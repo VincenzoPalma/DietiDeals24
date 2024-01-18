@@ -1,6 +1,5 @@
 package com.example.dietideals_app
 
-import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,11 +9,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.dietideals_app.ui.theme.DietidealsappTheme
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +38,12 @@ class MainActivity : ComponentActivity() {
 fun LoginScreen() {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val passwordFocusRequester = remember { FocusRequester() }
 
     var isLoginEnabled by remember {
         mutableStateOf(false)
     }
 
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = Modifier
@@ -50,19 +52,15 @@ fun LoginScreen() {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Login"
-        )
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
+        TextField(
+            label = {Text("E-mail")},
             value = username,
             onValueChange = {
                 username = it
                 isLoginEnabled = it.isNotBlank() && password.isNotBlank()
             },
-            label = { Text("Username") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
@@ -70,11 +68,11 @@ fun LoginScreen() {
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
-                onNext = { /* Handle next action if needed */ }
+                onNext = {passwordFocusRequester.requestFocus()}
             )
         )
 
-        OutlinedTextField(
+        TextField(
             value = password,
             onValueChange = {
                 password = it
@@ -83,7 +81,8 @@ fun LoginScreen() {
             label = { Text("Password") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(8.dp)
+                .focusRequester(passwordFocusRequester),
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
@@ -114,6 +113,8 @@ fun LoginScreen() {
         ) {
             Text("Login")
         }
+
+        Text("oppure accedi con")
     }
 }
 
