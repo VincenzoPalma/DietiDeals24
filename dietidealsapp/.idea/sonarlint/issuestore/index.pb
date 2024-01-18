@@ -19,16 +19,6 @@ D
 app/build.gradle.kts,d\2\d2a4383452aad84a18429a5844d31330a012a9e6
 l
 <app/src/main/java/com/example/dietideals_app/model/Utente.kt,f\e\fedbe8c7eb77378d4a1f10f1b53edcd36379d9e5
-w
-Gapp/src/main/java/com/example/dietideals_app/model/datiUtente/Utente.kt,e\2\e2c423439b4aa82dc8c7a24e609f396d85af064c
-
-Oapp/src/main/java/com/example/dietideals_app/model/datiUtente/dettagliUtente.kt,2\7\2781b3d73bf3d43b6d73c1af99b71623260f37ed
-
-Oapp/src/main/java/com/example/dietideals_app/model/datiUtente/DettagliUtente.kt,d\7\d7e702709344a1a64784a584a290f53fec3c002f
-~
-Napp/src/main/java/com/example/dietideals_app/model/datiUtente/DatiVenditore.kt,9\3\93356325a097c855299c1e59f82309ac61e55209
-v
-Fapp/src/main/java/com/example/dietideals_app/model/datiUtente/Carta.kt,e\a\eaba91ecd0d4d0d4ee1afec73d59743a0c2ad3dc
 k
 ;app/src/main/java/com/example/dietideals_app/model/Carta.kt,d\a\da20f2d3d9c2a6c04342086aa3be703d68268dec
 j
@@ -61,3 +51,5 @@ t
 Dapp/src/main/java/com/example/dietideals_app/model/DettagliUtente.kt,4\0\40b71adc49850939b77ef37173193977e5bdb4cf
 S
 #.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
+k
+;app/src/main/java/com/example/dietideals_app/model/oiuio.kt,3\a\3ad0bf64f9c2b7c9095802bdd10e0f15c8b608bc
