@@ -1,6 +1,4 @@
 
-l
-<app/src/main/java/com/example/dietideals_app/MainActivity.kt,3\3\3373ad17470e2588214092e40de9f40b765fb1f2
 n
 >app/src/main/java/com/example/dietideals_app/ui/theme/Color.kt,0\1\01f6b3a20145a42dbc92b54155793fbdf50d072a
 n
@@ -113,3 +111,11 @@ Q.idea/sonarlint/securityhotspotstore/4/d/4dd8aa00f0ae1dd58a0a8147f8637262ae9535
 Q.idea/sonarlint/securityhotspotstore/5/6/560762d121b82b3317908f0e4827ac96b8d36d01,7\b\7b4a746bc347480e964392fae53a20d9b688d84a
 Å
 Q.idea/sonarlint/securityhotspotstore/c/1/c118364abcecfae1a9a7f943b97f425661d092cd,d\6\d6fc55b1be8d1f18304372731ff6a8cade238718
+Å
+Qapp/src/main/java/com/example/dietideals_app/presenter/autenticazionePresenter.kt,a\0\a06c9990774bdf64c4c6e154284a639208502814
+y
+Iapp/src/main/java/com/example/dietideals_app/view/PaginaAutenticazione.kt,e\e\ee396109911186b88f333bc40b95619ae10f12e9
+Å
+Qapp/src/main/java/com/example/dietideals_app/presenter/AutenticazionePresenter.kt,1\5\1554819f5952ef8c0b7656787b9134655596ce3e
+P
+ app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e

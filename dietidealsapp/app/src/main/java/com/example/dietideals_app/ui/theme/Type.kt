@@ -10,7 +10,7 @@ import com.example.dietideals_app.R
 
 // Set of Material typography styles to start with
 
-val customfont=FontFamily(Font(R.font.dihil))
+val titleCustomFont = FontFamily(Font(R.font.fonttitolo))
 
 val Typography = Typography(
     bodyLarge = TextStyle(
