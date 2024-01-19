@@ -1,5 +1,6 @@
 package com.example.dietideals_app
 
+import android.graphics.fonts.FontFamily
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,7 +20,6 @@ import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Search
@@ -38,15 +38,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -97,7 +101,7 @@ fun LoginScreen() {
                 .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "DIETIDEALS 24", color = Color.White, fontSize = 50.sp, fontWeight = FontWeight.Bold) //aggiungere font
+            Text(text = "DIETIDEALS 24", color = Color.White, textAlign = TextAlign.Center,fontSize = 45.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth()) //aggiungere font
             Spacer(modifier = Modifier.height(10.dp))
             Image(
                 painter = logoApp,
@@ -130,12 +134,12 @@ fun LoginScreen() {
             )
             TextField(
                 value = password,
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if(passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
                 //aggiungere icone personalizzate
-                leadingIcon = {Icon(imageVector = Icons.Default.Create, contentDescription = null)},
+                leadingIcon = {Icon(painter = painterResource(id = R.drawable.baseline_lock_24), contentDescription = null)},
                 //icona cliccabile per nascondere e mostrare password, non funzionante
-                trailingIcon = {Icon(imageVector = Icons.Default.Search, contentDescription = null,
-                    modifier = Modifier.clickable{passwordVisibile = !passwordVisibile; if(!passwordVisibile) VisualTransformation.None else PasswordVisualTransformation()})},
+                trailingIcon = {Icon(painter = painterResource(id = R.drawable.baseline_remove_red_eye_24), contentDescription = null,
+                    modifier = Modifier.clickable{passwordVisibile = !passwordVisibile})},
                 onValueChange = {
                     password = it
                     isLoginEnabled = it.isNotBlank() && username.isNotBlank()
@@ -215,11 +219,6 @@ fun LoginScreen() {
         }
 
     }
-}
-
-@Composable
-fun nascondiPasswordButtonClick() {
-
 }
 
 fun effettuaLogin(username: String, password: String) {
