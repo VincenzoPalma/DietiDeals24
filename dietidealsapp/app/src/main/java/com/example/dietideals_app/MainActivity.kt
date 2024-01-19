@@ -55,6 +55,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.ui.theme.customfont
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +102,7 @@ fun LoginScreen() {
                 .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "DIETIDEALS 24", color = Color.White, textAlign = TextAlign.Center,fontSize = 45.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth()) //aggiungere font
+            Text(text = "DIETIDEALS 24", color = Color.White, fontFamily = customfont,textAlign = TextAlign.Center,fontSize = 40.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth()) //aggiungere font
             Spacer(modifier = Modifier.height(10.dp))
             Image(
                 painter = logoApp,
