@@ -8,17 +8,17 @@ import java.util.Objects;
 @Table(name = "ContoCorrente", schema = "public", catalog = "ingswProva")
 public class ContoCorrente {
     @Id
-    @Column(name = "IBAN", nullable = false, length = 27)
+    @Column(name = "iban", nullable = false, length = 27)
     private String iban;
-    @Basic
-    @Column(name = "NomeTitolare", nullable = false, length = -1)
+
+    @Column(name = "nomeTitolare", nullable = false, length = -1)
     private String nomeTitolare;
-    @Basic
-    @Column(name = "CodiceBIC_SWIFT", nullable = false, length = 11)
+
+    @Column(name = "codiceBIC_SWIFT", nullable = false, length = 11)
     private String codiceBicSwift;
-    @Basic
-    @Column(name = "Utente", nullable = false, length = -1)
-    private String utente;
+
+    @OneToOne@JoinColumn(name = "utente", nullable = false)
+    private Utente utente;
 
     public String getIban() {
         return iban;
@@ -44,11 +44,11 @@ public class ContoCorrente {
         this.codiceBicSwift = codiceBicSwift;
     }
 
-    public String getUtente() {
+    public Utente getUtente() {
         return utente;
     }
 
-    public void setUtente(String utente) {
+    public void setUtente(Utente utente) {
         this.utente = utente;
     }
 

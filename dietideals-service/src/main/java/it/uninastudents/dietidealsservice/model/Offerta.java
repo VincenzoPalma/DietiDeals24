@@ -8,15 +8,14 @@ import java.util.Objects;
 @Table(name = "Offerta", schema = "public", catalog = "ingswProva")
 public class Offerta {
     @Id
-    @Column(name = "UsernameUtente", nullable = false, length = -1)
-    private String usernameUtente;
-
-    //embedded
     @Column(name = "id_Asta", nullable = false)
     private int idAsta;
 
+    @EmbeddedId
+    @Column(name = "usernameUtente", nullable = false, length = -1)
+    private String usernameUtente;
 
-    @Column(name = "Prezzo", nullable = false)
+    @Column(name = "prezzo", nullable = false)
     private Object prezzo;
 
     public Object getPrezzo() {

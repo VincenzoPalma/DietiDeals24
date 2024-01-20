@@ -9,39 +9,38 @@ import java.util.Objects;
 @Entity
 @Table(name = "Asta", schema = "public", catalog = "ingswProva")
 public class Asta {
-    @Id //generato
+    @Id@GeneratedValue//generato
     @Column(name = "id_Asta", nullable = false)
     private int idAsta;
 
-    @Column(name = "Nome", nullable = false, length = -1)
+    @Column(name = "nome", nullable = false, length = -1)
     private String nome;
 
-    @Column(name = "Descrizione", nullable = false, length = 300)
+    @Column(name = "descrizione", nullable = false, length = 300)
     private String descrizione;
 
-    @Basic
-    @Column(name = "Foto", nullable = true)
+    @Column(name = "foto", nullable = true)
     private byte[] foto;
-    @Basic
-    @Column(name = "DataScadenza", nullable = true)
+
+    @Column(name = "dataScadenza", nullable = true)
     private Date dataScadenza;
-    @Basic
-    @Column(name = "SogliaRialzo", nullable = true)
+
+    @Column(name = "sogliaRialzo", nullable = true)
     private Object sogliaRialzo;
-    @Basic
-    @Column(name = "IntervalloTempoOfferto", nullable = true)
+
+    @Column(name = "intervalloTempoOfferto", nullable = true)
     private Object intervalloTempoOfferto;
-    @Basic
-    @Column(name = "Categoria", nullable = false, length = -1)
+
+    @Column(name = "categoria", nullable = false, length = -1)
     private String categoria;
-    @Basic
-    @Column(name = "Tipo", nullable = false, length = -1)
+
+    @Column(name = "tipo", nullable = false, length = -1)
     private String tipo;
-    @Basic
-    @Column(name = "Stato", nullable = false, length = -1)
+
+    @Column(name = "stato", nullable = false, length = -1)
     private String stato;
-    @Basic
-    @Column(name = "Proprietario", nullable = false, length = -1)
+
+    @Column(name = "proprietario", nullable = false, length = -1)
     private String proprietario;
 
     public String getNome() {

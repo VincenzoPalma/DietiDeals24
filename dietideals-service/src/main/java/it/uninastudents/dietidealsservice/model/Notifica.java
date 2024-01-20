@@ -12,13 +12,13 @@ public class Notifica {
     @Column(name = "id_Asta", nullable = false)
     private int idAsta;
     @EmbeddedId
-    @Column(name = "Username", nullable = false, length = -1)
+    @Column(name = "username", nullable = false, length = -1)
     private String username;
 
-    @Column(name = "Contenuto", nullable = false, length = -1)
+    @Column(name = "contenuto", nullable = false, length = -1)
     private String contenuto;
 
-    @Column(name = "Data", nullable = false)
+    @Column(name = "data", nullable = false)
     private Timestamp data;
 
     public String getContenuto() {
