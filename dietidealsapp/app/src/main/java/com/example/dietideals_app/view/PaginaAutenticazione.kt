@@ -38,7 +38,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -46,6 +45,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.presenter.AutenticazionePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
@@ -60,7 +63,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen()
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
+                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
+                        composable("prova") { SimpleScreen() }
+                    }
                 }
             }
         }
@@ -68,11 +75,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen() {
-    val presenter = AutenticazionePresenter()
+fun SchermataAutenticazione(navController: NavController) {
+    val presenter = AutenticazionePresenter() //instanza del presenter
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val passwordFocusRequester = remember { FocusRequester() }
+    //valori per le immagini della schermata
     val background = painterResource(id = R.drawable.sfondoprova)
     val logoFacebook = painterResource(id = R.drawable.facebookicon)
     val logoGoogle = painterResource(id = R.drawable.googleicon)
@@ -100,7 +108,7 @@ fun LoginScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
             //testo titolo
-            Text(text = "DIETIDEALS 24", color = Color.White, fontFamily = titleCustomFont,textAlign = TextAlign.Center,fontSize = 53.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth()) //aggiungere font
+            Text(text = "DIETIDEALS 24", color = Color.White, fontFamily = titleCustomFont,textAlign = TextAlign.Center,fontSize = 40.sp, modifier = Modifier.fillMaxWidth()) //aggiungere font
             Spacer(modifier = Modifier.height(10.dp))
             //icona applicazione
             Image(
@@ -223,6 +231,7 @@ fun LoginScreen() {
             Button(
                 onClick = {
                     presenter.effettuaRegistrazione()
+                    navController.navigate("prova")
                 },
                 modifier = Modifier
                     .width(180.dp)
@@ -234,12 +243,13 @@ fun LoginScreen() {
         }
 
     }
+
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
     DietidealsappTheme {
-        LoginScreen()
+        //SchermataAutenticazione()
     }
 }

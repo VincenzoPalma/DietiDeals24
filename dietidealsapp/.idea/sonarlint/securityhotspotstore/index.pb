@@ -119,3 +119,5 @@ Iapp/src/main/java/com/example/dietideals_app/view/PaginaAutenticazione.kt,e\e\
 Qapp/src/main/java/com/example/dietideals_app/presenter/AutenticazionePresenter.kt,1\5\1554819f5952ef8c0b7656787b9134655596ce3e
 P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
+j
+:app/src/main/java/com/example/dietideals_app/view/prova.kt,8\0\80a16b47df43db0555db147cb9870382880c84a4
