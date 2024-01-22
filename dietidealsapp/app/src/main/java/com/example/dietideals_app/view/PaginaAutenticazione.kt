@@ -6,8 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -45,6 +42,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -76,175 +75,234 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SchermataAutenticazione(navController: NavController) {
-    val presenter = AutenticazionePresenter() //instanza del presenter
+    val presenter = AutenticazionePresenter() // istanza del presenter
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val passwordFocusRequester = remember { FocusRequester() }
-    //valori per le immagini della schermata
+    // valori per le immagini della schermata
     val background = painterResource(id = R.drawable.sfondoprova)
     val logoFacebook = painterResource(id = R.drawable.facebookicon)
     val logoGoogle = painterResource(id = R.drawable.googleicon)
     val logoGitHub = painterResource(id = R.drawable.githubicon)
     val logoApp = painterResource(id = R.drawable.iconaapp)
-    var passwordVisibile by remember { mutableStateOf(false) } //variabile per tenere traccia della visibilità della password
-    var isLoginEnabled by remember { mutableStateOf(false) } //variabile per tenere traccia dello stato del bottone di login
+    var passwordVisibile by remember { mutableStateOf(false) } // variabile per tenere traccia della visibilità della password
+    var isLoginEnabled by remember { mutableStateOf(false) } // variabile per tenere traccia dello stato del bottone di login
 
-    Box(
+    ConstraintLayout(
         modifier = Modifier
-            .fillMaxSize(),
-            contentAlignment = Alignment.Center
+            .fillMaxSize()
     ) {
-        //immagine di background
+        val (backgroundImage, title, appIcon, emailTextField, passwordTextField, accessButton, socialIcons, registerButton) = createRefs()
+
+        // Immagine di background
         Image(
             painter = background,
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .constrainAs(backgroundImage) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                },
             contentScale = ContentScale.Crop
         )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            //testo titolo
-            Text(text = "DIETIDEALS 24", color = Color.White, fontFamily = titleCustomFont,textAlign = TextAlign.Center,fontSize = 40.sp, modifier = Modifier.fillMaxWidth()) //aggiungere font
-            Spacer(modifier = Modifier.height(10.dp))
-            //icona applicazione
-            Image(
-                painter = logoApp,
-                contentDescription = null,
-                modifier = Modifier
-                    .width(60.dp)
-                    .height(60.dp),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.height(35.dp))
-            //text field email
-            TextField(
-                label = { Text("E-mail") },
-                //aggiungere icone personalizzate
-                leadingIcon = {Icon(imageVector = Icons.Default.Email, contentDescription = null)},
-                value = username,
-                onValueChange = {
-                    username = it
-                    isLoginEnabled = it.isNotBlank() && password.isNotBlank()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = { passwordFocusRequester.requestFocus() }
-                )
-            )
-            //text field password
-            TextField(
-                value = password,
-                visualTransformation = if(passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
-                leadingIcon = {Icon(painter = painterResource(id = R.drawable.baseline_lock_24), contentDescription = null)},
-                trailingIcon = {Icon(painter = painterResource(id = R.drawable.baseline_remove_red_eye_24), contentDescription = null,
-                    modifier = Modifier.clickable{passwordVisibile = !passwordVisibile})},
-                onValueChange = {
-                    password = it
-                    isLoginEnabled = it.length >= 5 && username.isNotBlank() //ricontrollare
-                },
-                label = { Text("Password") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .focusRequester(passwordFocusRequester),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        if (isLoginEnabled) {
-                            // Perform login action
-                            presenter.effettuaLogin(username, password)
-                        }
-                    }
-                )
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-            //bottone accesso
-            Button(
-                onClick = {
+        // Testo titolo
+        Text(
+            text = "DIETIDEALS 24",
+            color = Color.White,
+            fontFamily = titleCustomFont,
+            textAlign = TextAlign.Center,
+            fontSize = 40.sp,
+            modifier = Modifier
+                .constrainAs(title) {
+                    top.linkTo(parent.top, margin = 16.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .fillMaxWidth()
+        )
+
+        // Icona applicazione
+        Image(
+            painter = logoApp,
+            contentDescription = null,
+            modifier = Modifier
+                .constrainAs(appIcon) {
+                    top.linkTo(title.bottom, margin = 20.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .width(60.dp)
+                .height(60.dp),
+            contentScale = ContentScale.Crop
+        )
+
+        // Text field email
+        TextField(
+            label = { Text("E-mail") },
+            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
+            value = username,
+            onValueChange = {
+                username = it
+                isLoginEnabled = it.isNotBlank() && password.isNotBlank()
+            },
+            modifier = Modifier
+                .constrainAs(emailTextField) {
+                    top.linkTo(appIcon.bottom, margin = 35.dp)
+                    start.linkTo(parent.start, margin = 16.dp)
+                    end.linkTo(parent.end, margin = 16.dp)
+                }
+                .fillMaxWidth()
+                .padding(8.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { passwordFocusRequester.requestFocus() }
+            )
+        )
+
+        // Text field password
+        TextField(
+            value = password,
+            visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
+            leadingIcon = { Icon(painter = painterResource(id = R.drawable.baseline_lock_24), contentDescription = null) },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_remove_red_eye_24),
+                    contentDescription = null,
+                    modifier = Modifier.clickable { passwordVisibile = !passwordVisibile })
+            },
+            onValueChange = {
+                password = it
+                isLoginEnabled = it.length >= 5 && username.isNotBlank()
+            },
+            label = { Text("Password") },
+            modifier = Modifier
+                .constrainAs(passwordTextField) {
+                    top.linkTo(emailTextField.bottom, margin = 16.dp)
+                    start.linkTo(parent.start, margin = 16.dp)
+                    end.linkTo(parent.end, margin = 16.dp)
+                }
+                .fillMaxWidth()
+                .padding(8.dp)
+                .focusRequester(passwordFocusRequester),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
                     if (isLoginEnabled) {
+                        // Perform login action
                         presenter.effettuaLogin(username, password)
                     }
-                },
-                modifier = Modifier
-                    .width(140.dp)
-                    .height(48.dp),
-                shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
-                enabled = isLoginEnabled
-            ) {
-                Text("ACCEDI", fontSize = 20.sp)
-            }
-            Spacer(modifier = Modifier.height(15.dp))
-            Text("oppure accedi con", color = Color.Gray, fontSize = 19.sp)
-
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                    horizontalArrangement = Arrangement.Center
+                }
             )
-            {
-                Image(
-                    painter = logoGoogle,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(70.dp)
-                        .height(70.dp)
-                        .clickable {/*login google*/ },
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.width(65.dp))
-                Image(
-                    painter = logoFacebook,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(70.dp)
-                        .height(70.dp)
-                        .clickable {/*login facebook*/ },
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.width(65.dp))
-                Image(
-                    painter = logoGitHub,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(70.dp)
-                        .height(70.dp)
-                        .clickable {/*login github*/ },
-                    contentScale = ContentScale.Crop
-                )
-            }
-            Spacer(modifier = Modifier.height(15.dp))
-            Text("Non hai un account?", color = Color.Gray, fontSize = 19.sp)
-            Spacer(modifier = Modifier.height(15.dp))
-            Button(
-                onClick = {
-                    presenter.effettuaRegistrazione()
-                    navController.navigate("prova")
-                },
-                modifier = Modifier
-                    .width(180.dp)
-                    .height(48.dp),
-                shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
-            ) {
-                Text("REGISTRATI", fontSize = 20.sp)
-            }
+        )
+
+        // Bottone accesso
+        Button(
+            onClick = {
+                if (isLoginEnabled) {
+                    presenter.effettuaLogin(username, password)
+                }
+            },
+            modifier = Modifier
+                .constrainAs(accessButton) {
+                    top.linkTo(passwordTextField.bottom, margin = 16.dp)
+                    start.linkTo(parent.start, margin = 16.dp)
+                    end.linkTo(parent.end, margin = 16.dp)
+                }
+                .width(140.dp)
+                .height(48.dp),
+            shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
+            enabled = isLoginEnabled
+        ) {
+            Text("ACCEDI", fontSize = 20.sp)
         }
 
-    }
+        // Icone social
+        Row(
+            modifier = Modifier
+                .constrainAs(socialIcons) {
+                    top.linkTo(accessButton.bottom, margin = 15.dp)
+                    start.linkTo(parent.start, margin = 16.dp)
+                    end.linkTo(parent.end, margin = 16.dp)
+                }
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = logoGoogle,
+                contentDescription = null,
+                modifier = Modifier
+                    .width(70.dp)
+                    .height(70.dp)
+                    .clickable { /*login google*/ },
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.width(65.dp))
+            Image(
+                painter = logoFacebook,
+                contentDescription = null,
+                modifier = Modifier
+                    .width(70.dp)
+                    .height(70.dp)
+                    .clickable { /*login facebook*/ },
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.width(65.dp))
+            Image(
+                painter = logoGitHub,
+                contentDescription = null,
+                modifier = Modifier
+                    .width(70.dp)
+                    .height(70.dp)
+                    .clickable { /*login github*/ },
+                contentScale = ContentScale.Crop
+            )
+        }
 
+        // Testo registrazione
+        Text(
+            "Non hai un account?",
+            color = Color.Gray,
+            fontSize = 19.sp,
+            modifier = Modifier
+                .constrainAs(registerButton) {
+                    top.linkTo(socialIcons.bottom, margin = 15.dp)
+                    start.linkTo(parent.start, margin = 16.dp)
+                    end.linkTo(parent.end, margin = 16.dp)
+                }
+        )
+
+        // Bottone registrazione
+        Button(
+            onClick = {
+                presenter.effettuaRegistrazione()
+                navController.navigate("prova")
+            },
+            modifier = Modifier
+                .constrainAs(registerButton) {
+                    top.linkTo(socialIcons.bottom, margin = 15.dp)
+                    start.linkTo(parent.start, margin = 16.dp)
+                    end.linkTo(parent.end, margin = 16.dp)
+
+                }
+                .width(180.dp)
+                .height(48.dp),
+            shape = CutCornerShape(topStart = 5.dp, bottomEnd = 5.dp),
+        ) {
+            Text("REGISTRATI", fontSize = 20.sp)
+        }
+    }
 }
+
 
 @Preview(showBackground = true)
 @Composable
