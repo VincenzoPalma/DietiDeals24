@@ -14,16 +14,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,8 +71,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
-                        composable("prova") { SimpleScreen() }
+                        composable("SchermataAutenticazione") {SchermataAutenticazione(navController = navController) }
+                        composable("prova") {SimpleScreen() }
                     }
                 }
             }
@@ -73,6 +80,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataAutenticazione(navController: NavController) {
     val presenter = AutenticazionePresenter() // istanza del presenter
@@ -88,11 +96,12 @@ fun SchermataAutenticazione(navController: NavController) {
     var passwordVisibile by remember { mutableStateOf(false) } // variabile per tenere traccia della visibilità della password
     var isLoginEnabled by remember { mutableStateOf(false) } // variabile per tenere traccia dello stato del bottone di login
 
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (backgroundImage, title, appIcon, emailTextField, passwordTextField, accessButton, socialIcons, registerButton) = createRefs()
+        val (backgroundImage, title, appIcon, emailTextField, passwordTextField, accessButton, socialIcons, registratiText, registerButton) = createRefs()
 
         // Immagine di background
         Image(
@@ -142,9 +151,10 @@ fun SchermataAutenticazione(navController: NavController) {
         )
 
         // Text field email
-        TextField(
+       OutlinedTextField(
             label = { Text("E-mail") },
-            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
+            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null, tint = Color(0xFF0EA639)) },
+            shape = RoundedCornerShape(15.dp),
             value = username,
             onValueChange = {
                 username = it
@@ -155,8 +165,8 @@ fun SchermataAutenticazione(navController: NavController) {
                     top.linkTo(appIcon.bottom, margin = 35.dp)
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
+                    width = Dimension.fillToConstraints
                 }
-                .fillMaxWidth()
                 .padding(8.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
@@ -167,15 +177,18 @@ fun SchermataAutenticazione(navController: NavController) {
         )
 
         // Text field password
-        TextField(
+        OutlinedTextField(
             value = password,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
-            leadingIcon = { Icon(painter = painterResource(id = R.drawable.baseline_lock_24), contentDescription = null) },
+            shape = RoundedCornerShape(15.dp),
+            leadingIcon = { Icon(painter = painterResource(id =R.drawable.baseline_lock_24), contentDescription = null,tint = Color(0xFF0EA639) ) },
             trailingIcon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_remove_red_eye_24),
+                    painter = painterResource(id = if(!passwordVisibile) R.drawable.baseline_remove_red_eye_24 else R.drawable.closed_eye_icon), /*Cambio dinamico dell'icona per visualizzare la password*/
                     contentDescription = null,
-                    modifier = Modifier.clickable { passwordVisibile = !passwordVisibile })
+                    modifier = Modifier.clickable { passwordVisibile = !passwordVisibile
+                 },
+                    tint = Color(0xFF0EA639))
             },
             onValueChange = {
                 password = it
@@ -187,8 +200,8 @@ fun SchermataAutenticazione(navController: NavController) {
                     top.linkTo(emailTextField.bottom, margin = 16.dp)
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
+                    width = Dimension.fillToConstraints
                 }
-                .fillMaxWidth()
                 .padding(8.dp)
                 .focusRequester(passwordFocusRequester),
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -274,8 +287,8 @@ fun SchermataAutenticazione(navController: NavController) {
             color = Color.Gray,
             fontSize = 19.sp,
             modifier = Modifier
-                .constrainAs(registerButton) {
-                    top.linkTo(socialIcons.bottom, margin = 15.dp)
+                .constrainAs(registratiText) {
+                    top.linkTo(socialIcons.bottom, margin = 5.dp)
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
                 }
@@ -289,7 +302,7 @@ fun SchermataAutenticazione(navController: NavController) {
             },
             modifier = Modifier
                 .constrainAs(registerButton) {
-                    top.linkTo(socialIcons.bottom, margin = 15.dp)
+                    top.linkTo(registratiText.bottom, margin = 10.dp)
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
 
@@ -308,6 +321,7 @@ fun SchermataAutenticazione(navController: NavController) {
 @Composable
 fun PreviewLoginScreen() {
     DietidealsappTheme {
-        //SchermataAutenticazione()
+        val navController = rememberNavController()
+        SchermataAutenticazione(navController)
     }
 }
