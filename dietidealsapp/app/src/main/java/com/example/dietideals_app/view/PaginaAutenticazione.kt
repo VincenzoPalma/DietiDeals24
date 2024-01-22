@@ -15,22 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
                         composable("SchermataAutenticazione") {SchermataAutenticazione(navController = navController) }
-                        composable("prova") {SimpleScreen() }
+                        composable("SchermataRegistrazione") {SchermataRegistrazione()}
                     }
                 }
             }
@@ -80,21 +74,24 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun SchermataAutenticazione(navController: NavController) {
-    val presenter = AutenticazionePresenter() // istanza del presenter
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    val passwordFocusRequester = remember { FocusRequester() }
-    // valori per le immagini della schermata
+    val presenter = AutenticazionePresenter() // Istanza del presenter per la gestione dell'autenticazione
+    var username by remember { mutableStateOf("") } // Variabile per memorizzare l'username
+    var password by remember { mutableStateOf("") } // Variabile per memorizzare la password
+    val passwordFocusRequester = remember { FocusRequester() } // Richiede il focus per l'input della password
+
+// Valori per le immagini della schermata
     val background = painterResource(id = R.drawable.sfondoprova)
     val logoFacebook = painterResource(id = R.drawable.facebookicon)
     val logoGoogle = painterResource(id = R.drawable.googleicon)
     val logoGitHub = painterResource(id = R.drawable.githubicon)
     val logoApp = painterResource(id = R.drawable.iconaapp)
-    var passwordVisibile by remember { mutableStateOf(false) } // variabile per tenere traccia della visibilità della password
-    var isLoginEnabled by remember { mutableStateOf(false) } // variabile per tenere traccia dello stato del bottone di login
+
+    var passwordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della password
+    var isLoginEnabled by remember { mutableStateOf(false) } // Variabile per tenere traccia dello stato del bottone di login
+
 
 
     ConstraintLayout(
@@ -298,7 +295,7 @@ fun SchermataAutenticazione(navController: NavController) {
         Button(
             onClick = {
                 presenter.effettuaRegistrazione()
-                navController.navigate("prova")
+                navController.navigate("SchermataRegistrazione")
             },
             modifier = Modifier
                 .constrainAs(registerButton) {
