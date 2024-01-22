@@ -1,4 +1,4 @@
-package it.uninastudents.dietidealsservice.model;
+package it.uninastudents.dietidealsservice.model.entity;
 
 import jakarta.persistence.*;
 
@@ -9,7 +9,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "Asta", schema = "public", catalog = "ingswProva")
 public class Asta {
-    @Id@GeneratedValue//generato
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) //generato
     @Column(name = "id_Asta", nullable = false)
     private int idAsta;
 
