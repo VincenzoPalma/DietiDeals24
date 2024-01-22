@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun SchermataAutenticazione(navController: NavController) {
     val presenter = AutenticazionePresenter() //instanza del presenter
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val passwordFocusRequester = remember { FocusRequester() }
     //valori per le immagini della schermata
@@ -125,9 +125,9 @@ fun SchermataAutenticazione(navController: NavController) {
                 label = { Text("E-mail") },
                 //aggiungere icone personalizzate
                 leadingIcon = {Icon(imageVector = Icons.Default.Email, contentDescription = null)},
-                value = username,
+                value = email,
                 onValueChange = {
-                    username = it
+                    email = it
                     isLoginEnabled = it.isNotBlank() && password.isNotBlank()
                 },
                 modifier = Modifier
@@ -149,7 +149,7 @@ fun SchermataAutenticazione(navController: NavController) {
                     modifier = Modifier.clickable{passwordVisibile = !passwordVisibile})},
                 onValueChange = {
                     password = it
-                    isLoginEnabled = it.length >= 5 && username.isNotBlank() //ricontrollare
+                    isLoginEnabled = it.isNotBlank() && email.isNotBlank() //ricontrollare
                 },
                 label = { Text("Password") },
                 modifier = Modifier
@@ -163,7 +163,7 @@ fun SchermataAutenticazione(navController: NavController) {
                     onDone = {
                         if (isLoginEnabled) {
                             // Perform login action
-                            presenter.effettuaLogin(username, password)
+                            presenter.effettuaLogin(email, password)
                         }
                     }
                 )
@@ -174,7 +174,7 @@ fun SchermataAutenticazione(navController: NavController) {
             Button(
                 onClick = {
                     if (isLoginEnabled) {
-                        presenter.effettuaLogin(username, password)
+                        presenter.effettuaLogin(email, password)
                     }
                 },
                 modifier = Modifier
