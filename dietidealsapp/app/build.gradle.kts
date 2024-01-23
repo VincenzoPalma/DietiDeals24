@@ -52,9 +52,11 @@ android {
 dependencies {
 
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     val nav_version = "2.7.6"
     implementation("androidx.navigation:navigation-compose:$nav_version")
     api("androidx.navigation:navigation-fragment-ktx:$nav_version")
+    implementation ("androidx.compose.material3:material3:1.2.0-beta02")
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
