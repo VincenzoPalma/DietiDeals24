@@ -119,8 +119,6 @@ Iapp/src/main/java/com/example/dietideals_app/view/PaginaAutenticazione.kt,e\e\
 Qapp/src/main/java/com/example/dietideals_app/presenter/AutenticazionePresenter.kt,1\5\1554819f5952ef8c0b7656787b9134655596ce3e
 P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
-j
-:app/src/main/java/com/example/dietideals_app/view/prova.kt,8\0\80a16b47df43db0555db147cb9870382880c84a4
 {
 Kapp/src/main/java/com/example/dietideals_app/repository/UtenteRepository.kt,0\1\0182013e4d470d46d8531a876eff561e475581ce
 ç
@@ -131,3 +129,5 @@ y
 Iapp/src/main/java/com/example/dietideals_app/repository/RetrofitConfig.kt,b\c\bc1227ad50902948d51c7c9d39e2ed1e51d38594
 x
 Happ/src/main/java/com/example/dietideals_app/view/PaginaRegistrazione.kt,5\0\504f8313484a41f0eecf4c7b33e25fa3ba7680b6
+N
+app/debug/output-metadata.json,6\d\6d0d047f57b3ed56db47b6d89a6ec6080e4cb494
