@@ -1,4 +1,4 @@
-package it.uninastudents.dietidealsservice.model;
+package it.uninastudents.dietidealsservice.model.entity;
 
 import jakarta.persistence.*;
 

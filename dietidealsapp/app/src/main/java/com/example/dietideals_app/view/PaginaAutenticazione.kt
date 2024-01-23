@@ -81,8 +81,7 @@ fun SchermataAutenticazione(navController: NavController) {
     var username by remember { mutableStateOf("") } // Variabile per memorizzare l'username
     var password by remember { mutableStateOf("") } // Variabile per memorizzare la password
     val passwordFocusRequester = remember { FocusRequester() } // Richiede il focus per l'input della password
-
-// Valori per le immagini della schermata
+    // Valori per le immagini della schermata
     val background = painterResource(id = R.drawable.sfondoprova)
     val logoFacebook = painterResource(id = R.drawable.facebookicon)
     val logoGoogle = painterResource(id = R.drawable.googleicon)
@@ -260,6 +259,7 @@ fun SchermataAutenticazione(navController: NavController) {
             Image(
                 painter = logoFacebook,
                 contentDescription = null,
+
                 modifier = Modifier
                     .width(70.dp)
                     .height(70.dp)
@@ -290,7 +290,6 @@ fun SchermataAutenticazione(navController: NavController) {
                     end.linkTo(parent.end, margin = 16.dp)
                 }
         )
-
         // Bottone registrazione
         Button(
             onClick = {

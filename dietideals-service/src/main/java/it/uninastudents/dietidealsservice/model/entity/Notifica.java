@@ -1,19 +1,24 @@
-package it.uninastudents.dietidealsservice.model;
+package it.uninastudents.dietidealsservice.model.entity;
 
+import it.uninastudents.dietidealsservice.model.id.IdRelazioneAstaUtente;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
+@IdClass(IdRelazioneAstaUtente.class)
 @Table(name = "Notifica", schema = "public", catalog = "ingswProva")
 public class Notifica {
     @Id
-    @Column(name = "id_Asta", nullable = false)
-    private int idAsta;
-    @EmbeddedId
-    @Column(name = "username", nullable = false, length = -1)
-    private String username;
+    @ManyToOne
+    @JoinColumn(name = "id_Asta", nullable = false)
+    private Asta asta;
+
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "username", nullable = false)
+    private Utente utente;
 
     @Column(name = "contenuto", nullable = false, length = -1)
     private String contenuto;
@@ -37,20 +42,20 @@ public class Notifica {
         this.data = data;
     }
 
-    public int getIdAsta() {
-        return idAsta;
+    public Asta getAsta() {
+        return asta;
     }
 
-    public void setIdAsta(int idAsta) {
-        this.idAsta = idAsta;
+    public void setAsta(Asta asta) {
+        this.asta = asta;
     }
 
-    public String getUsername() {
-        return username;
+    public Utente getUtente() {
+        return utente;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUtente(Utente utente) {
+        this.utente = utente;
     }
 
     @Override
@@ -58,11 +63,11 @@ public class Notifica {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Notifica that = (Notifica) o;
-        return idAsta == that.idAsta && Objects.equals(contenuto, that.contenuto) && Objects.equals(data, that.data) && Objects.equals(username, that.username);
+        return asta == that.asta && Objects.equals(contenuto, that.contenuto) && Objects.equals(data, that.data) && Objects.equals(utente, that.utente);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(contenuto, data, idAsta, username);
+        return Objects.hash(contenuto, data, asta, utente);
     }
 }
