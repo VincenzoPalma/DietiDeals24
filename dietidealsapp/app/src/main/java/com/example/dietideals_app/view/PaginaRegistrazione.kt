@@ -67,7 +67,7 @@ class RegistrazioneActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-//funzione per la creazione della schermata di registrazione
+//funzione per la creazione della schermata di registrazionee
 fun SchermataRegistrazione() {
     val background = painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
 
