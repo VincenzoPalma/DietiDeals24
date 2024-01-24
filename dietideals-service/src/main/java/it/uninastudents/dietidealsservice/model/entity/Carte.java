@@ -13,7 +13,7 @@ public class Carte {
     private String numero;
 
     @Column(name = "nomeTitolare", nullable = false, length = -1)
-    private Object nomeTitolare;
+    private String nomeTitolare;
 
     @Column(name = "codiceCVV_CVC", nullable = false)
     private short codiceCvvCvc;
@@ -32,11 +32,11 @@ public class Carte {
         this.numero = numero;
     }
 
-    public Object getNomeTitolare() {
+    public String getNomeTitolare() {
         return nomeTitolare;
     }
 
-    public void setNomeTitolare(Object nomeTitolare) {
+    public void setNomeTitolare(String nomeTitolare) {
         this.nomeTitolare = nomeTitolare;
     }
 

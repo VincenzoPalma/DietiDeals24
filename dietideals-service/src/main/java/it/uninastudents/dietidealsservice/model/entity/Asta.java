@@ -2,7 +2,9 @@ package it.uninastudents.dietidealsservice.model.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -26,10 +28,10 @@ public class Asta {
     private Date dataScadenza;
 
     @Column(name = "sogliaRialzo", nullable = true)
-    private Object sogliaRialzo;
+    private BigDecimal sogliaRialzo;
 
     @Column(name = "intervalloTempoOfferto", nullable = true)
-    private Object intervalloTempoOfferto;
+    private Duration intervalloTempoOfferto;
 
     @Column(name = "categoria", nullable = false, length = -1)
     private String categoria;
@@ -83,19 +85,19 @@ public class Asta {
         this.dataScadenza = dataScadenza;
     }
 
-    public Object getSogliaRialzo() {
+    public BigDecimal getSogliaRialzo() {
         return sogliaRialzo;
     }
 
-    public void setSogliaRialzo(Object sogliaRialzo) {
+    public void setSogliaRialzo(BigDecimal sogliaRialzo) {
         this.sogliaRialzo = sogliaRialzo;
     }
 
-    public Object getIntervalloTempoOfferto() {
+    public Duration getIntervalloTempoOfferto() {
         return intervalloTempoOfferto;
     }
 
-    public void setIntervalloTempoOfferto(Object intervalloTempoOfferto) {
+    public void setIntervalloTempoOfferto(Duration intervalloTempoOfferto) {
         this.intervalloTempoOfferto = intervalloTempoOfferto;
     }
 

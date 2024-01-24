@@ -45,6 +45,7 @@ public class Utente {
     @Column(name = "indirizzo", nullable = true, length = -1)
     private String indirizzo;
 
+
     @Column(name = "partitaIVA", nullable = true, length = -1)
     private String partitaIva;
 
@@ -54,8 +55,9 @@ public class Utente {
     @Column(name = "fotoProfilo", nullable = true)
     private byte[] fotoProfilo;
 
-    @Column(name = "contoCorrente", nullable = true, length = 27)
-    private String contoCorrente;
+    @OneToOne
+    @JoinColumn(name = "contoCorrente", nullable = true)
+    private ContoCorrente contoCorrente;
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
@@ -117,9 +119,41 @@ public class Utente {
         this.fotoProfilo = fotoProfilo;
     }
 
-    public void setContoCorrente(String contoCorrente) {
+    public void setContoCorrente(ContoCorrente contoCorrente) {
         this.contoCorrente = contoCorrente;
     }
+
+    public String getUsername() { return username; }
+
+    public String getTipo() { return tipo; }
+
+    public String getNome() { return nome; }
+
+    public String getCognome() { return cognome; }
+
+    public String getEmail() { return email; }
+
+    public String getPassword() { return password; }
+
+    public String getDescrizione() { return descrizione; }
+
+    public String getFacebook() { return facebook; }
+
+    public String getInstagram() { return instagram; }
+
+    public String getTwitter() { return twitter; }
+
+    public String getSitoWeb() { return sitoWeb; }
+
+    public String getIndirizzo() { return indirizzo; }
+
+    public String getPartitaIva() { return partitaIva; }
+
+    public byte[] getDocumentoIdentita() { return documentoIdentita; }
+
+    public byte[] getFotoProfilo() { return fotoProfilo; }
+
+    public ContoCorrente getContoCorrente() { return contoCorrente; }
 
     @Override
     public boolean equals(Object o) {
