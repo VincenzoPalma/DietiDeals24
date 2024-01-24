@@ -6,8 +6,8 @@ import java.sql.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Carte", schema = "public", catalog = "ingswProva")
-public class Carte {
+@Table(name = "Carta", schema = "public", catalog = "ingswProva")
+public class Carta {
     @Id
     @Column(name = "numero", nullable = false, length = 16)
     private String numero;
@@ -68,7 +68,7 @@ public class Carte {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Carte that = (Carte) o;
+        Carta that = (Carta) o;
         return codiceCvvCvc == that.codiceCvvCvc && Objects.equals(numero, that.numero) && Objects.equals(nomeTitolare, that.nomeTitolare) && Objects.equals(dataScadenza, that.dataScadenza) && Objects.equals(utente, that.utente);
     }
 

@@ -12,7 +12,7 @@ import java.util.Objects;
 public class Notifica {
     @Id
     @ManyToOne
-    @JoinColumn(name = "id_Asta", nullable = false)
+    @JoinColumn(name = "idAsta", nullable = false)
     private Asta asta;
 
     @Id
