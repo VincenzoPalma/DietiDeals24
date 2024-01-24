@@ -8,20 +8,27 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +52,11 @@ import androidx.constraintlayout.compose.Dimension
 import com.example.dietideals_app.R
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class RegistrazioneActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +78,7 @@ class RegistrazioneActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-//funzione per la creazione della schermata di registrazionee
+
 fun SchermataRegistrazione() {
     val background = painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
 
@@ -78,8 +89,6 @@ fun SchermataRegistrazione() {
     var confermaPassword by remember { mutableStateOf("") } // Conferma della password
     var nome by remember { mutableStateOf("") } // Nome dell'utente
     var cognome by remember { mutableStateOf("") } // Cognome dell'utente
-
-    var dataDiNascita by remember { mutableStateOf(Calendar.getInstance()) } // ToDo: Memorizza la data di nascita dell'utente. (Da implementare)
 
     var passwordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della password.
     var confermaPasswordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della conferma della password.
@@ -97,6 +106,7 @@ fun SchermataRegistrazione() {
 
     var passwordMatching by remember { mutableStateOf(false) } // Variabile per indicare se la password e la conferma della password coincidono.
 
+
     //Funzione per controllare se le due password coincidono ToDo
     fun checkPasswordMatching() {
         if (password.isNotBlank() && confermaPassword.isNotBlank()) {
@@ -107,7 +117,7 @@ fun SchermataRegistrazione() {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (backgroundImage, title, emailTextField, usernameTextfield, passwordTextField, confermaPasswordTextfield, datiAngraficiText, nomeTextfield, cognomeTextField, datDiNascitafield, ) = createRefs()
+        val (backgroundImage, title, emailTextField, usernameTextfield, passwordTextField, confermaPasswordTextfield, datiAngraficiText, nomeTextfield, cognomeTextField, dataDiNascitafield, ) = createRefs()
 
         // Immagine di background
         Image(
@@ -214,10 +224,6 @@ fun SchermataRegistrazione() {
             },
             onValueChange = { password = it },
             label = { Text("Password") },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = if (!passwordMatching) Color.Red else Color(0xFF0EA639),
-                unfocusedBorderColor = if (!passwordMatching) Color.Red else Color.Gray
-            ),
             modifier = Modifier
                 .constrainAs(passwordTextField) {
                     top.linkTo(usernameTextfield.bottom, margin = 2.dp)
@@ -324,8 +330,67 @@ fun SchermataRegistrazione() {
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
             )
         }
+        var state =  rememberDatePickerState()
+        var openDialog = remember { mutableStateOf(false) }
+
+
+
+            fun convertMillisToDate(millis: Long): String {
+            val formatter = SimpleDateFormat("dd/MM/yyyy")
+            return formatter.format(Date(millis))}
+
+
+            OutlinedButton(onClick = { openDialog.value = true },
+
+                modifier = Modifier
+                    .constrainAs(dataDiNascitafield) {
+                        top.linkTo(nomeTextfield.bottom, margin = 2.dp)
+                        start.linkTo(parent.start, margin = 16.dp)
+                        end.linkTo(parent.end, margin = 16.dp)
+                    }
+                    .width(250.dp)
+                    .height(48.dp),
+            ) {
+                Icon(painter = painterResource(id = R.drawable.iconcalendario), contentDescription =null)
+                Spacer(modifier =  Modifier.width(8.dp))
+            Text(text = if(state.selectedDateMillis == null)"Nato il DD/MM/YYY" else "Nato il " + convertMillisToDate(state.selectedDateMillis!!),color = if(state.selectedDateMillis == null)Color.Gray else(Color.Black))
+        }
+
+
+        if (openDialog.value) {
+            DatePickerDialog(
+                onDismissRequest = {
+                    openDialog.value = false
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            openDialog.value = false
+
+                        }
+                    ) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            openDialog.value = false
+                        }
+                    ) {
+                        Text("CANCEL")
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = state
+
+                )
+            }
+        }
+        }
+
     }
-}
 
 
 
