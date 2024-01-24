@@ -68,8 +68,7 @@ class RegistrazioneActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataRegistrazione() {
-    val background =
-        painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
+    val background = painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
 
 // Variabili per memorizzare le informazioni dell'utente.
     var username by remember { mutableStateOf("") } // Username
