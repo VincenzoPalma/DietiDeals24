@@ -73,7 +73,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-//prova
 
 @Composable
 fun SchermataAutenticazione(navController: NavController) {
