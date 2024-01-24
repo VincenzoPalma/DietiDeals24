@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") {SchermataAutenticazione(navController = navController) }
+                        composable("SchermataAutenticazione") {SchermataAutenticazione(navController = navController)}
                         composable("SchermataRegistrazione") {SchermataRegistrazione()}
                     }
                 }
@@ -73,7 +73,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 @Composable
 fun SchermataAutenticazione(navController: NavController) {
