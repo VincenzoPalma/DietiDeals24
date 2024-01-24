@@ -6,14 +6,14 @@ import java.sql.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Carte", schema = "public", catalog = "ingswProva")
-public class Carte {
+@Table(name = "Carta", schema = "public", catalog = "ingswProva")
+public class Carta {
     @Id
     @Column(name = "numero", nullable = false, length = 16)
     private String numero;
 
     @Column(name = "nomeTitolare", nullable = false, length = -1)
-    private Object nomeTitolare;
+    private String nomeTitolare;
 
     @Column(name = "codiceCVV_CVC", nullable = false)
     private short codiceCvvCvc;
@@ -32,11 +32,11 @@ public class Carte {
         this.numero = numero;
     }
 
-    public Object getNomeTitolare() {
+    public String getNomeTitolare() {
         return nomeTitolare;
     }
 
-    public void setNomeTitolare(Object nomeTitolare) {
+    public void setNomeTitolare(String nomeTitolare) {
         this.nomeTitolare = nomeTitolare;
     }
 
@@ -68,7 +68,7 @@ public class Carte {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Carte that = (Carte) o;
+        Carta that = (Carta) o;
         return codiceCvvCvc == that.codiceCvvCvc && Objects.equals(numero, that.numero) && Objects.equals(nomeTitolare, that.nomeTitolare) && Objects.equals(dataScadenza, that.dataScadenza) && Objects.equals(utente, that.utente);
     }
 

@@ -2,7 +2,9 @@ package it.uninastudents.dietidealsservice.model.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -10,7 +12,7 @@ import java.util.Objects;
 @Table(name = "Asta", schema = "public", catalog = "ingswProva")
 public class Asta {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) //generato
-    @Column(name = "id_Asta", nullable = false)
+    @Column(name = "idAsta", nullable = false)
     private int idAsta;
 
     @Column(name = "nome", nullable = false, length = -1)
@@ -26,10 +28,10 @@ public class Asta {
     private Date dataScadenza;
 
     @Column(name = "sogliaRialzo", nullable = true)
-    private Object sogliaRialzo;
+    private BigDecimal sogliaRialzo;
 
-    @Column(name = "intervalloTempoOfferto", nullable = true)
-    private Object intervalloTempoOfferto;
+    @Column(name = "intervalloTempoOfferta", nullable = true)
+    private Duration intervalloTempoOfferta;
 
     @Column(name = "categoria", nullable = false, length = -1)
     private String categoria;
@@ -38,7 +40,7 @@ public class Asta {
     private String tipo;
 
     @Column(name = "stato", nullable = false, length = -1)
-    private String stato;
+    private String stato = "Attiva";
 
     @Column(name = "proprietario", nullable = false, length = -1)
     private String proprietario;
@@ -83,20 +85,20 @@ public class Asta {
         this.dataScadenza = dataScadenza;
     }
 
-    public Object getSogliaRialzo() {
+    public BigDecimal getSogliaRialzo() {
         return sogliaRialzo;
     }
 
-    public void setSogliaRialzo(Object sogliaRialzo) {
+    public void setSogliaRialzo(BigDecimal sogliaRialzo) {
         this.sogliaRialzo = sogliaRialzo;
     }
 
-    public Object getIntervalloTempoOfferto() {
-        return intervalloTempoOfferto;
+    public Duration getIntervalloTempoOfferta() {
+        return intervalloTempoOfferta;
     }
 
-    public void setIntervalloTempoOfferto(Object intervalloTempoOfferto) {
-        this.intervalloTempoOfferto = intervalloTempoOfferto;
+    public void setIntervalloTempoOfferta(Duration intervalloTempoOfferta) {
+        this.intervalloTempoOfferta = intervalloTempoOfferta;
     }
 
     public String getCategoria() {
@@ -136,12 +138,12 @@ public class Asta {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Asta that = (Asta) o;
-        return idAsta == that.idAsta && Objects.equals(nome, that.nome) && Objects.equals(descrizione, that.descrizione) && Arrays.equals(foto, that.foto) && Objects.equals(dataScadenza, that.dataScadenza) && Objects.equals(sogliaRialzo, that.sogliaRialzo) && Objects.equals(intervalloTempoOfferto, that.intervalloTempoOfferto) && Objects.equals(categoria, that.categoria) && Objects.equals(tipo, that.tipo) && Objects.equals(stato, that.stato) && Objects.equals(proprietario, that.proprietario);
+        return idAsta == that.idAsta && Objects.equals(nome, that.nome) && Objects.equals(descrizione, that.descrizione) && Arrays.equals(foto, that.foto) && Objects.equals(dataScadenza, that.dataScadenza) && Objects.equals(sogliaRialzo, that.sogliaRialzo) && Objects.equals(intervalloTempoOfferta, that.intervalloTempoOfferta) && Objects.equals(categoria, that.categoria) && Objects.equals(tipo, that.tipo) && Objects.equals(stato, that.stato) && Objects.equals(proprietario, that.proprietario);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(nome, idAsta, descrizione, dataScadenza, sogliaRialzo, intervalloTempoOfferto, categoria, tipo, stato, proprietario);
+        int result = Objects.hash(nome, idAsta, descrizione, dataScadenza, sogliaRialzo, intervalloTempoOfferta, categoria, tipo, stato, proprietario);
         result = 31 * result + Arrays.hashCode(foto);
         return result;
     }

@@ -4,6 +4,8 @@ import it.uninastudents.dietidealsservice.model.id.IdRelazioneAstaUtente;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -12,7 +14,7 @@ import java.util.Objects;
 public class Offerta {
     @Id
     @ManyToOne
-    @JoinColumn(name = "id_Asta", nullable = false)
+    @JoinColumn(name = "idAsta", nullable = false)
     private Asta asta;
 
     @Id
@@ -22,6 +24,17 @@ public class Offerta {
 
     @Column(name = "prezzo", nullable = false)
     private BigDecimal prezzo;
+
+    @Column(name = "tempoCreazione", nullable = false)
+    private LocalDateTime tempoCreazione;
+
+    public LocalDateTime getTempoCreazione() {
+        return tempoCreazione;
+    }
+
+    public void setTempoCreazione(LocalDateTime tempoCreazione) {
+        this.tempoCreazione = tempoCreazione;
+    }
 
     public BigDecimal getPrezzo() {
         return prezzo;
@@ -51,12 +64,12 @@ public class Offerta {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Offerta that = (Offerta) o;
-        return asta == that.asta && Objects.equals(prezzo, that.prezzo) && Objects.equals(utente, that.utente);
+        Offerta offerta = (Offerta) o;
+        return Objects.equals(asta, offerta.asta) && Objects.equals(utente, offerta.utente) && Objects.equals(prezzo, offerta.prezzo) && Objects.equals(tempoCreazione, offerta.tempoCreazione);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(prezzo, utente, asta);
+        return Objects.hash(asta, utente, prezzo, tempoCreazione);
     }
 }
