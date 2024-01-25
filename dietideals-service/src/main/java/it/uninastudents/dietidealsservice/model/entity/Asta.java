@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -25,13 +26,13 @@ public class Asta {
     private byte[] foto;
 
     @Column(name = "dataScadenza", nullable = true)
-    private Date dataScadenza;
+    private LocalDateTime dataScadenza;
 
     @Column(name = "sogliaRialzo", nullable = true)
-    private BigDecimal sogliaRialzo;
+    private BigDecimal sogliaRialzo = BigDecimal.valueOf(10);
 
     @Column(name = "intervalloTempoOfferta", nullable = true)
-    private Duration intervalloTempoOfferta;
+    private Duration intervalloTempoOfferta = Duration.ofHours(1);
 
     @Column(name = "categoria", nullable = false, length = -1)
     private String categoria;
@@ -77,11 +78,11 @@ public class Asta {
         this.foto = foto;
     }
 
-    public Date getDataScadenza() {
+    public LocalDateTime getDataScadenza() {
         return dataScadenza;
     }
 
-    public void setDataScadenza(Date dataScadenza) {
+    public void setDataScadenza(LocalDateTime dataScadenza) {
         this.dataScadenza = dataScadenza;
     }
 
