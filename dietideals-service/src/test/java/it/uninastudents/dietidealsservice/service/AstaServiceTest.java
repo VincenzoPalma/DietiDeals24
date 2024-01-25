@@ -19,10 +19,10 @@ class AstaServiceTest {
 
     @Test
     void isStatoAttivoOTerminatoTest(){
-        assertTrue(astaService.isStatoAttivoOTerminato("Attiva"));
-        assertTrue(astaService.isStatoAttivoOTerminato("Terminata"));
-        assertFalse(astaService.isStatoAttivoOTerminato("In Corso"));
-        assertFalse(astaService.isStatoAttivoOTerminato(""));
-        assertFalse(astaService.isStatoAttivoOTerminato(null));
+        assertTrue(astaService.isStatoAttivo("Attiva"));
+        assertTrue(astaService.isStatoAttivo("Terminata"));
+        assertFalse(astaService.isStatoAttivo("In Corso"));
+        assertFalse(astaService.isStatoAttivo(""));
+        assertFalse(astaService.isStatoAttivo(null));
     }
 }

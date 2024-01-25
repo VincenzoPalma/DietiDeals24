@@ -14,10 +14,10 @@ public interface AstaRepository extends JpaRepository<Asta, Integer> {
     Set<Asta> findAstaAttivaOrderByDataScadenzaAsc();
 
     @Query("SELECT a FROM Asta a WHERE LOWER(a.nome) LIKE LOWER(CONCAT('%', :parolaChiave, '%')) ORDER BY CASE WHEN a.tipo = 'Inglese' THEN a.intervalloTempoOfferta ELSE a.dataScadenza END ASC")
-    Set<Asta> trovaAstePerParolaChiaveByDataScadenzaAsc(@Param("parolaChiave") String parolaChiave);
+    Set<Asta> findAstaPerParolaChiaveOrderByDataScadenzaAsc(@Param("parolaChiave") String parolaChiave);
 
     @Query("SELECT a FROM Asta a WHERE a.tipo = ?1 AND a.stato = 'Attiva' ORDER BY CASE WHEN a.tipo = 'Inglese' THEN a.intervalloTempoOfferta ELSE a.dataScadenza END ASC")
-    Set<Asta> findAstaAttivaByTipoOrderByDataScadenzaAsc(String tipo);
+    Set<Asta> findAstaAttivaByTipoOrderByDataScadenzaAsc(String tipo, String stato);
 
     @Query("SELECT a FROM Asta a WHERE a.categoria = ?1 AND a.stato = 'Attiva' ORDER BY CASE WHEN a.tipo = 'Inglese' THEN a.intervalloTempoOfferta ELSE a.dataScadenza END ASC")
     Set<Asta> findAstaAttivaByCategoriaOrderByDataScadenzaAsc(String categoria);

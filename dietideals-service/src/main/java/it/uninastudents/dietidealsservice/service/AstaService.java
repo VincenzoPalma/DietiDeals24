@@ -3,6 +3,7 @@ package it.uninastudents.dietidealsservice.service;
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.repository.AstaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -43,6 +45,70 @@ public class AstaService {
         return astaRepository.save(asta);
     }
 
+    //da rivedere
+    public void cancellaAstaperId(Integer IdAsta){
+
+        astaRepository.deleteById(IdAsta);
+    }
+
+    public Set<Asta> findAstaAttivaOrderByDataScadenzaAs(){
+        if (!isStatoAttivo(asta.getStato())) return null; //da rivedere
+        return astaRepository.findAstaAttivaOrderByDataScadenzaAsc();
+    }
+    //da rivedere
+    public Set<Asta> findAstaPerParolaChiaveOrderByDataScadenzaAsc(@Param("parolaChiave") String parolaChiave){
+        if(parolaChiave == null){
+            return null;
+        }
+        return astaRepository.findAstaPerParolaChiaveOrderByDataScadenzaAsc(parolaChiave);
+    }
+
+    public Set<Asta> findAstaAttivaByTipoOrderByDataScadenzaAsc(String tipo, String stato){ //prova metodo che dovrebbe andare bene
+        if(tipo==null){
+            return null;
+        }
+        if (!isStatoAttivo(stato)) return null;
+        return astaRepository.findAstaAttivaByTipoOrderByDataScadenzaAsc(tipo, stato);
+    }
+
+    public Set<Asta> findAstaAttivaByCategoriaOrderByDataScadenzaAsc(String categoria){
+        if (!isCategoriaValida(categoria)) return null; //da rivedere
+        if (!isStatoAttivo(asta.getStato())) return null;
+        return astaRepository.findAstaAttivaByCategoriaOrderByDataScadenzaAsc(categoria);
+    }
+
+    public Set<Asta> findAstaAttivaByProprietario(String username){
+        if(username == null){
+            return null;
+        }
+        if (!isStatoAttivo(asta.getStato())) return null;
+        return astaRepository.findAstaAttivaByProprietario(username);
+    }
+
+    public Set<Asta> findAstaTerminataByProprietario(String username){
+        if(username == null){
+            return null;
+        }
+        if (!isStatoTerminato(asta.getStato())) return null;
+        return astaRepository.findAstaTerminataByProprietario(username);
+    }
+
+    public Set<Asta> findAstaSeguitaByProprietario(String username){
+        if(username == null){
+            return null;
+        }
+        if (!isStatoAttivo(asta.getStato())) return null;
+        return astaRepository.findAstaSeguitaByProprietario(username);
+    }
+
+    public Set<Asta> findAstaVintaByProprietario(String username){
+        if(username == null){
+            return null;
+        }
+        if (!isStatoTerminato(asta.getStato())) return null;
+        return astaRepository.findAstaVintaByProprietario(username);
+    }
+
     public boolean checkDatiAsta(Asta asta) {
         if (asta == null){
             return false;
@@ -54,7 +120,8 @@ public class AstaService {
         } else if (tipoAsta.equals("Silenziosa") || tipoAsta.equals("Inversa")) {
             if (!checkDataScadenzaMin24oreMax30giorni(asta)) return false;
         }
-        if (!isStatoAttivoOTerminato(asta.getStato())) return false;
+        if (!isStatoAttivo(asta.getStato())) return false;
+        if (!isStatoTerminato(asta.getStato())) return false;
         if (!isDescrizioneMinoreUguale300Caratteri(asta.getDescrizione())) return false;
         if (!isCategoriaValida(asta.getCategoria())) return false;
         return true;
@@ -81,11 +148,18 @@ public class AstaService {
         return asta.getSogliaRialzo().compareTo(BigDecimal.valueOf(0)) > 0;
     }
 
-    public boolean isStatoAttivoOTerminato(String stato) {
+    public boolean isStatoAttivo(String stato) {
         if (stato == null){
             return false;
         }
-        return stato.equals("Attiva") || stato.equals("Terminata");
+        return stato.equals("Attiva");
+    }
+
+    public boolean isStatoTerminato(String stato) {
+        if (stato == null){
+            return false;
+        }
+        return stato.equals("Terminata");
     }
 
     public boolean isDescrizioneMinoreUguale300Caratteri(String descrizione) {
@@ -101,4 +175,5 @@ public class AstaService {
         }
         return listaCategorie.contains(categoria);
     }
+
 }

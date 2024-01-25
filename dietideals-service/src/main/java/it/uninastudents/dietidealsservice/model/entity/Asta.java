@@ -106,9 +106,7 @@ public class Asta {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
 
     public String getTipo() {
         return tipo;
