@@ -3,7 +3,6 @@ package it.uninastudents.dietidealsservice.service;
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.repository.AstaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,33 +10,38 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 
 @Service
 @Transactional
 public class AstaService {
     private AstaRepository astaRepository;
-    private final ArrayList<String> listaCategorie = new ArrayList<String>();
+    private static final ArrayList<String> listaCategorie = new ArrayList<String>();
+
+    //inizializzazione arraylist categorie
+    static {
+        listaCategorie.add("Elettronica");
+        listaCategorie.add("Informatica");
+        listaCategorie.add("Giocattoli");
+        listaCategorie.add("Alimentari");
+        listaCategorie.add("Servizi");
+        listaCategorie.add("Arredamento");
+        listaCategorie.add("Auto e moto");
+        listaCategorie.add("Libri");
+        listaCategorie.add("Abbigliamento");
+        listaCategorie.add("Attrezzi e utensili");
+        listaCategorie.add("Bellezza");
+        listaCategorie.add("Musica e arte");
+    }
 
     @Autowired
     public AstaService(AstaRepository astaRepository) {
         this.astaRepository = astaRepository;
-        ArrayList<String> newListaCategorie = new ArrayList<String>();
-        newListaCategorie.add("Elettronica");
-        newListaCategorie.add("Informatica");
-        newListaCategorie.add("Giocattoli");
-        newListaCategorie.add("Alimentari");
-        newListaCategorie.add("Servizi");
-        newListaCategorie.add("Arredamento");
-        newListaCategorie.add("Auto e moto");
-        newListaCategorie.add("Libri");
-        newListaCategorie.add("Abbigliamento");
-        newListaCategorie.add("Attrezzi e utensili");
-        newListaCategorie.add("Bellezza");
-        newListaCategorie.add("Musica e arte");
     }
 
-    public AstaService() {
+    public AstaService(){
+        //costruttore vuoto
     }
 
     public Asta salvaAsta(Asta asta) {
@@ -45,68 +49,61 @@ public class AstaService {
         return astaRepository.save(asta);
     }
 
-    //da rivedere
-    public void cancellaAstaperId(Integer IdAsta){
-
-        astaRepository.deleteById(IdAsta);
-    }
-
-    public Set<Asta> findAstaAttivaOrderByDataScadenzaAs(){
-        if (!isStatoAttivo(asta.getStato())) return null; //da rivedere
-        return astaRepository.findAstaAttivaOrderByDataScadenzaAsc();
-    }
-    //da rivedere
-    public Set<Asta> findAstaPerParolaChiaveOrderByDataScadenzaAsc(@Param("parolaChiave") String parolaChiave){
-        if(parolaChiave == null){
-            return null;
+    public void cancellaAstaById(Integer idAsta){
+        if (idAsta != null){
+            astaRepository.deleteById(idAsta);
         }
-        return astaRepository.findAstaPerParolaChiaveOrderByDataScadenzaAsc(parolaChiave);
     }
 
-    public Set<Asta> findAstaAttivaByTipoOrderByDataScadenzaAsc(String tipo, String stato){ //prova metodo che dovrebbe andare bene
-        if(tipo==null){
-            return null;
+    public Set<Asta> findAsteAttive(){
+        return astaRepository.findAsteAttiveOrderByDataScadenzaAsc();
+    }
+
+    public Set<Asta> findAsteByParolaChiave(String parolaChiave){
+    if(parolaChiave == null || parolaChiave.isEmpty()){
+            return Collections.emptySet();
         }
-        if (!isStatoAttivo(stato)) return null;
-        return astaRepository.findAstaAttivaByTipoOrderByDataScadenzaAsc(tipo, stato);
+        return astaRepository.findAstePerParolaChiaveOrderByDataScadenzaAsc(parolaChiave);
     }
 
-    public Set<Asta> findAstaAttivaByCategoriaOrderByDataScadenzaAsc(String categoria){
-        if (!isCategoriaValida(categoria)) return null; //da rivedere
-        if (!isStatoAttivo(asta.getStato())) return null;
-        return astaRepository.findAstaAttivaByCategoriaOrderByDataScadenzaAsc(categoria);
+    public Set<Asta> findAsteAttiveByTipo(String tipo){
+        if(tipo == null){
+            return Collections.emptySet();
+        }
+        return astaRepository.findAsteAttiveByTipoOrderByDataScadenzaAsc(tipo);
     }
 
-    public Set<Asta> findAstaAttivaByProprietario(String username){
+    public Set<Asta> findAsteAttiveByCategoria(String categoria){
+        if (!isCategoriaValida(categoria)) return Collections.emptySet();
+        return astaRepository.findAsteAttiveByCategoriaOrderByDataScadenzaAsc(categoria);
+    }
+
+    public Set<Asta> findAsteAttiveByProprietario(String username){
         if(username == null){
-            return null;
+            return Collections.emptySet();
         }
-        if (!isStatoAttivo(asta.getStato())) return null;
-        return astaRepository.findAstaAttivaByProprietario(username);
+        return astaRepository.findAsteAttiveByProprietario(username);
     }
 
-    public Set<Asta> findAstaTerminataByProprietario(String username){
+    public Set<Asta> findAsteTerminateByProprietario(String username){
         if(username == null){
-            return null;
+            return Collections.emptySet();
         }
-        if (!isStatoTerminato(asta.getStato())) return null;
-        return astaRepository.findAstaTerminataByProprietario(username);
+        return astaRepository.findAsteTerminateByProprietario(username);
     }
 
-    public Set<Asta> findAstaSeguitaByProprietario(String username){
+    public Set<Asta> findAsteSeguiteByProprietario(String username){
         if(username == null){
-            return null;
+            return Collections.emptySet();
         }
-        if (!isStatoAttivo(asta.getStato())) return null;
-        return astaRepository.findAstaSeguitaByProprietario(username);
+        return astaRepository.findAsteSeguiteByProprietario(username);
     }
 
-    public Set<Asta> findAstaVintaByProprietario(String username){
+    public Set<Asta> findAsteVinteByProprietario(String username){
         if(username == null){
-            return null;
+            return Collections.emptySet();
         }
-        if (!isStatoTerminato(asta.getStato())) return null;
-        return astaRepository.findAstaVintaByProprietario(username);
+        return astaRepository.findAsteVinteByProprietario(username);
     }
 
     public boolean checkDatiAsta(Asta asta) {
@@ -115,51 +112,45 @@ public class AstaService {
         }
         String tipoAsta = asta.getTipo();
         if (tipoAsta.equals("Inglese")){
-            if (!checkSogliaRialzoPositiva(asta)) return false;
-            if (!checkIntervalloTempoOffertaMin30minutiMax3ore(asta)) return false;
+            if (!checkSogliaRialzoPositiva(asta.getSogliaRialzo())) return false;
+            if (!checkIntervalloTempoOffertaMin30minutiMax3ore(asta.getIntervalloTempoOfferta())) return false;
         } else if (tipoAsta.equals("Silenziosa") || tipoAsta.equals("Inversa")) {
-            if (!checkDataScadenzaMin24oreMax30giorni(asta)) return false;
+            if (!checkDataScadenzaMin24oreMax30giorni(asta.getDataScadenza())) return false;
+        } else {
+            return false;
         }
-        if (!isStatoAttivo(asta.getStato())) return false;
-        if (!isStatoTerminato(asta.getStato())) return false;
+        if (!isStatoAttivaOrTerminata(asta.getStato())) return false;
         if (!isDescrizioneMinoreUguale300Caratteri(asta.getDescrizione())) return false;
         if (!isCategoriaValida(asta.getCategoria())) return false;
         return true;
     }
 
-    public boolean checkDataScadenzaMin24oreMax30giorni(Asta asta) {
-        if (asta == null){
+    public boolean checkDataScadenzaMin24oreMax30giorni(LocalDateTime dataScadenza) {
+        if (dataScadenza == null){
             return false;
         }
-        return asta.getDataScadenza().isBefore(LocalDateTime.now().plusDays(30)) && asta.getDataScadenza().isAfter(LocalDateTime.now().plusHours(24));
+        return dataScadenza.isBefore(LocalDateTime.now().plusDays(31)) && dataScadenza.isAfter(LocalDateTime.now().plusHours(23));
     }
 
-    public boolean checkIntervalloTempoOffertaMin30minutiMax3ore(Asta asta) {
-        if (asta == null){
+    public boolean checkIntervalloTempoOffertaMin30minutiMax3ore(Duration intervalloTempoOfferta) {
+        if (intervalloTempoOfferta == null){
             return false;
         }
-        return asta.getIntervalloTempoOfferta().compareTo(Duration.ofHours(3)) < 0 && asta.getIntervalloTempoOfferta().compareTo(Duration.ofMinutes(30)) > 0;
+        return intervalloTempoOfferta.compareTo(Duration.ofHours(3)) <= 0 && intervalloTempoOfferta.compareTo(Duration.ofMinutes(30)) >= 0;
     }
 
-    public boolean checkSogliaRialzoPositiva(Asta asta) {
-        if (asta == null){
+    public boolean checkSogliaRialzoPositiva(BigDecimal sogliaRialzo) {
+        if (sogliaRialzo == null){
             return false;
         }
-        return asta.getSogliaRialzo().compareTo(BigDecimal.valueOf(0)) > 0;
+        return sogliaRialzo.compareTo(BigDecimal.valueOf(0)) > 0;
     }
 
-    public boolean isStatoAttivo(String stato) {
+    public boolean isStatoAttivaOrTerminata(String stato) {
         if (stato == null){
             return false;
         }
-        return stato.equals("Attiva");
-    }
-
-    public boolean isStatoTerminato(String stato) {
-        if (stato == null){
-            return false;
-        }
-        return stato.equals("Terminata");
+        return stato.equals("Attiva") || stato.equals("Terminata");
     }
 
     public boolean isDescrizioneMinoreUguale300Caratteri(String descrizione) {

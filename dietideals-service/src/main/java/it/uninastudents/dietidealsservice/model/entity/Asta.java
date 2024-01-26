@@ -43,8 +43,23 @@ public class Asta {
     @Column(name = "stato", nullable = false, length = -1)
     private String stato = "Attiva";
 
-    @Column(name = "proprietario", nullable = false, length = -1)
-    private String proprietario;
+    @ManyToOne
+    @JoinColumn(name = "proprietario", nullable = false)
+    private Utente proprietario;
+
+    public Asta(int idAsta, String nome, String descrizione, byte[] foto, LocalDateTime dataScadenza, BigDecimal sogliaRialzo, Duration intervalloTempoOfferta, String categoria, String tipo, String stato, Utente proprietario) {
+        this.idAsta = idAsta;
+        this.nome = nome;
+        this.descrizione = descrizione;
+        this.foto = foto;
+        this.dataScadenza = dataScadenza;
+        this.sogliaRialzo = sogliaRialzo;
+        this.intervalloTempoOfferta = intervalloTempoOfferta;
+        this.categoria = categoria;
+        this.tipo = tipo;
+        this.stato = stato;
+        this.proprietario = proprietario;
+    }
 
     public String getNome() {
         return nome;
@@ -124,11 +139,11 @@ public class Asta {
         this.stato = stato;
     }
 
-    public String getProprietario() {
+    public Utente getProprietario() {
         return proprietario;
     }
 
-    public void setProprietario(String proprietario) {
+    public void setProprietario(Utente proprietario) {
         this.proprietario = proprietario;
     }
 

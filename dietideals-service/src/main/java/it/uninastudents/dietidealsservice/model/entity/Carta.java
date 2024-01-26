@@ -3,6 +3,7 @@ package it.uninastudents.dietidealsservice.model.entity;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -15,14 +16,22 @@ public class Carta {
     @Column(name = "nomeTitolare", nullable = false, length = -1)
     private String nomeTitolare;
 
-    @Column(name = "codiceCVV_CVC", nullable = false)
-    private short codiceCvvCvc;
+    @Column(name = "codiceCVV_CVC", nullable = false, length =  3)
+    private String codiceCvvCvc;
 
     @Column(name = "dataScadenza", nullable = false)
-    private Date dataScadenza;
+    private LocalDate dataScadenza;
 
     @ManyToOne @JoinColumn(name = "utente", nullable = false)
     private Utente utente;
+
+    public Carta(String numero, String nomeTitolare, String codiceCvvCvc, LocalDate dataScadenza, Utente utente) {
+        this.numero = numero;
+        this.nomeTitolare = nomeTitolare;
+        this.codiceCvvCvc = codiceCvvCvc;
+        this.dataScadenza = dataScadenza;
+        this.utente = utente;
+    }
 
     public String getNumero() {
         return numero;
@@ -40,19 +49,19 @@ public class Carta {
         this.nomeTitolare = nomeTitolare;
     }
 
-    public short getCodiceCvvCvc() {
+    public String getCodiceCvvCvc() {
         return codiceCvvCvc;
     }
 
-    public void setCodiceCvvCvc(short codiceCvvCvc) {
+    public void setCodiceCvvCvc(String codiceCvvCvc) {
         this.codiceCvvCvc = codiceCvvCvc;
     }
 
-    public Date getDataScadenza() {
+    public LocalDate getDataScadenza() {
         return dataScadenza;
     }
 
-    public void setDataScadenza(Date dataScadenza) {
+    public void setDataScadenza(LocalDate dataScadenza) {
         this.dataScadenza = dataScadenza;
     }
 
@@ -69,7 +78,7 @@ public class Carta {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Carta that = (Carta) o;
-        return codiceCvvCvc == that.codiceCvvCvc && Objects.equals(numero, that.numero) && Objects.equals(nomeTitolare, that.nomeTitolare) && Objects.equals(dataScadenza, that.dataScadenza) && Objects.equals(utente, that.utente);
+        return Objects.equals(codiceCvvCvc, that.codiceCvvCvc) && Objects.equals(numero, that.numero) && Objects.equals(nomeTitolare, that.nomeTitolare) && Objects.equals(dataScadenza, that.dataScadenza) && Objects.equals(utente, that.utente);
     }
 
     @Override

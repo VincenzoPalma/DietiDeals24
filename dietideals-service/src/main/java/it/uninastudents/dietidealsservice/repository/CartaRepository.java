@@ -7,5 +7,5 @@ import java.util.Set;
 
 public interface CartaRepository extends JpaRepository<Carta, String> {
 
-    Set<Carta> findCartaByUtenteUsername(String username);
+    Set<Carta> findCarteByUtenteUsername(String username);
 }
