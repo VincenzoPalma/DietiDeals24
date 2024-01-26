@@ -1,15 +1,19 @@
 package com.example.dietideals_app.view
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -49,14 +54,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
+import com.example.dietideals_app.presenter.AutenticazionePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
-import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 class RegistrazioneActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +74,12 @@ class RegistrazioneActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
+                        composable("SchermataAutenticazione") {SchermataAutenticazione(navController = navController)}
+                        composable("SchermataRegistrazione") {SchermataRegistrazione(navController = navController)}
+                        composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController)}
+                    }
                 }
                 }
 
@@ -79,8 +92,9 @@ class RegistrazioneActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun SchermataRegistrazione() {
-    val background = painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
+fun SchermataRegistrazione(navController: NavController) {
+    val background =
+        painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
 
 // Variabili per memorizzare le informazioni dell'utente.
     var username by remember { mutableStateOf("") } // Username
@@ -91,7 +105,7 @@ fun SchermataRegistrazione() {
     var cognome by remember { mutableStateOf("") } // Cognome dell'utente
 
     var passwordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della password.
-    var confermaPasswordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della conferma della password.
+
 
     val passwordFocusRequester =
         remember { FocusRequester() } // Richiede il focus per l'input della password.
@@ -106,6 +120,8 @@ fun SchermataRegistrazione() {
 
     var passwordMatching by remember { mutableStateOf(false) } // Variabile per indicare se la password e la conferma della password coincidono.
 
+    val presenter = AutenticazionePresenter()
+
 
     //Funzione per controllare se le due password coincidono ToDo
     fun checkPasswordMatching() {
@@ -117,7 +133,7 @@ fun SchermataRegistrazione() {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (backgroundImage, title, emailTextField, usernameTextfield, passwordTextField, confermaPasswordTextfield, datiAngraficiText, nomeTextfield, cognomeTextField, dataDiNascitafield, ) = createRefs()
+        val (backgroundImage, title, emailTextField, usernameTextfield, passwordTextField, confermaPasswordTextfield, datiAngraficiText, nomeTextfield, dataDiNascitafield,bottoneAvanti) = createRefs()
 
         // Immagine di background
         Image(
@@ -136,20 +152,37 @@ fun SchermataRegistrazione() {
         )
 
 // Testo titolo
-        Text(
-            text = "REGISTRAZIONE",
-            color = Color.White,
-            fontFamily = titleCustomFont,
-            textAlign = TextAlign.Center,
-            fontSize = 35.sp,
-            modifier = Modifier
-                .constrainAs(title) {
-                    top.linkTo(parent.top, margin = 35.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                .fillMaxWidth()
-        )
+        Row(
+            modifier = Modifier.constrainAs(title) {
+                top.linkTo(parent.top, margin = 16.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }.fillMaxWidth()
+                .padding(6.dp)
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(35.dp)  // Imposta la dimensione dell'icona
+                    .clickable {
+                        // Aggiungi l'azione desiderata quando viene cliccata l'icona
+                        presenter.effettuaRegistrazione()
+                        navController.navigate("SchermataAutenticazione")
+                    }, tint = Color.White
+            )
+            Spacer(modifier = Modifier.width(5.dp))  // Aggiunge uno spazio tra l'icona e il testo
+            Text(
+                text = "REGISTRAZIONE",
+                color = Color.White,
+                fontFamily = titleCustomFont,
+                textAlign = TextAlign.Center,
+                fontSize = 30.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
 
 // Text Field E-mail
         OutlinedTextField(
@@ -187,7 +220,7 @@ fun SchermataRegistrazione() {
                     tint = Color(0xFF0EA639)
                 )
             },
-            onValueChange = {username = it },
+            onValueChange = { username = it },
             label = { Text("Username") },
             modifier = Modifier
                 .constrainAs(usernameTextfield) {
@@ -330,67 +363,94 @@ fun SchermataRegistrazione() {
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
             )
         }
-        var state =  rememberDatePickerState()
-        var openDialog = remember { mutableStateOf(false) }
+        val state = rememberDatePickerState()
+        val openDialog = remember { mutableStateOf(false) }
 
 
-
-            fun convertMillisToDate(millis: Long): String {
+        @SuppressLint("SimpleDateFormat")
+        fun convertMillisToDate(millis: Long): String {
             val formatter = SimpleDateFormat("dd/MM/yyyy")
-            return formatter.format(Date(millis))}
-
-
-            OutlinedButton(onClick = { openDialog.value = true },
-
-                modifier = Modifier
-                    .constrainAs(dataDiNascitafield) {
-                        top.linkTo(nomeTextfield.bottom, margin = 2.dp)
-                        start.linkTo(parent.start, margin = 16.dp)
-                        end.linkTo(parent.end, margin = 16.dp)
-                    }
-                    .width(250.dp)
-                    .height(48.dp),
-            ) {
-                Icon(painter = painterResource(id = R.drawable.iconcalendario), contentDescription =null)
-                Spacer(modifier =  Modifier.width(8.dp))
-            Text(text = if(state.selectedDateMillis == null)"Nato il DD/MM/YYY" else "Nato il " + convertMillisToDate(state.selectedDateMillis!!),color = if(state.selectedDateMillis == null)Color.Gray else(Color.Black))
+            return formatter.format(Date(millis))
         }
 
 
-        if (openDialog.value) {
-            DatePickerDialog(
-                onDismissRequest = {
-                    openDialog.value = false
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            openDialog.value = false
+        OutlinedButton(
+            onClick = { openDialog.value = true },
 
-                        }
-                    ) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            openDialog.value = false
-                        }
-                    ) {
-                        Text("CANCEL")
-                    }
+            modifier = Modifier
+                .constrainAs(dataDiNascitafield) {
+                    top.linkTo(nomeTextfield.bottom, margin = 2.dp)
+                    start.linkTo(parent.start, margin = 16.dp)
+                    end.linkTo(parent.end, margin = 16.dp)
                 }
-            ) {
-                DatePicker(
-                    state = state
-
-                )
-            }
+                .width(250.dp)
+                .height(48.dp),
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.iconcalendario),
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = if (state.selectedDateMillis == null) "Nato il DD/MM/YYYY" else "Nato il " + convertMillisToDate(
+                    state.selectedDateMillis!!
+                ), color = if (state.selectedDateMillis == null) Color.Gray else (Color.Black)
+            )
         }
+        Button(
+            onClick = {
+                presenter.effettuaRegistrazione()
+                navController.navigate("SchermataImmagineProfilo")
+            },
+            modifier = Modifier// Posiziona il pulsante in basso a destra
+                .padding(16.dp)
+                .constrainAs(bottoneAvanti){
+                    top.linkTo(dataDiNascitafield.bottom, margin = 2.dp)
+                    start.linkTo(parent.start, margin = 200.dp)
+                    end.linkTo(parent.end, margin = 2.dp)
+
+                },shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
+
+        ) {
+            Text(text = "AVANTI", fontSize = 20.sp)
+
+
+            if (openDialog.value) {
+                DatePickerDialog(
+                    onDismissRequest = {
+                        openDialog.value = false
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                openDialog.value = false
+
+                            }
+                        ) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                openDialog.value = false
+                            }
+                        ) {
+                            Text("CANCEL")
+                        }
+                    }
+                ) {
+                    DatePicker(
+                        state = state
+
+                    )
+                }
+            }
+
         }
 
     }
+}
 
 
 
@@ -398,7 +458,8 @@ fun SchermataRegistrazione() {
 @Composable
 fun PreviewRegisterScreen() {
     DietidealsappTheme {
-        SchermataRegistrazione()
+        val navController = rememberNavController()
+        SchermataRegistrazione(navController)
     }
 }
 
