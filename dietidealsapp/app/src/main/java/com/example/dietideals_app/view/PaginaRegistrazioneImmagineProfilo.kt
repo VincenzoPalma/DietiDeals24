@@ -1,0 +1,225 @@
+package com.example.dietideals_app.view
+
+import android.net.Uri
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.dietideals_app.R
+import com.example.dietideals_app.presenter.AutenticazionePresenter
+import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.ui.theme.titleCustomFont
+
+class RegistrazioneImmagineProfilo : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            DietidealsappTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
+                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
+                        composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
+                        composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController) }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SchermataImmagineProfilo(navController: NavController) {
+    // Ottieni l'immagine di sfondo da resources
+    val background = painterResource(id = R.drawable.sfondo3)
+
+    // Crea un presenter per la registrazione
+    val presenter = AutenticazionePresenter()
+
+    // Placeholder per l'immagine del profilo
+
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val (backgroundImage, title, profileImage, testoImmagine, bottoneAvanti) = createRefs()
+
+        // Immagine di sfondo
+        Image(
+            painter = background,
+            contentDescription = null,
+            modifier = Modifier
+                .constrainAs(backgroundImage) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                },
+            contentScale = ContentScale.Crop
+        )
+
+        // Titolo e icona indietro
+        Row(
+            modifier = Modifier
+                .constrainAs(title) {
+                    top.linkTo(parent.top, margin = 16.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .fillMaxWidth()
+                .padding(6.dp)
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Icona indietro
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(35.dp)
+                    .clickable {
+                        // Azione quando l'icona indietro viene cliccata
+                        presenter.effettuaRegistrazione()
+                        navController.navigate("SchermataRegistrazione")
+                    },
+                tint = Color.White
+            )
+
+            Spacer(modifier = Modifier.width(5.dp))  // Aggiunge uno spazio tra l'icona e il testo
+
+            // Testo titolo
+            Text(
+                text = "REGISTRAZIONE",
+                color = Color.White,
+                fontFamily = titleCustomFont,
+                textAlign = TextAlign.Center,
+                fontSize = 30.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        LocalContext.current as ComponentActivity
+        var selectedImageUri: Uri? = null
+        // Definisci il contratto per l'activity result
+        val getContent =
+            rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+                // Gestisci l'URI dell'immagine selezionata
+                // Puoi eseguire ulteriori operazioni qui, come caricare l'immagine
+                uri?.let {
+                    selectedImageUri = it
+                }
+            }
+
+        // Cerchio con icona di una matita al centro
+        Box(
+            modifier = Modifier
+                .constrainAs(profileImage) {
+                    top.linkTo(title.top, margin = 200.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .size(150.dp)
+                .clip(CircleShape)
+                .background(Color.White)
+                .clickable {
+                    getContent.launch("image/*")
+                }
+                .border(5.dp, Color.Black, shape = CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_brush_24),
+                contentDescription = null,
+                tint = Color.Black,
+                modifier = Modifier.size(70.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(5.dp)) // Spazio verticale tra la Box e il testo
+        //Todo Modificare Font E FontSize Del Testo
+        Text(
+            text = "IMMAGINE DEL PROFILO (OPZIONALE)",
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp,
+            modifier = Modifier.constrainAs(testoImmagine){
+                top.linkTo(profileImage.bottom, margin = 10.dp)
+                start.linkTo(parent.start, margin = 16.dp)
+                end.linkTo(parent.end, margin = 16.dp)
+            },color = Color.Black
+        )
+        Button(
+            onClick = {
+                presenter.effettuaRegistrazione()
+                navController.navigate("ToDo") //ToDo Inserire route schermata successiva
+            },
+            modifier = Modifier// Posiziona il pulsante in basso a destra
+                .padding(16.dp)
+                .constrainAs(bottoneAvanti) {
+                    top.linkTo(
+                        testoImmagine.bottom,
+                        margin = 80.dp
+                    ) //ToDo allinearlo in basso a destra dello schermo
+                    start.linkTo(parent.start, margin = 200.dp)
+                    end.linkTo(parent.end, margin = 2.dp)
+
+                },
+            shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
+        ) {
+            Text(text = "AVANTI", fontSize = 20.sp)
+        }
+    }
+}
+
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSchermataImmagineProfilo() {
+    DietidealsappTheme {
+        val navController = rememberNavController()
+        SchermataImmagineProfilo(navController)
+    }
+}
