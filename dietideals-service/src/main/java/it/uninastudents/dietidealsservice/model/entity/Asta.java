@@ -22,16 +22,16 @@ public class Asta {
     @Column(name = "descrizione", nullable = false, length = 300)
     private String descrizione;
 
-    @Column(name = "foto", nullable = true)
+    @Column(name = "foto")
     private byte[] foto;
 
-    @Column(name = "dataScadenza", nullable = true)
+    @Column(name = "dataScadenza")
     private LocalDateTime dataScadenza;
 
-    @Column(name = "sogliaRialzo", nullable = true)
+    @Column(name = "sogliaRialzo")
     private BigDecimal sogliaRialzo = BigDecimal.valueOf(10);
 
-    @Column(name = "intervalloTempoOfferta", nullable = true)
+    @Column(name = "intervalloTempoOfferta")
     private Duration intervalloTempoOfferta = Duration.ofHours(1);
 
     @Column(name = "categoria", nullable = false, length = -1)

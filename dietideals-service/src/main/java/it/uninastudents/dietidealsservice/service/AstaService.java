@@ -16,7 +16,7 @@ import java.util.Set;
 @Service
 @Transactional
 public class AstaService {
-    private static final ArrayList<String> listaCategorie = new ArrayList<String>();
+    private static final ArrayList<String> listaCategorie = new ArrayList<>();
 
     //inizializzazione arraylist categorie
     static {

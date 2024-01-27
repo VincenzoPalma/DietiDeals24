@@ -27,36 +27,36 @@ public class Utente {
     @Column(name = "password", nullable = false, length = -1)
     private String password;
 
-    @Column(name = "descrizione", nullable = true, length = 300)
+    @Column(name = "descrizione", length = 300)
     private String descrizione;
 
-    @Column(name = "facebook", nullable = true, length = -1)
+    @Column(name = "facebook", length = -1)
     private String facebook;
 
-    @Column(name = "instagram", nullable = true, length = -1)
+    @Column(name = "instagram", length = -1)
     private String instagram;
 
-    @Column(name = "twitter", nullable = true, length = -1)
+    @Column(name = "twitter", length = -1)
     private String twitter;
 
-    @Column(name = "sitoWeb", nullable = true, length = -1)
+    @Column(name = "sitoWeb", length = -1)
     private String sitoWeb;
 
-    @Column(name = "indirizzo", nullable = true, length = -1)
+    @Column(name = "indirizzo", length = -1)
     private String indirizzo;
 
 
-    @Column(name = "partitaIVA", nullable = true, length = -1)
+    @Column(name = "partitaIVA", length = -1)
     private String partitaIva;
 
-    @Column(name = "documentoIdentita", nullable = true)
+    @Column(name = "documentoIdentita")
     private byte[] documentoIdentita;
 
-    @Column(name = "fotoProfilo", nullable = true)
+    @Column(name = "fotoProfilo")
     private byte[] fotoProfilo;
 
     @OneToOne
-    @JoinColumn(name = "contoCorrente", nullable = true)
+    @JoinColumn(name = "contoCorrente")
     private ContoCorrente contoCorrente;
 
     public String getUsername() {
