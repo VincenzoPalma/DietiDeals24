@@ -3,7 +3,6 @@ package it.uninastudents.dietidealsservice.model.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -12,7 +11,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "Asta", schema = "public", catalog = "ingswProva")
 public class Asta {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) //generato
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //generato
     @Column(name = "idAsta", nullable = false)
     private int idAsta;
 
@@ -59,6 +59,10 @@ public class Asta {
         this.tipo = tipo;
         this.stato = stato;
         this.proprietario = proprietario;
+    }
+
+    public Asta() {
+
     }
 
     public String getNome() {
@@ -121,7 +125,9 @@ public class Asta {
         return categoria;
     }
 
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
 
     public String getTipo() {
         return tipo;
@@ -151,13 +157,13 @@ public class Asta {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Asta that = (Asta) o;
-        return idAsta == that.idAsta && Objects.equals(nome, that.nome) && Objects.equals(descrizione, that.descrizione) && Arrays.equals(foto, that.foto) && Objects.equals(dataScadenza, that.dataScadenza) && Objects.equals(sogliaRialzo, that.sogliaRialzo) && Objects.equals(intervalloTempoOfferta, that.intervalloTempoOfferta) && Objects.equals(categoria, that.categoria) && Objects.equals(tipo, that.tipo) && Objects.equals(stato, that.stato) && Objects.equals(proprietario, that.proprietario);
+        Asta asta = (Asta) o;
+        return idAsta == asta.idAsta && Objects.equals(nome, asta.nome) && Objects.equals(descrizione, asta.descrizione) && Arrays.equals(foto, asta.foto) && Objects.equals(dataScadenza, asta.dataScadenza) && Objects.equals(sogliaRialzo, asta.sogliaRialzo) && Objects.equals(intervalloTempoOfferta, asta.intervalloTempoOfferta) && Objects.equals(categoria, asta.categoria) && Objects.equals(tipo, asta.tipo) && Objects.equals(stato, asta.stato) && Objects.equals(proprietario, asta.proprietario);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(nome, idAsta, descrizione, dataScadenza, sogliaRialzo, intervalloTempoOfferta, categoria, tipo, stato, proprietario);
+        int result = Objects.hash(idAsta, nome, descrizione, dataScadenza, sogliaRialzo, intervalloTempoOfferta, categoria, tipo, stato, proprietario);
         result = 31 * result + Arrays.hashCode(foto);
         return result;
     }

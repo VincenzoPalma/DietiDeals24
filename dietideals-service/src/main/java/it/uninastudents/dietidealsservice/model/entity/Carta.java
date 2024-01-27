@@ -2,7 +2,6 @@ package it.uninastudents.dietidealsservice.model.entity;
 
 import jakarta.persistence.*;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -16,13 +15,14 @@ public class Carta {
     @Column(name = "nomeTitolare", nullable = false, length = -1)
     private String nomeTitolare;
 
-    @Column(name = "codiceCVV_CVC", nullable = false, length =  3)
+    @Column(name = "codiceCVV_CVC", nullable = false, length = 3)
     private String codiceCvvCvc;
 
     @Column(name = "dataScadenza", nullable = false)
     private LocalDate dataScadenza;
 
-    @ManyToOne @JoinColumn(name = "utente", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "utente", nullable = false)
     private Utente utente;
 
     public Carta(String numero, String nomeTitolare, String codiceCvvCvc, LocalDate dataScadenza, Utente utente) {
@@ -31,6 +31,10 @@ public class Carta {
         this.codiceCvvCvc = codiceCvvCvc;
         this.dataScadenza = dataScadenza;
         this.utente = utente;
+    }
+
+    public Carta() {
+
     }
 
     public String getNumero() {

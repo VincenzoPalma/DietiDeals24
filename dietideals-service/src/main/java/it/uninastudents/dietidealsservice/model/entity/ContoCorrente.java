@@ -17,8 +17,20 @@ public class ContoCorrente {
     @Column(name = "codiceBIC_SWIFT", nullable = false, length = 11)
     private String codiceBicSwift;
 
-    @OneToOne@JoinColumn(name = "utente", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "utente", nullable = false)
     private Utente utente;
+
+    public ContoCorrente() {
+
+    }
+
+    public ContoCorrente(String iban, String nomeTitolare, String codiceBicSwift, Utente utente) {
+        this.iban = iban;
+        this.nomeTitolare = nomeTitolare;
+        this.codiceBicSwift = codiceBicSwift;
+        this.utente = utente;
+    }
 
     public String getIban() {
         return iban;

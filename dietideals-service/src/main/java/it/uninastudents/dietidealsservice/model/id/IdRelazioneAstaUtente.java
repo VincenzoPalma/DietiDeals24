@@ -1,43 +1,41 @@
 package it.uninastudents.dietidealsservice.model.id;
 
+import it.uninastudents.dietidealsservice.model.entity.Asta;
+import it.uninastudents.dietidealsservice.model.entity.Utente;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 public class IdRelazioneAstaUtente implements Serializable {
-    private String username;
-    private int idAsta;
+    private Asta asta;
+    private Utente utente;
 
-    public IdRelazioneAstaUtente(String username, int idAsta) {
-        this.username = username;
-        this.idAsta = idAsta;
+    public Asta getAsta() {
+        return asta;
     }
 
-    public String getUsername() {
-        return username;
+    public void setAsta(Asta asta) {
+        this.asta = asta;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public Utente getUtente() {
+        return utente;
     }
 
-    public int getIdAsta() {
-        return idAsta;
-    }
-
-    public void setIdAsta(int idAsta) {
-        this.idAsta = idAsta;
+    public void setUtente(Utente utente) {
+        this.utente = utente;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        IdRelazioneAstaUtente idRelazioneAstaUtente = (IdRelazioneAstaUtente) o;
-        return idAsta == idRelazioneAstaUtente.idAsta && Objects.equals(username, idRelazioneAstaUtente.username);
+        IdRelazioneAstaUtente that = (IdRelazioneAstaUtente) o;
+        return Objects.equals(asta, that.asta) && Objects.equals(utente, that.utente);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, idAsta);
+        return Objects.hash(asta, utente);
     }
 }

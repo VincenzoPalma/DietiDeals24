@@ -59,101 +59,133 @@ public class Utente {
     @JoinColumn(name = "contoCorrente", nullable = true)
     private ContoCorrente contoCorrente;
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public String getUsername() {
+        return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getCognome() {
+        return cognome;
     }
 
     public void setCognome(String cognome) {
         this.cognome = cognome;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public String getDescrizione() {
+        return descrizione;
+    }
+
     public void setDescrizione(String descrizione) {
         this.descrizione = descrizione;
+    }
+
+    public String getFacebook() {
+        return facebook;
     }
 
     public void setFacebook(String facebook) {
         this.facebook = facebook;
     }
 
+    public String getInstagram() {
+        return instagram;
+    }
+
     public void setInstagram(String instagram) {
         this.instagram = instagram;
+    }
+
+    public String getTwitter() {
+        return twitter;
     }
 
     public void setTwitter(String twitter) {
         this.twitter = twitter;
     }
 
+    public String getSitoWeb() {
+        return sitoWeb;
+    }
+
     public void setSitoWeb(String sitoWeb) {
         this.sitoWeb = sitoWeb;
+    }
+
+    public String getIndirizzo() {
+        return indirizzo;
     }
 
     public void setIndirizzo(String indirizzo) {
         this.indirizzo = indirizzo;
     }
 
+    public String getPartitaIva() {
+        return partitaIva;
+    }
+
     public void setPartitaIva(String partitaIva) {
         this.partitaIva = partitaIva;
+    }
+
+    public byte[] getDocumentoIdentita() {
+        return documentoIdentita;
     }
 
     public void setDocumentoIdentita(byte[] documentoIdentita) {
         this.documentoIdentita = documentoIdentita;
     }
 
+    public byte[] getFotoProfilo() {
+        return fotoProfilo;
+    }
+
     public void setFotoProfilo(byte[] fotoProfilo) {
         this.fotoProfilo = fotoProfilo;
+    }
+
+    public ContoCorrente getContoCorrente() {
+        return contoCorrente;
     }
 
     public void setContoCorrente(ContoCorrente contoCorrente) {
         this.contoCorrente = contoCorrente;
     }
-
-    public String getUsername() { return username; }
-
-    public String getTipo() { return tipo; }
-
-    public String getNome() { return nome; }
-
-    public String getCognome() { return cognome; }
-
-    public String getEmail() { return email; }
-
-    public String getPassword() { return password; }
-
-    public String getDescrizione() { return descrizione; }
-
-    public String getFacebook() { return facebook; }
-
-    public String getInstagram() { return instagram; }
-
-    public String getTwitter() { return twitter; }
-
-    public String getSitoWeb() { return sitoWeb; }
-
-    public String getIndirizzo() { return indirizzo; }
-
-    public String getPartitaIva() { return partitaIva; }
-
-    public byte[] getDocumentoIdentita() { return documentoIdentita; }
-
-    public byte[] getFotoProfilo() { return fotoProfilo; }
-
-    public ContoCorrente getContoCorrente() { return contoCorrente; }
 
     @Override
     public boolean equals(Object o) {

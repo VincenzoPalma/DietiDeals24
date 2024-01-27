@@ -18,7 +18,7 @@ public class CartaService {
     private CartaRepository cartaRepository;
 
     @Autowired
-    public CartaService(CartaRepository cartaRepository){
+    public CartaService(CartaRepository cartaRepository) {
         this.cartaRepository = cartaRepository;
     }
 
@@ -26,65 +26,62 @@ public class CartaService {
         //costruttore vuoto
     }
 
-    public void deleteCartaByNumero(String numeroCarta){
-        if (numeroCarta != null){
+    public void deleteCartaByNumero(String numeroCarta) {
+        if (numeroCarta != null) {
             cartaRepository.deleteById(numeroCarta);
         }
     }
 
-    public Set<Carta> findCarteByUtenteUsername(String username){
-        if (username == null){
+    public Set<Carta> findCarteByUtenteUsername(String username) {
+        if (username == null) {
             return Collections.emptySet();
         }
         return cartaRepository.findCarteByUtenteUsername(username);
     }
 
-    public Carta salvaCarta(Carta carta){
-        if (!checkCarta(carta)){
+    public Carta salvaCarta(Carta carta) {
+        if (!checkCarta(carta)) {
             return null;
         }
         return cartaRepository.save(carta);
     }
 
-    public boolean checkCarta(Carta carta){
-        if (carta == null){
+    public boolean checkCarta(Carta carta) {
+        if (carta == null) {
             return false;
         }
-        if (carta.getNomeTitolare() == null || carta.getUtente() == null){
+        if (carta.getNomeTitolare() == null || carta.getUtente() == null) {
             return false;
         }
-        if (!isNumeroUguale16Caratteri(carta.getNumero())){
+        if (!isNumeroUguale16Caratteri(carta.getNumero())) {
             return false;
         }
-        if (!isCodiceCvvCvcUguale3Cifre(carta.getCodiceCvvCvc())){
+        if (!isCodiceCvvCvcUguale3Cifre(carta.getCodiceCvvCvc())) {
             return false;
         }
-        if (!isDataScadenzaFutura(carta.getDataScadenza())){
-            return false;
-        }
-        return true;
+        return isDataScadenzaFutura(carta.getDataScadenza());
     }
 
-    public boolean isNumeroUguale16Caratteri(String numeroCarta){
+    public boolean isNumeroUguale16Caratteri(String numeroCarta) {
         return checkRegexPerNCifre(16, numeroCarta);
     }
 
-    public boolean isCodiceCvvCvcUguale3Cifre(String codiceCvvCvc){
+    public boolean isCodiceCvvCvcUguale3Cifre(String codiceCvvCvc) {
         return checkRegexPerNCifre(3, codiceCvvCvc);
     }
 
-    public boolean checkRegexPerNCifre(int n, String stringa){
-        if (stringa == null || n <= 0){
+    public boolean checkRegexPerNCifre(int n, String stringa) {
+        if (stringa == null || n <= 0) {
             return false;
         }
-        String regex = "^[0-9]{"+ n +"}$";
+        String regex = "^[0-9]{" + n + "}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(stringa);
         return matcher.matches();
     }
 
-    public boolean isDataScadenzaFutura(LocalDate dataScadenza){
-        if (dataScadenza == null){
+    public boolean isDataScadenzaFutura(LocalDate dataScadenza) {
+        if (dataScadenza == null) {
             return false;
         }
         return dataScadenza.isAfter(LocalDate.now());
