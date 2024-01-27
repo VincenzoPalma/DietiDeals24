@@ -79,6 +79,8 @@ class RegistrazioneActivity : ComponentActivity() {
                         composable("SchermataAutenticazione") {SchermataAutenticazione(navController = navController)}
                         composable("SchermataRegistrazione") {SchermataRegistrazione(navController = navController)}
                         composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController)}
+                        composable("SchermataDiventaVenditore") {SchermataDiventaVenditore(navController = navController) }
+                        composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
                     }
                 }
                 }
