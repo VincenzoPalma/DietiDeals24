@@ -3,7 +3,8 @@ package it.uninastudents.dietidealsservice.repository;
 import it.uninastudents.dietidealsservice.model.entity.ContoCorrente;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ContoCorrenteRepository extends JpaRepository<ContoCorrente, String> {
+import java.util.UUID;
 
-    ContoCorrente findContoCorrenteByUtenteUsername(String username);
+public interface ContoCorrenteRepository extends JpaRepository<ContoCorrente, UUID> {
+
 }

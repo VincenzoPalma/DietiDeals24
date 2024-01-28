@@ -1,25 +1,14 @@
 package it.uninastudents.dietidealsservice.service;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+@SpringBootTest
+@TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 class OffertaServiceTest {
 
-    private final OffertaService offertaService = new OffertaService();
+    @Autowired
+    private OffertaService offertaService;
 
-    @Test
-    void checkPrezzoPositivoTest() {
-        //test del caso in cui il valore atteso è un BigDecimal positivo, e il valore effettivo è un BigDecimal positivo
-        assertTrue(offertaService.checkPrezzoPositivo(BigDecimal.valueOf(10)));
-        //test del caso in cui il valore atteso è un BigDecimal positivo, e il valore effettivo è un BigDecimal negativo
-        assertFalse(offertaService.checkPrezzoPositivo(BigDecimal.valueOf(-2)));
-        //test del caso in cui il valore atteso è un BigDecimal positivo, e il valore effettivo è un BigDecimal pari a 0
-        assertFalse(offertaService.checkPrezzoPositivo(BigDecimal.valueOf(0)));
-        //test del caso in cui il valore atteso è un BigDecimal positivo, e il valore effettivo è null
-        assertFalse(offertaService.checkPrezzoPositivo(null));
-    }
 }
