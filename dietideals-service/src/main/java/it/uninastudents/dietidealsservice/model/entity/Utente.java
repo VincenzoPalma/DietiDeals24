@@ -1,173 +1,73 @@
 package it.uninastudents.dietidealsservice.model.entity;
 
+import it.uninastudents.dietidealsservice.model.base.BaseEntity;
+import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 @Entity
-@Table(name = "Utente", schema = "public", catalog = "ingswProva")
-public class Utente {
-    @Id
-    @Column(name = "username", nullable = false, length = -1)
+@Table(name = "utente", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email"),
+        @UniqueConstraint(columnNames = "username")
+})
+public class Utente extends BaseEntity {
+
+    @Column(nullable = false)
     private String username;
 
-    @Column(name = "tipo", nullable = false, length = -1)
-    private String tipo = "Compratore";
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private RuoloUtente ruolo;
 
-    @Column(name = "nome", nullable = false, length = -1)
+    @Column(nullable = false)
     private String nome;
 
-    @Column(name = "cognome", nullable = false, length = -1)
+    @Column(nullable = false)
     private String cognome;
 
-    @Column(name = "email", nullable = false, length = -1)
+    @Column(nullable = false)
     private String email;
 
-    @Column(name = "password", nullable = false, length = -1)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "descrizione", nullable = true, length = 300)
+    @Column(length = 300)
     private String descrizione;
 
-    @Column(name = "facebook", nullable = true, length = -1)
     private String facebook;
 
-    @Column(name = "instagram", nullable = true, length = -1)
     private String instagram;
 
-    @Column(name = "twitter", nullable = true, length = -1)
     private String twitter;
 
-    @Column(name = "sitoWeb", nullable = true, length = -1)
     private String sitoWeb;
 
-    @Column(name = "indirizzo", nullable = true, length = -1)
     private String indirizzo;
 
-
-    @Column(name = "partitaIVA", nullable = true, length = -1)
     private String partitaIva;
 
-    @Column(name = "documentoIdentita", nullable = true)
-    private byte[] documentoIdentita;
+    private String urlDocumentoIdentita;
 
-    @Column(name = "fotoProfilo", nullable = true)
-    private byte[] fotoProfilo;
+    private String urlFotoProfilo;
 
     @OneToOne
-    @JoinColumn(name = "contoCorrente", nullable = true)
     private ContoCorrente contoCorrente;
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
+    @OneToMany
+    private Set<Offerta> offerte;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    @OneToMany
+    private Set<Asta> aste;
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    @OneToMany
+    private Set<Notifica> notifiche;
 
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
-    }
+    @OneToMany
+    private Set<Carta> carte;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
-
-    public void setFacebook(String facebook) {
-        this.facebook = facebook;
-    }
-
-    public void setInstagram(String instagram) {
-        this.instagram = instagram;
-    }
-
-    public void setTwitter(String twitter) {
-        this.twitter = twitter;
-    }
-
-    public void setSitoWeb(String sitoWeb) {
-        this.sitoWeb = sitoWeb;
-    }
-
-    public void setIndirizzo(String indirizzo) {
-        this.indirizzo = indirizzo;
-    }
-
-    public void setPartitaIva(String partitaIva) {
-        this.partitaIva = partitaIva;
-    }
-
-    public void setDocumentoIdentita(byte[] documentoIdentita) {
-        this.documentoIdentita = documentoIdentita;
-    }
-
-    public void setFotoProfilo(byte[] fotoProfilo) {
-        this.fotoProfilo = fotoProfilo;
-    }
-
-    public void setContoCorrente(ContoCorrente contoCorrente) {
-        this.contoCorrente = contoCorrente;
-    }
-
-    public String getUsername() { return username; }
-
-    public String getTipo() { return tipo; }
-
-    public String getNome() { return nome; }
-
-    public String getCognome() { return cognome; }
-
-    public String getEmail() { return email; }
-
-    public String getPassword() { return password; }
-
-    public String getDescrizione() { return descrizione; }
-
-    public String getFacebook() { return facebook; }
-
-    public String getInstagram() { return instagram; }
-
-    public String getTwitter() { return twitter; }
-
-    public String getSitoWeb() { return sitoWeb; }
-
-    public String getIndirizzo() { return indirizzo; }
-
-    public String getPartitaIva() { return partitaIva; }
-
-    public byte[] getDocumentoIdentita() { return documentoIdentita; }
-
-    public byte[] getFotoProfilo() { return fotoProfilo; }
-
-    public ContoCorrente getContoCorrente() { return contoCorrente; }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Utente that = (Utente) o;
-        return Objects.equals(tipo, that.tipo) && Objects.equals(username, that.username) && Objects.equals(nome, that.nome) && Objects.equals(cognome, that.cognome) && Objects.equals(email, that.email) && Objects.equals(password, that.password) && Objects.equals(descrizione, that.descrizione) && Objects.equals(facebook, that.facebook) && Objects.equals(instagram, that.instagram) && Objects.equals(twitter, that.twitter) && Objects.equals(sitoWeb, that.sitoWeb) && Objects.equals(indirizzo, that.indirizzo) && Objects.equals(partitaIva, that.partitaIva) && Arrays.equals(documentoIdentita, that.documentoIdentita) && Arrays.equals(fotoProfilo, that.fotoProfilo) && Objects.equals(contoCorrente, that.contoCorrente);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(tipo, username, nome, cognome, email, password, descrizione, facebook, instagram, twitter, sitoWeb, indirizzo, partitaIva, contoCorrente);
-        result = 31 * result + Arrays.hashCode(documentoIdentita);
-        result = 31 * result + Arrays.hashCode(fotoProfilo);
-        return result;
-    }
 }

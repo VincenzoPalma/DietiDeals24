@@ -6,9 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
-class AstaServiceTest {
-    @Autowired
-    private AstaService astaService;
+class OffertaServiceTest {
 
+    @Autowired
+    private OffertaService offertaService;
 
 }

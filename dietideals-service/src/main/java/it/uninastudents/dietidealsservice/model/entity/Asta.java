@@ -1,164 +1,51 @@
 package it.uninastudents.dietidealsservice.model.entity;
 
+import it.uninastudents.dietidealsservice.model.base.BaseEntity;
+import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
+import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
+import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Objects;
+import java.time.OffsetDateTime;
+import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 @Entity
-@Table(name = "Asta", schema = "public", catalog = "ingswProva")
-public class Asta {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) //generato
-    @Column(name = "idAsta", nullable = false)
-    private int idAsta;
+@Table(name = "asta")
+public class Asta extends BaseEntity {
 
-    @Column(name = "nome", nullable = false, length = -1)
+    @Column(nullable = false)
     private String nome;
 
-    @Column(name = "descrizione", nullable = false, length = 300)
+    @Column(nullable = false, length = 300)
     private String descrizione;
 
-    @Column(name = "foto", nullable = true)
-    private byte[] foto;
+    private String urlFoto;
 
-    @Column(name = "dataScadenza", nullable = true)
-    private LocalDateTime dataScadenza;
+    private OffsetDateTime dataScadenza;
 
-    @Column(name = "sogliaRialzo", nullable = true)
-    private BigDecimal sogliaRialzo = BigDecimal.valueOf(10);
+    private BigDecimal sogliaRialzo;
 
-    @Column(name = "intervalloTempoOfferta", nullable = true)
-    private Duration intervalloTempoOfferta = Duration.ofHours(1);
+    private Integer intervalloTempoOfferta;
 
-    @Column(name = "categoria", nullable = false, length = -1)
-    private String categoria;
+    @Column(nullable = false)
+    private CategoriaAsta categoria;
 
-    @Column(name = "tipo", nullable = false, length = -1)
-    private String tipo;
+    @Column(nullable = false)
+    private TipoAsta tipo;
 
-    @Column(name = "stato", nullable = false, length = -1)
-    private String stato = "Attiva";
+    @Column(nullable = false)
+    private StatoAsta stato;
 
     @ManyToOne
-    @JoinColumn(name = "proprietario", nullable = false)
+    @JoinColumn(nullable = false)
     private Utente proprietario;
 
-    public Asta(int idAsta, String nome, String descrizione, byte[] foto, LocalDateTime dataScadenza, BigDecimal sogliaRialzo, Duration intervalloTempoOfferta, String categoria, String tipo, String stato, Utente proprietario) {
-        this.idAsta = idAsta;
-        this.nome = nome;
-        this.descrizione = descrizione;
-        this.foto = foto;
-        this.dataScadenza = dataScadenza;
-        this.sogliaRialzo = sogliaRialzo;
-        this.intervalloTempoOfferta = intervalloTempoOfferta;
-        this.categoria = categoria;
-        this.tipo = tipo;
-        this.stato = stato;
-        this.proprietario = proprietario;
-    }
+    @OneToMany
+    private Set<Offerta> offerte;
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public int getIdAsta() {
-        return idAsta;
-    }
-
-    public void setIdAsta(int idAsta) {
-        this.idAsta = idAsta;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
-
-    public byte[] getFoto() {
-        return foto;
-    }
-
-    public void setFoto(byte[] foto) {
-        this.foto = foto;
-    }
-
-    public LocalDateTime getDataScadenza() {
-        return dataScadenza;
-    }
-
-    public void setDataScadenza(LocalDateTime dataScadenza) {
-        this.dataScadenza = dataScadenza;
-    }
-
-    public BigDecimal getSogliaRialzo() {
-        return sogliaRialzo;
-    }
-
-    public void setSogliaRialzo(BigDecimal sogliaRialzo) {
-        this.sogliaRialzo = sogliaRialzo;
-    }
-
-    public Duration getIntervalloTempoOfferta() {
-        return intervalloTempoOfferta;
-    }
-
-    public void setIntervalloTempoOfferta(Duration intervalloTempoOfferta) {
-        this.intervalloTempoOfferta = intervalloTempoOfferta;
-    }
-
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) { this.categoria = categoria; }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public String getStato() {
-        return stato;
-    }
-
-    public void setStato(String stato) {
-        this.stato = stato;
-    }
-
-    public Utente getProprietario() {
-        return proprietario;
-    }
-
-    public void setProprietario(Utente proprietario) {
-        this.proprietario = proprietario;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Asta that = (Asta) o;
-        return idAsta == that.idAsta && Objects.equals(nome, that.nome) && Objects.equals(descrizione, that.descrizione) && Arrays.equals(foto, that.foto) && Objects.equals(dataScadenza, that.dataScadenza) && Objects.equals(sogliaRialzo, that.sogliaRialzo) && Objects.equals(intervalloTempoOfferta, that.intervalloTempoOfferta) && Objects.equals(categoria, that.categoria) && Objects.equals(tipo, that.tipo) && Objects.equals(stato, that.stato) && Objects.equals(proprietario, that.proprietario);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(nome, idAsta, descrizione, dataScadenza, sogliaRialzo, intervalloTempoOfferta, categoria, tipo, stato, proprietario);
-        result = 31 * result + Arrays.hashCode(foto);
-        return result;
-    }
 }
