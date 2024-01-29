@@ -24,5 +24,8 @@ public class Offerta extends BaseEntity {
     @Column(nullable = false)
     private BigDecimal prezzo;
 
+    @Column(nullable = false)
+    private boolean vincente;
+
 
 }

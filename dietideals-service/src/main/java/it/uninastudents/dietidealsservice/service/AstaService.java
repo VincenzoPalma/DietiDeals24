@@ -2,6 +2,7 @@ package it.uninastudents.dietidealsservice.service;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
+import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.repository.AstaRepository;
 import it.uninastudents.dietidealsservice.repository.specs.AstaSpecs;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -28,4 +31,14 @@ public class AstaService {
         return repository.findAll(spec, pageable);
     }
 
+
+    public Page<Asta> getAsteUtenteByStato(Pageable pageable, UUID idProprietario, StatoAsta stato){
+        var spec = AstaSpecs.hasProprietario(idProprietario).and(AstaSpecs.hasStato(stato));
+        return repository.findAll(spec, pageable);
+    }
+
+    public Page<Asta> getAsteUtente(Pageable pageable, UUID idProprietario, StatoAsta stato){
+        var spec = AstaSpecs.hasStato(stato).and(AstaSpecs.hasOfferta(idProprietario)); //specificare lo stato dell'offerta
+        return repository.findAll(spec, pageable);
+    }
 }

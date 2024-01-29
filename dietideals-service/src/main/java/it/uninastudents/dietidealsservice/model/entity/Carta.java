@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -23,7 +24,7 @@ public class Carta extends BaseEntity {
     private String codiceCvvCvc;
 
     @Column(nullable = false)
-    private LocalDate dataScadenza;
+    private OffsetDateTime dataScadenza;
 
     @ManyToOne
     @JoinColumn(nullable = false)

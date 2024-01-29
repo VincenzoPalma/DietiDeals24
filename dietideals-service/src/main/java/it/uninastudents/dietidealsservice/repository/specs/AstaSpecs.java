@@ -1,11 +1,16 @@
 package it.uninastudents.dietidealsservice.repository.specs;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
+import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
+import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
+import jakarta.persistence.criteria.Join;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AstaSpecs {
@@ -26,4 +31,20 @@ public final class AstaSpecs {
     public static Specification<Asta> hasCategoria(CategoriaAsta target) {
         return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("categoria"), target)) : none();
     }
+
+    public static Specification<Asta> hasProprietario(UUID target) {
+        return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("proprietario").get("id"), target)) : none();
+    }
+
+    public static Specification<Asta> hasStato(StatoAsta target) {
+        return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("stato"), target)) : none();
+    }
+
+    public static Specification<Asta> hasOfferta(UUID target) {
+        return target != null ? (root, query, criteriaBuilder) -> {
+            Join<Asta, Offerta> offerteJoin = root.join("offerte");
+            return criteriaBuilder.equal(offerteJoin.get("utente").get("id"), target);
+        } : none();
+    }
+
 }
