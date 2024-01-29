@@ -37,7 +37,7 @@ public class AstaService {
         return repository.findAll(spec, pageable);
     }
 
-    public Page<Asta> getAsteUtente(Pageable pageable, UUID idProprietario, StatoAsta stato){
+    public Page<Asta> getAstePartecipateUtente(Pageable pageable, UUID idProprietario, StatoAsta stato){
         var spec = AstaSpecs.hasStato(stato).and(AstaSpecs.hasOfferta(idProprietario)); //specificare lo stato dell'offerta
         return repository.findAll(spec, pageable);
     }
