@@ -1,15 +1,12 @@
 package com.example.dietideals_app.view
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,9 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
@@ -31,9 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -67,16 +60,16 @@ class Diventavenditore : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
                         composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController) }
-                        composable("SchermataDiventaVenditore") {SchermataDiventaVenditore(navController = navController) }
+                        composable("SchermataImmagineProfilo") { SchermataImmagineProfilo(navController = navController) }
+                        composable("SchermataDiventaVenditore") { SchermataDiventaVenditore(navController = navController) }
                         composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
+                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
                     }
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun SchermataDiventaVenditore(navController: NavController) {
@@ -86,12 +79,11 @@ fun SchermataDiventaVenditore(navController: NavController) {
     // Crea un presenter per la registrazione
     val presenter = AutenticazionePresenter()
 
-    // Placeholder per l'immagine del profilo
-
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (backgroundImage, title, testoVenditore, boxVenditore, contenutoBox,nonOraButton, sottoTitolo) = createRefs()
+        val (backgroundImage, title, sellerText, contentBox, notNowButton, subTitle) = createRefs()
+
 
         // Immagine di sfondo
         Image(
@@ -108,6 +100,8 @@ fun SchermataDiventaVenditore(navController: NavController) {
                 },
             contentScale = ContentScale.Crop
         )
+
+        // Titolo
         Row(
             modifier = Modifier
                 .constrainAs(title) {
@@ -127,7 +121,7 @@ fun SchermataDiventaVenditore(navController: NavController) {
                 modifier = Modifier
                     .size(35.dp)
                     .clickable {
-                        // Azione quando l'icona indietro viene cliccata
+                        // Azione quando l'icona indietro viene clicata
                         presenter.effettuaRegistrazione()
                         navController.navigate("SchermataImmagineProfilo")
                     },
@@ -146,104 +140,106 @@ fun SchermataDiventaVenditore(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             )
         }
+
+        // Testo "Sei un venditore?"
         Text(
             text = "Sei un venditore?",
             color = Color.White,
             fontFamily = titleCustomFont,
             textAlign = TextAlign.Center,
             fontSize = 20.sp,
-            modifier = Modifier.constrainAs(testoVenditore) {
+            modifier = Modifier.constrainAs(sellerText) {
                 top.linkTo(title.top, margin = 40.dp)
                 start.linkTo(parent.start)
-                end.linkTo(parent.end,)
+                end.linkTo(parent.end)
             }
         )
-        Box(
+
+        // Contenuto centrato
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .constrainAs(boxVenditore) {
-                    top.linkTo(testoVenditore.top,margin = 200.dp)
-                    bottom.linkTo(parent.bottom,margin = 300.dp)
+                .constrainAs(contentBox) {
+                    top.linkTo(sellerText.top, margin = 125.dp)
+                    bottom.linkTo(notNowButton.top, margin = 100.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-
                 }
                 .size(380.dp)
-                .clip(RoundedCornerShape(10.dp))
                 .background(Color.White)
-                .border(5.dp, Color.Black, shape = RoundedCornerShape(5.dp)),
-
+                .padding(16.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+            // Testi e contenuti della Box
+            Text(
+                text = "PASSA ALL'ACCOUNT VENDITORE",
+                textAlign = TextAlign.Center,
+                style = TextStyle(fontWeight = FontWeight.Bold),
+                fontSize = 20.sp,
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(
+                text = "I VANTAGGI",
+                textAlign = TextAlign.Center,
+                style = TextStyle(fontWeight = FontWeight.Bold),
+                fontSize = 20.sp,
+            )
+            Spacer(modifier = Modifier.height(40.dp))
+            Text(
+                text = "1) CREARE ASTE ALL'INGLESE",
+                textAlign = TextAlign.Left,
+                fontStyle = FontStyle.Italic,
+                fontSize = 20.sp,
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(
+                text = "2) CREARE ASTE SILENZIOSE",
+                textAlign = TextAlign.Left,
+                fontStyle = FontStyle.Italic,
+                fontSize = 20.sp,
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(
+                text = "3) PARTECIPARE ALLE ASTE INVERSE",
+                textAlign = TextAlign.Left,
+                fontStyle = FontStyle.Italic,
+                fontSize = 20.sp,
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // Bottone "DIVENTA UN VENDITORE"
+            Button(
+                onClick = { presenter.effettuaRegistrazione()
+                    navController.navigate("SchermataRegistrazioneDatiVenditore")},
+                shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
                 modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.TopCenter)
+                    .padding(bottom = 16.dp) // Aggiungi un margine inferiore
+                    .fillMaxWidth() // Usa tutta la larghezza disponibile
             ) {
                 Text(
-                    text = "PASSA ALL'ACCOUNT VENDITORE",
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(fontWeight = FontWeight.Bold),
-                    fontSize = 20.sp,
+                    text = "DIVENTA UN VENDITORE",
+                    fontSize = 20.sp, // Imposta la dimensione del font desiderata
+                    modifier = Modifier.padding(8.dp) // Aggiungi spaziatura interna al testo
                 )
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(
-                    text = "I VANTAGGI",
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(fontWeight = FontWeight.Bold),
-                    fontSize = 20.sp,
-                )
-                Spacer(modifier = Modifier.height(40.dp))
-                Text(
-                    text = "1) CREARE ASTE ALL'INGLESE",
-                    textAlign = TextAlign.Left,
-                    fontStyle = FontStyle.Italic,
-                    fontSize = 20.sp,
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(
-                    text = "2) CREARE ASTE SILENZIOSE",
-                    textAlign = TextAlign.Left,
-                    fontStyle = FontStyle.Italic,
-                    fontSize = 20.sp,
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(
-                    text = "3) PARTECIPARE ALLE ASTE INVERSE",
-                    textAlign = TextAlign.Left,
-                    fontStyle = FontStyle.Italic,
-                    fontSize = 20.sp,
-                )
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                Button(
-                    onClick = {},
-                    shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
-                    modifier = Modifier
-                        .padding(bottom = 16.dp) // Aggiungi un margine inferiore
-                        .fillMaxWidth()
-                        // Usa tutta la larghezza disponibile
-                ) {
-                    Text(
-                        text = "DIVENTA UN VENDITORE",
-                        fontSize = 20.sp, // Imposta la dimensione del font desiderata
-                        modifier = Modifier.padding(8.dp) // Aggiungi spaziatura interna al testo
-                    )
-                }
             }
         }
+
+        // Bottone "NON ORA"
         Button(
-            onClick = {presenter.effettuaRegistrazione()
-                      navController.navigate("SchermataRegistrazioneSuccesso")},
+            onClick = {
+                presenter.effettuaRegistrazione()
+                navController.navigate("SchermataRegistrazioneSuccesso")
+            },
             shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
             modifier = Modifier
-                .padding(bottom = 16.dp) // Aggiungi un margine inferiore
-                .constrainAs(nonOraButton){
-                    top.linkTo(boxVenditore.top, margin = 400.dp)
+                .padding(bottom = 25.dp) // Aggiungi un margine inferiore
+                .constrainAs(notNowButton){
+                    top.linkTo(contentBox.bottom, margin = 5.dp)
                     start.linkTo(parent.start)
-                    end.linkTo(parent.end,)
-                }, colors = ButtonColors(containerColor=Color(0xFF9b0404), contentColor = Color.White, disabledContainerColor = Color.Gray, disabledContentColor = Color.Black) // Usa tutta la larghezza disponibile
+                    end.linkTo(parent.end)
+                },
+            colors = ButtonColors(containerColor=Color(0xFF9b0404), contentColor = Color.White, disabledContainerColor = Color.Gray, disabledContentColor = Color.Black)
         ) {
             Text(
                 text = "NON ORA",
@@ -251,22 +247,21 @@ fun SchermataDiventaVenditore(navController: NavController) {
                 modifier = Modifier.padding(8.dp) // Aggiungi spaziatura interna al testo
             )
         }
+
+        // Testo sotto il bottone "NON ORA"
         Text(
             text = "POTRAI PASSARE AD UN ACCOUNT VENDITORE IN UN SECONDO MOMENTO",
             textAlign = TextAlign.Center,
             color = Color.Gray,
             fontSize = 8.sp,
-            modifier = Modifier.constrainAs(sottoTitolo){
-                top.linkTo(nonOraButton.top, margin = 60.dp)
+            modifier = Modifier.constrainAs(subTitle){
+                top.linkTo(notNowButton.top, margin = 70.dp)
                 start.linkTo(parent.start)
-                end.linkTo(parent.end,)
+                end.linkTo(parent.end)
             }
         )
-
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable

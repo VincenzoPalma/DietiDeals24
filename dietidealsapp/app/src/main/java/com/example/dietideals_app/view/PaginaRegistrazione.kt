@@ -1,12 +1,12 @@
 package com.example.dietideals_app.view
+
+
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,7 +38,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -81,6 +80,7 @@ class RegistrazioneActivity : ComponentActivity() {
                         composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController)}
                         composable("SchermataDiventaVenditore") {SchermataDiventaVenditore(navController = navController) }
                         composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
+                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
                     }
                 }
                 }
@@ -329,7 +329,7 @@ fun SchermataRegistrazione(navController: NavController) {
         Row(
             modifier = Modifier
                 .constrainAs(nomeTextfield) {
-                    top.linkTo(datiAngraficiText.bottom, margin = 2.dp)
+                    top.linkTo(datiAngraficiText.bottom)
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
                     width = Dimension.fillToConstraints
@@ -410,6 +410,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     top.linkTo(dataDiNascitafield.bottom, margin = 2.dp)
                     start.linkTo(parent.start, margin = 200.dp)
                     end.linkTo(parent.end, margin = 2.dp)
+                    bottom.linkTo(parent.bottom,margin = 16.dp)
 
                 },shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
 

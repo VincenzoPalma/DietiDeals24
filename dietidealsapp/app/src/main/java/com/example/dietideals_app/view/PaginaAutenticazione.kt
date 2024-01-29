@@ -70,7 +70,8 @@ class MainActivity : ComponentActivity() {
                         composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController)}
                         composable("SchermataDiventaVenditore") {SchermataDiventaVenditore(navController = navController) }
                         composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
-                    }
+                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
+                        }
                 }
             }
         }

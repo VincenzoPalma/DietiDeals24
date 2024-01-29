@@ -1,15 +1,10 @@
 package com.example.dietideals_app.view
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,19 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -63,16 +54,16 @@ class RegistrazioneSuccesso : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
                         composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController) }
-                        composable("SchermataDiventaVenditore") {SchermataDiventaVenditore(navController = navController) }
+                        composable("SchermataImmagineProfilo") { SchermataImmagineProfilo(navController = navController) }
+                        composable("SchermataDiventaVenditore") { SchermataDiventaVenditore(navController = navController) }
                         composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
+                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
                     }
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun SchermataRegistrazioneSuccesso(navController: NavController) {
@@ -82,12 +73,10 @@ fun SchermataRegistrazioneSuccesso(navController: NavController) {
     // Crea un presenter per la registrazione
     val presenter = AutenticazionePresenter()
 
-    // Placeholder per l'immagine del profilo
-
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (backgroundImage, title, boxSuccesso, contenutoBox, nonOraButton, sottoTitolo) = createRefs()
+        val (backgroundImage, title, textColumn, loginButton) = createRefs()
 
         // Immagine di sfondo
         Image(
@@ -104,6 +93,8 @@ fun SchermataRegistrazioneSuccesso(navController: NavController) {
                 },
             contentScale = ContentScale.Crop
         )
+
+        // Titolo
         Row(
             modifier = Modifier
                 .constrainAs(title) {
@@ -114,10 +105,7 @@ fun SchermataRegistrazioneSuccesso(navController: NavController) {
                 .fillMaxWidth()
                 .padding(6.dp)
         ) {
-
-            Spacer(modifier = Modifier.width(5.dp))  // Aggiunge uno spazio tra l'icona e il testo
-
-            // Testo titolo
+            Spacer(modifier = Modifier.width(5.dp))
             Text(
                 text = "REGISTRAZIONE",
                 color = Color.White,
@@ -127,64 +115,62 @@ fun SchermataRegistrazioneSuccesso(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Box(
+
+        // Contenuto centrato
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .constrainAs(boxSuccesso) {
-                    top.linkTo(title.top, margin = 50.dp)
-                    bottom.linkTo(parent.bottom,margin = 60.dp)
+                .constrainAs(textColumn) {
+                    top.linkTo(parent.top, margin = 40.dp)
+                    bottom.linkTo(
+                        loginButton.top
+                    ) // Aggiungi il margine desiderato tra il testo e il pulsante
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-
                 }
-                .size(380.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.White)
-                .border(5.dp, Color.Black, shape = RoundedCornerShape(5.dp)),
-
-            ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.TopCenter)
-            ) {
-                Text(
-                    text = "ACCOUNT CREATO!",
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(fontWeight = FontWeight.Bold),
-                    fontSize = 35.sp,
-                )
-                Spacer(modifier = Modifier.height(15.dp))
-                Text(
-                    text = "Registrazione avvenuta con successo! Torna alla schermata di login per effettuare l'accesso",
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(
-                        lineHeight = 40.sp),
-                    fontSize = 35.sp,
-                )
-            }
-
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "ACCOUNT CREATO!",
+                textAlign = TextAlign.Center,
+                style = TextStyle(fontWeight = FontWeight.Bold),
+                fontSize = 35.sp,
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                text = "Registrazione avvenuta con successo! Torna alla schermata di login per effettuare l'accesso",
+                textAlign = TextAlign.Center,
+                style = TextStyle(lineHeight = 40.sp),
+                fontSize = 30.sp,
+            )
         }
-        Button(onClick = { presenter.effettuaRegistrazione()
-            navController.navigate("SchermataAutenticazione")},
+
+        // Bottone centrato sotto il testo
+        Button(
+            onClick = {
+                presenter.effettuaRegistrazione()
+                navController.navigate("SchermataAutenticazione")
+            },
             shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
             modifier = Modifier
-                .padding(bottom = 16.dp) // Aggiungi un margine inferiore
-                .constrainAs(nonOraButton){
-                    top.linkTo(boxSuccesso.top, margin = 400.dp)
+                .padding(bottom = 16.dp) // Aggiungi il margine inferiore desiderato
+                .constrainAs(loginButton) {
+                    top.linkTo(textColumn.bottom)
+                    bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
-                    end.linkTo(parent.end,)
-                }) {
+                    end.linkTo(parent.end)
+                }
+        ) {
             Text(
                 text = "ACCEDI",
-                fontSize = 30.sp, // Imposta la dimensione del font desiderata
-                modifier = Modifier.padding(8.dp) // Aggiungi spaziatura interna al testo
+                fontSize = 20.sp,
+                modifier = Modifier.padding(8.dp)
             )
-            
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegistrazioneSuccesso() {
