@@ -1,3 +1,5 @@
+@file:Suppress("KotlinConstantConditions")
+
 package com.example.dietideals_app.view
 
 
@@ -73,25 +75,45 @@ class RegistrazioneActivity : ComponentActivity() {
         setContent {
             DietidealsappTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") {SchermataAutenticazione(navController = navController)}
-                        composable("SchermataRegistrazione") {SchermataRegistrazione(navController = navController)}
-                        composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController)}
-                        composable("SchermataDiventaVenditore") {SchermataDiventaVenditore(navController = navController) }
-                        composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
-                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
+                    NavHost(
+                        navController = navController, startDestination = "SchermataAutenticazione"
+                    ) {
+                        composable("SchermataAutenticazione") {
+                            SchermataAutenticazione(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
+                        composable("SchermataImmagineProfilo") {
+                            SchermataImmagineProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataDiventaVenditore") {
+                            SchermataDiventaVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneSuccesso") {
+                            SchermataRegistrazioneSuccesso(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneDatiVenditore") {
+                            SchermataRegistrazioneDatiVenditore(
+                                navController = navController
+                            )
+                        }
                     }
                 }
-                }
-
-                }
             }
-        }
 
+        }
+    }
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -130,12 +152,11 @@ fun SchermataRegistrazione(navController: NavController) {
 
 
     ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
 
 
-    val (backgroundImage, title, emailTextField, usernameTextfield, passwordTextField, confermaPasswordTextfield, datiAngraficiText, nomeTextfield, dataDiNascitafield,bottoneAvanti) = createRefs()
+        val (backgroundImage, title, emailTextField, usernameTextfield, passwordTextField, confermaPasswordTextfield, datiAngraficiText, nomeTextfield, dataDiNascitafield, bottoneAvanti) = createRefs()
         fun isEmailValid(email: String): Boolean {
             // In questo esempio, si utilizza un'espressione regolare per verificare il formato dell'email
             val emailRegex = Regex("^[A-Za-z](.*)(@)(.+)(\\.)(.+)")
@@ -171,6 +192,7 @@ fun SchermataRegistrazione(navController: NavController) {
             // Puoi definire i criteri di validazione del cognome qui
             return cognome.isNotBlank()
         }
+
         fun calculateAge(birthDate: Date, currentDate: Date): Int {
             val birthCalendar = Calendar.getInstance()
             val currentCalendar = Calendar.getInstance()
@@ -187,6 +209,7 @@ fun SchermataRegistrazione(navController: NavController) {
 
             return age
         }
+
         fun isUserAdult(selectedDateMillis: Long?): Boolean {
             // Verifica se la data di nascita è stata selezionata
             if (selectedDateMillis == null) {
@@ -208,35 +231,34 @@ fun SchermataRegistrazione(navController: NavController) {
 
         fun checkFields(): Boolean {
             // Verifica qui tutti i campi e restituisci true solo se sono tutti compilati correttamente
-            return isEmailValid(email) && isUsernameValid(username) && isPasswordValid(password)
-                    && isPasswordMatching(password, confermaPassword) && isNomeValid(nome) && isCognomeValid(cognome)
-                    && isUserAdult(state?.selectedDateMillis)
+            return isEmailValid(email) && isUsernameValid(username) && isPasswordValid(password) && isPasswordMatching(
+                password, confermaPassword
+            ) && isNomeValid(nome) && isCognomeValid(cognome) && isUserAdult(state.selectedDateMillis)
         }
         // Immagine di background
         Image(
             painter = background,
             contentDescription = null,
-            modifier = Modifier
-                .constrainAs(backgroundImage) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                    width = Dimension.fillToConstraints
-                    height = Dimension.fillToConstraints
-                },
+            modifier = Modifier.constrainAs(backgroundImage) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+                width = Dimension.fillToConstraints
+                height = Dimension.fillToConstraints
+            },
             contentScale = ContentScale.Crop
         )
 
 // Testo titolo
-        Row(
-            modifier = Modifier.constrainAs(title) {
+        Row(modifier = Modifier
+            .constrainAs(title) {
                 top.linkTo(parent.top, margin = 16.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-            }.fillMaxWidth()
-                .padding(6.dp)
-        ) {
+            }
+            .fillMaxWidth()
+            .padding(6.dp)) {
             Spacer(modifier = Modifier.height(8.dp))
             Icon(
                 painter = painterResource(id = R.drawable.baseline_arrow_back_24),
@@ -247,7 +269,8 @@ fun SchermataRegistrazione(navController: NavController) {
                         // Aggiungi l'azione desiderata quando viene cliccata l'icona
                         presenter.effettuaRegistrazione()
                         navController.navigate("SchermataAutenticazione")
-                    }, tint = Color.White
+                    },
+                tint = Color.White
             )
             Spacer(modifier = Modifier.width(5.dp))  // Aggiunge uno spazio tra l'icona e il testo
             Text(
@@ -262,12 +285,20 @@ fun SchermataRegistrazione(navController: NavController) {
 
         var isValidEmail by remember { mutableStateOf(false) }
 // Text Field E-mail
-        OutlinedTextField(
-            label = { Text("E-mail") },
+        OutlinedTextField(label = {
+            Text(
+                "E-mail",
+                color = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(
+                    0xFF9B0404
+                ) else Color.Black,
+            )
+        },
             shape = RoundedCornerShape(15.dp),
             value = email,
-            onValueChange = { email = it
-                isValidEmail = isEmailValid(it)},
+            onValueChange = {
+                email = it
+                isValidEmail = isEmailValid(it)
+            },
             trailingIcon = {
                 Icon(
                     painter = painterResource(
@@ -275,19 +306,28 @@ fun SchermataRegistrazione(navController: NavController) {
 
                     ),
                     contentDescription = null,
-                    tint = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+                    tint = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(
+                        0xFF9B0404
+                    ) else Color.Gray,
                     modifier = if (email.isEmpty()) Modifier.alpha(0f) else Modifier
 
                 )
-            },colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
-                focusedBorderColor = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(
+                    0xFF9B0404
+                ) else Color.Gray,
+                focusedBorderColor = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(
+                    0xFF9B0404
+                ) else Color.Gray,
             ),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
                     contentDescription = null,
-                    tint = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+                    tint = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(
+                        0xFF9B0404
+                    ) else Color.Gray,
                 )
 
             },
@@ -305,36 +345,51 @@ fun SchermataRegistrazione(navController: NavController) {
 
 // Text Field Username
         var isValidUsername by remember { mutableStateOf(false) }
-        OutlinedTextField(
-            value = username,
+        OutlinedTextField(value = username,
             shape = RoundedCornerShape(15.dp),
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_account_circle_24),
                     contentDescription = null,
-                    tint = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+                    tint = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(
+                        0xFF9B0404
+                    ) else Color.Gray,
                 )
             },
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
-                focusedBorderColor = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+                unfocusedBorderColor = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(
+                    0xFF9B0404
+                ) else Color.Gray,
+                focusedBorderColor = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(
+                    0xFF9B0404
+                ) else Color.Gray,
             ),
             trailingIcon = {
                 Icon(
                     painter = painterResource(
                         id = if (isValidUsername) R.drawable.baseline_done_24 else if (!isValidUsername && username.isNotEmpty()) R.drawable.baseline_close_24 else R.drawable.empty
-
                     ),
                     contentDescription = null,
-                    tint = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+                    tint = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(
+                        0xFF9B0404
+                    ) else Color.Gray,
                     modifier = if (username.isEmpty()) Modifier.alpha(0f) else Modifier
 
                 )
             },
-            onValueChange = { username = it
-                isValidUsername = isUsernameValid(username)},
+            onValueChange = {
+                username = it
+                isValidUsername = isUsernameValid(username)
+            },
 
-            label = { Text("Username") },
+            label = {
+                Text(
+                    "Username",
+                    color = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(
+                        0xFF9B0404
+                    ) else Color.Black,
+                )
+            },
             modifier = Modifier
                 .constrainAs(usernameTextfield) {
                     top.linkTo(emailTextField.bottom, margin = 2.dp)
@@ -350,34 +405,50 @@ fun SchermataRegistrazione(navController: NavController) {
 
 // Text Field Password
         var isValidPassword by remember { mutableStateOf(false) }
-        var matchedPassword by remember { mutableStateOf(false)}
-        OutlinedTextField(
-            value = password,
+        var matchedPassword by remember { mutableStateOf(false) }
+        OutlinedTextField(value = password,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
             shape = RoundedCornerShape(15.dp),
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_lock_24),
                     contentDescription = null,
-                    tint = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(0xFF9B0404) else Color.Gray,
+                    tint = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                        0xFF9B0404
+                    ) else Color.Gray,
                 )
             },
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(0xFF9B0404) else Color.Gray,
-                focusedBorderColor = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(0xFF9B0404) else Color.Gray,
+                unfocusedBorderColor = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                    0xFF9B0404
+                ) else Color.Gray,
+                focusedBorderColor = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                    0xFF9B0404
+                ) else Color.Gray,
             ),
             trailingIcon = {
                 Icon(
                     painter = painterResource(id = if (!passwordVisibile) R.drawable.baseline_remove_red_eye_24 else R.drawable.closed_eye_icon),
                     contentDescription = null,
                     modifier = Modifier.clickable { passwordVisibile = !passwordVisibile },
-                    tint = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(0xFF9B0404) else Color.Gray,
+                    tint = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                        0xFF9B0404
+                    ) else Color.Gray,
                 )
             },
-            onValueChange = { password = it
+            onValueChange = {
+                password = it
                 isValidPassword = isPasswordValid(it)
-                matchedPassword = isPasswordMatching(it,confermaPassword)},
-            label = { Text("Password") },
+                matchedPassword = isPasswordMatching(it, confermaPassword)
+            },
+            label = {
+                Text(
+                    "Password",
+                    color = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                        0xFF9B0404
+                    ) else Color.Black,
+                )
+            },
             modifier = Modifier
                 .constrainAs(passwordTextField) {
                     top.linkTo(usernameTextfield.bottom, margin = 2.dp)
@@ -394,35 +465,53 @@ fun SchermataRegistrazione(navController: NavController) {
 // Text Field Conferma Password
         var isValidConfirmedPassword by remember { mutableStateOf(false) }
 
-        OutlinedTextField(
-        value = confermaPassword,
+        OutlinedTextField(value = confermaPassword,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
             shape = RoundedCornerShape(15.dp),
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_lock_24),
                     contentDescription = null,
-                    tint = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if ( confermaPassword.isNotEmpty() && (!isValidConfirmedPassword ||!matchedPassword)) Color(0xFF9B0404) else Color.Gray,
+                    tint = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if (confermaPassword.isNotEmpty() && (!isValidConfirmedPassword || !matchedPassword)) Color(
+                        0xFF9B0404
+                    ) else Color.Gray,
                 )
             },
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if ( confermaPassword.isNotEmpty() && (!isValidConfirmedPassword ||!matchedPassword)) Color(0xFF9B0404) else Color.Gray,
-                focusedBorderColor = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if ( confermaPassword.isNotEmpty() && (!isValidConfirmedPassword ||!matchedPassword)) Color(0xFF9B0404) else Color.Gray,
+                unfocusedBorderColor = if (isValidConfirmedPassword && matchedPassword) Color(
+                    0xFF0EA639
+                ) else if (confermaPassword.isNotEmpty() && (!isValidConfirmedPassword || !matchedPassword)) Color(
+                    0xFF9B0404
+                ) else Color.Gray,
+                focusedBorderColor = if (isValidConfirmedPassword && matchedPassword) Color(
+                    0xFF0EA639
+                ) else if (confermaPassword.isNotEmpty() && (!isValidConfirmedPassword || !matchedPassword)) Color(
+                    0xFF9B0404
+                ) else Color.Gray,
             ),
             trailingIcon = {
                 Icon(
                     painter = painterResource(id = if (!passwordVisibile) R.drawable.baseline_remove_red_eye_24 else R.drawable.closed_eye_icon),
                     contentDescription = null,
                     modifier = Modifier.clickable { passwordVisibile = !passwordVisibile },
-                    tint = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if ( confermaPassword.isNotEmpty() && (!isValidConfirmedPassword ||!matchedPassword)) Color(0xFF9B0404) else Color.Gray,
+                    tint = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if (confermaPassword.isNotEmpty() && (!isValidConfirmedPassword || !matchedPassword)) Color(
+                        0xFF9B0404
+                    ) else Color.Gray,
                 )
             },
             onValueChange = {
                 confermaPassword = it
-                matchedPassword = isPasswordMatching(password,it)
+                matchedPassword = isPasswordMatching(password, it)
                 isValidConfirmedPassword = isPasswordValid(confermaPassword)
             },
-            label = { Text("Conferma Password") },
+            label = {
+                Text(
+                    "Conferma Password",
+                    color = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if (confermaPassword.isNotEmpty() && (!isValidConfirmedPassword || !matchedPassword)) Color(
+                        0xFF9B0404
+                    ) else Color.Black,
+                )
+            },
             modifier = Modifier
                 .constrainAs(confermaPasswordTextfield) {
                     top.linkTo(passwordTextField.bottom, margin = 2.dp)
@@ -437,19 +526,16 @@ fun SchermataRegistrazione(navController: NavController) {
         )
 
 // Label Dati Anagrafici
-        Text(
-            text = "DATI ANAGRAFICI",
+        Text(text = "DATI ANAGRAFICI",
             color = Color.Black,
             fontFamily = titleCustomFont,
             textAlign = TextAlign.Center,
             fontSize = 15.sp,
-            modifier = Modifier
-                .constrainAs(datiAngraficiText) {
-                    top.linkTo(confermaPasswordTextfield.top, margin = 90.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        )
+            modifier = Modifier.constrainAs(datiAngraficiText) {
+                top.linkTo(confermaPasswordTextfield.top, margin = 90.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            })
 
 // Gruppo di TextField per Nome e Cognome
         Row(
@@ -463,17 +549,23 @@ fun SchermataRegistrazione(navController: NavController) {
                 .padding(8.dp),
         ) {
             // Primo TextField (Nome)
-            var isValidName by remember{ mutableStateOf(false)}
+            var isValidName by remember { mutableStateOf(false) }
             OutlinedTextField(
                 value = nome,
-                onValueChange = { nome = it
-                    isValidName = isNomeValid(it)},
+                onValueChange = {
+                    nome = it
+                    isValidName = isNomeValid(it)
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = if (isValidName) Color(0xFF0EA639) else Color.Gray,
                     focusedBorderColor = if (isValidName) Color(0xFF0EA639) else Color.Gray,
                 ),
                 shape = RoundedCornerShape(15.dp),
-                label = { Text("Nome") },
+                label = {
+                    Text(
+                        "Nome", color = if (nome.isNotEmpty()) Color(0xFF0EA639) else Color.Black
+                    )
+                },
                 modifier = Modifier
                     .weight(1f)
                     .padding(8.dp)
@@ -485,13 +577,19 @@ fun SchermataRegistrazione(navController: NavController) {
             Spacer(modifier = Modifier.width(8.dp)) // Spazio tra i TextField
 
             // Secondo TextField (Cognome)
-            var isValidCognome by remember{ mutableStateOf(false)}
-            OutlinedTextField(
-                value = cognome,
-                onValueChange = { cognome = it
-                    isValidCognome = isCognomeValid(it)},
+            var isValidCognome by remember { mutableStateOf(false) }
+            OutlinedTextField(value = cognome,
+                onValueChange = {
+                    cognome = it
+                    isValidCognome = isCognomeValid(it)
+                },
                 shape = RoundedCornerShape(15.dp),
-                label = { Text("Cognome") },
+                label = {
+                    Text(
+                        "Cognome",
+                        color = if (cognome.isNotEmpty()) Color(0xFF0EA639) else Color.Black
+                    )
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = if (isValidCognome) Color(0xFF0EA639) else Color.Gray,
                     focusedBorderColor = if (isValidCognome) Color(0xFF0EA639) else Color.Gray,
@@ -528,13 +626,22 @@ fun SchermataRegistrazione(navController: NavController) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_calendar_month_24),
                 contentDescription = null,
-                tint =  if (isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(0xFF0EA639) else if(!isUserAdult(state.selectedDateMillis)&& state.selectedDateMillis != null) Color(0xFF9B0404) else (Color.Gray)
+                tint = if (isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
+                    0xFF0EA639
+                ) else if (!isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
+                    0xFF9B0404
+                ) else (Color.Gray)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = if (state.selectedDateMillis == null) "Nato il DD/MM/YYYY" else "Nato il " + convertMillisToDate(
                     state.selectedDateMillis!!
-                ), color = if (isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(0xFF0EA639) else if(!isUserAdult(state.selectedDateMillis)&& state.selectedDateMillis != null) Color(0xFF9B0404) else (Color.Gray)
+                ),
+                color = if (isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
+                    0xFF0EA639
+                ) else if (!isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
+                    0xFF9B0404
+                ) else (Color.Gray)
             )
         }
         Button(
@@ -545,43 +652,36 @@ fun SchermataRegistrazione(navController: NavController) {
             enabled = checkFields(),
             modifier = Modifier// Posiziona il pulsante in basso a destra
                 .padding(16.dp)
-                .constrainAs(bottoneAvanti){
+                .constrainAs(bottoneAvanti) {
                     top.linkTo(dataDiNascitafield.bottom, margin = 2.dp)
                     start.linkTo(parent.start, margin = 200.dp)
                     end.linkTo(parent.end, margin = 2.dp)
-                    bottom.linkTo(parent.bottom,margin = 16.dp)
+                    bottom.linkTo(parent.bottom, margin = 16.dp)
 
-                },shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
+                },
+            shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
 
-        ) {
+            ) {
             Text(text = "AVANTI", fontSize = 20.sp)
 
 
             if (openDialog.value) {
-                DatePickerDialog(
-                    onDismissRequest = {
+                DatePickerDialog(onDismissRequest = {
+                    openDialog.value = false
+                }, confirmButton = {
+                    TextButton(onClick = {
                         openDialog.value = false
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                openDialog.value = false
 
-                            }
-                        ) {
-                            Text("OK")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = {
-                                openDialog.value = false
-                            }
-                        ) {
-                            Text("CANCEL")
-                        }
+                    }) {
+                        Text("OK")
                     }
-                ) {
+                }, dismissButton = {
+                    TextButton(onClick = {
+                        openDialog.value = false
+                    }) {
+                        Text("CANCEL")
+                    }
+                }) {
                     DatePicker(
                         state = state
 
@@ -593,7 +693,6 @@ fun SchermataRegistrazione(navController: NavController) {
 
     }
 }
-
 
 
 @Preview(showBackground = true)
