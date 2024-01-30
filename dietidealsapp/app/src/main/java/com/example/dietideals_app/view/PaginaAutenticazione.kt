@@ -307,7 +307,7 @@ fun SchermataAutenticazione(navController: NavController) {
                 }
                 .width(180.dp)
                 .height(48.dp),
-            shape = CutCornerShape(topStart = 5.dp, bottomEnd = 5.dp),
+            shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
         ) {
             Text("REGISTRATI", fontSize = 20.sp)
         }

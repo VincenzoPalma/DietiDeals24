@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -62,6 +64,7 @@ import com.example.dietideals_app.presenter.AutenticazionePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 
 class RegistrazioneActivity : ComponentActivity() {
@@ -120,23 +123,95 @@ fun SchermataRegistrazione(navController: NavController) {
     val cognomeFocusRequester =
         remember { FocusRequester() } // Richiede il focus per l'input del cognome.
 
-    var passwordMatching by remember { mutableStateOf(false) } // Variabile per indicare se la password e la conferma della password coincidono.
-
     val presenter = AutenticazionePresenter()
 
+    val state = rememberDatePickerState()
+    val openDialog = remember { mutableStateOf(false) }
 
-    //Funzione per controllare se le due password coincidono ToDo
-    fun checkPasswordMatching() {
-        if (password.isNotBlank() && confermaPassword.isNotBlank()) {
-            passwordMatching = password == confermaPassword
-        }
-    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (backgroundImage, title, emailTextField, usernameTextfield, passwordTextField, confermaPasswordTextfield, datiAngraficiText, nomeTextfield, dataDiNascitafield,bottoneAvanti) = createRefs()
 
+
+    val (backgroundImage, title, emailTextField, usernameTextfield, passwordTextField, confermaPasswordTextfield, datiAngraficiText, nomeTextfield, dataDiNascitafield,bottoneAvanti) = createRefs()
+        fun isEmailValid(email: String): Boolean {
+            // In questo esempio, si utilizza un'espressione regolare per verificare il formato dell'email
+            val emailRegex = Regex("^[A-Za-z](.*)(@)(.+)(\\.)(.+)")
+            return email.matches(emailRegex)
+        }
+
+
+        // Funzione di validazione dell'username
+        fun isUsernameValid(username: String): Boolean {
+            // Puoi definire i criteri di validazione dell'username qui
+            return username.isNotBlank()
+        }
+
+        // Funzione di validazione della password
+        fun isPasswordValid(password: String): Boolean {
+            // Puoi definire i criteri di validazione della password qui (es. lunghezza minima)
+            return password.length >= 8
+        }
+
+        // Funzione di verifica della corrispondenza tra password e conferma password
+        fun isPasswordMatching(password: String, confirmPassword: String): Boolean {
+            return password == confirmPassword
+        }
+
+        // Funzione di validazione del nome
+        fun isNomeValid(nome: String): Boolean {
+            // Puoi definire i criteri di validazione del nome qui
+            return nome.isNotBlank()
+        }
+
+        // Funzione di validazione del cognome
+        fun isCognomeValid(cognome: String): Boolean {
+            // Puoi definire i criteri di validazione del cognome qui
+            return cognome.isNotBlank()
+        }
+        fun calculateAge(birthDate: Date, currentDate: Date): Int {
+            val birthCalendar = Calendar.getInstance()
+            val currentCalendar = Calendar.getInstance()
+
+            birthCalendar.time = birthDate
+            currentCalendar.time = currentDate
+
+            var age = currentCalendar.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR)
+
+            // Riduci l'età di uno se la data di nascita non è ancora arrivata quest'anno
+            if (currentCalendar.get(Calendar.DAY_OF_YEAR) < birthCalendar.get(Calendar.DAY_OF_YEAR)) {
+                age--
+            }
+
+            return age
+        }
+        fun isUserAdult(selectedDateMillis: Long?): Boolean {
+            // Verifica se la data di nascita è stata selezionata
+            if (selectedDateMillis == null) {
+                return false
+            }
+
+            // Calcola la data corrente
+            val currentDate = Calendar.getInstance().time
+
+            // Ottieni la data di nascita dall'input dell'utente
+            val birthDate = Date(selectedDateMillis)
+
+            // Calcola l'età dell'utente
+            val age = calculateAge(birthDate, currentDate)
+
+            // Verifica se l'utente è maggiorenne (ad esempio, se ha almeno 18 anni)
+            return age >= 18
+        }
+
+        fun checkFields(): Boolean {
+            // Verifica qui tutti i campi e restituisci true solo se sono tutti compilati correttamente
+            return isEmailValid(email) && isUsernameValid(username) && isPasswordValid(password)
+                    && isPasswordMatching(password, confermaPassword) && isNomeValid(nome) && isCognomeValid(cognome)
+                    && isUserAdult(state?.selectedDateMillis)
+        }
         // Immagine di background
         Image(
             painter = background,
@@ -185,20 +260,37 @@ fun SchermataRegistrazione(navController: NavController) {
             )
         }
 
-
+        var isValidEmail by remember { mutableStateOf(false) }
 // Text Field E-mail
         OutlinedTextField(
             label = { Text("E-mail") },
+            shape = RoundedCornerShape(15.dp),
+            value = email,
+            onValueChange = { email = it
+                isValidEmail = isEmailValid(it)},
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(
+                        id = if (isValidEmail) R.drawable.baseline_done_24 else if (!isValidEmail && email.isNotEmpty()) R.drawable.baseline_close_24 else R.drawable.empty
+
+                    ),
+                    contentDescription = null,
+                    tint = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+                    modifier = if (email.isEmpty()) Modifier.alpha(0f) else Modifier
+
+                )
+            },colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+                focusedBorderColor = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+            ),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
                     contentDescription = null,
-                    tint = Color(0xFF0EA639)
+                    tint = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
                 )
+
             },
-            shape = RoundedCornerShape(15.dp),
-            value = email,
-            onValueChange = { email = it },
             modifier = Modifier
                 .constrainAs(emailTextField) {
                     top.linkTo(title.bottom, margin = 80.dp)
@@ -212,6 +304,7 @@ fun SchermataRegistrazione(navController: NavController) {
         )
 
 // Text Field Username
+        var isValidUsername by remember { mutableStateOf(false) }
         OutlinedTextField(
             value = username,
             shape = RoundedCornerShape(15.dp),
@@ -219,10 +312,28 @@ fun SchermataRegistrazione(navController: NavController) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_account_circle_24),
                     contentDescription = null,
-                    tint = Color(0xFF0EA639)
+                    tint = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
                 )
             },
-            onValueChange = { username = it },
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+                focusedBorderColor = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+            ),
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(
+                        id = if (isValidUsername) R.drawable.baseline_done_24 else if (!isValidUsername && username.isNotEmpty()) R.drawable.baseline_close_24 else R.drawable.empty
+
+                    ),
+                    contentDescription = null,
+                    tint = if (isValidUsername) Color(0xFF0EA639) else if (!isValidUsername && username.isNotEmpty()) Color(0xFF9B0404) else Color.Gray,
+                    modifier = if (username.isEmpty()) Modifier.alpha(0f) else Modifier
+
+                )
+            },
+            onValueChange = { username = it
+                isValidUsername = isUsernameValid(username)},
+
             label = { Text("Username") },
             modifier = Modifier
                 .constrainAs(usernameTextfield) {
@@ -238,6 +349,8 @@ fun SchermataRegistrazione(navController: NavController) {
         )
 
 // Text Field Password
+        var isValidPassword by remember { mutableStateOf(false) }
+        var matchedPassword by remember { mutableStateOf(false)}
         OutlinedTextField(
             value = password,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
@@ -246,18 +359,24 @@ fun SchermataRegistrazione(navController: NavController) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_lock_24),
                     contentDescription = null,
-                    tint = Color(0xFF0EA639)
+                    tint = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(0xFF9B0404) else Color.Gray,
                 )
             },
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(0xFF9B0404) else Color.Gray,
+                focusedBorderColor = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(0xFF9B0404) else Color.Gray,
+            ),
             trailingIcon = {
                 Icon(
                     painter = painterResource(id = if (!passwordVisibile) R.drawable.baseline_remove_red_eye_24 else R.drawable.closed_eye_icon),
                     contentDescription = null,
                     modifier = Modifier.clickable { passwordVisibile = !passwordVisibile },
-                    tint = Color(0xFF0EA639)
+                    tint = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(0xFF9B0404) else Color.Gray,
                 )
             },
-            onValueChange = { password = it },
+            onValueChange = { password = it
+                isValidPassword = isPasswordValid(it)
+                matchedPassword = isPasswordMatching(it,confermaPassword)},
             label = { Text("Password") },
             modifier = Modifier
                 .constrainAs(passwordTextField) {
@@ -273,28 +392,35 @@ fun SchermataRegistrazione(navController: NavController) {
         )
 
 // Text Field Conferma Password
+        var isValidConfirmedPassword by remember { mutableStateOf(false) }
+
         OutlinedTextField(
-            value = confermaPassword,
+        value = confermaPassword,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
             shape = RoundedCornerShape(15.dp),
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_lock_24),
                     contentDescription = null,
-                    tint = Color(0xFF0EA639)
+                    tint = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if ( confermaPassword.isNotEmpty() && (!isValidConfirmedPassword ||!matchedPassword)) Color(0xFF9B0404) else Color.Gray,
                 )
             },
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if ( confermaPassword.isNotEmpty() && (!isValidConfirmedPassword ||!matchedPassword)) Color(0xFF9B0404) else Color.Gray,
+                focusedBorderColor = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if ( confermaPassword.isNotEmpty() && (!isValidConfirmedPassword ||!matchedPassword)) Color(0xFF9B0404) else Color.Gray,
+            ),
             trailingIcon = {
                 Icon(
                     painter = painterResource(id = if (!passwordVisibile) R.drawable.baseline_remove_red_eye_24 else R.drawable.closed_eye_icon),
                     contentDescription = null,
                     modifier = Modifier.clickable { passwordVisibile = !passwordVisibile },
-                    tint = Color(0xFF0EA639)
+                    tint = if (isValidConfirmedPassword && matchedPassword) Color(0xFF0EA639) else if ( confermaPassword.isNotEmpty() && (!isValidConfirmedPassword ||!matchedPassword)) Color(0xFF9B0404) else Color.Gray,
                 )
             },
             onValueChange = {
                 confermaPassword = it
-                checkPasswordMatching()
+                matchedPassword = isPasswordMatching(password,it)
+                isValidConfirmedPassword = isPasswordValid(confermaPassword)
             },
             label = { Text("Conferma Password") },
             modifier = Modifier
@@ -337,9 +463,15 @@ fun SchermataRegistrazione(navController: NavController) {
                 .padding(8.dp),
         ) {
             // Primo TextField (Nome)
+            var isValidName by remember{ mutableStateOf(false)}
             OutlinedTextField(
                 value = nome,
-                onValueChange = { nome = it },
+                onValueChange = { nome = it
+                    isValidName = isNomeValid(it)},
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = if (isValidName) Color(0xFF0EA639) else Color.Gray,
+                    focusedBorderColor = if (isValidName) Color(0xFF0EA639) else Color.Gray,
+                ),
                 shape = RoundedCornerShape(15.dp),
                 label = { Text("Nome") },
                 modifier = Modifier
@@ -353,11 +485,17 @@ fun SchermataRegistrazione(navController: NavController) {
             Spacer(modifier = Modifier.width(8.dp)) // Spazio tra i TextField
 
             // Secondo TextField (Cognome)
+            var isValidCognome by remember{ mutableStateOf(false)}
             OutlinedTextField(
                 value = cognome,
-                onValueChange = { cognome = it },
+                onValueChange = { cognome = it
+                    isValidCognome = isCognomeValid(it)},
                 shape = RoundedCornerShape(15.dp),
                 label = { Text("Cognome") },
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = if (isValidCognome) Color(0xFF0EA639) else Color.Gray,
+                    focusedBorderColor = if (isValidCognome) Color(0xFF0EA639) else Color.Gray,
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .padding(8.dp)
@@ -365,8 +503,7 @@ fun SchermataRegistrazione(navController: NavController) {
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
             )
         }
-        val state = rememberDatePickerState()
-        val openDialog = remember { mutableStateOf(false) }
+
 
 
         @SuppressLint("SimpleDateFormat")
@@ -389,14 +526,15 @@ fun SchermataRegistrazione(navController: NavController) {
                 .height(48.dp),
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.iconcalendario),
-                contentDescription = null
+                painter = painterResource(id = R.drawable.baseline_calendar_month_24),
+                contentDescription = null,
+                tint =  if (isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(0xFF0EA639) else if(!isUserAdult(state.selectedDateMillis)&& state.selectedDateMillis != null) Color(0xFF9B0404) else (Color.Gray)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = if (state.selectedDateMillis == null) "Nato il DD/MM/YYYY" else "Nato il " + convertMillisToDate(
                     state.selectedDateMillis!!
-                ), color = if (state.selectedDateMillis == null) Color.Gray else (Color.Black)
+                ), color = if (isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(0xFF0EA639) else if(!isUserAdult(state.selectedDateMillis)&& state.selectedDateMillis != null) Color(0xFF9B0404) else (Color.Gray)
             )
         }
         Button(
@@ -404,6 +542,7 @@ fun SchermataRegistrazione(navController: NavController) {
                 presenter.effettuaRegistrazione()
                 navController.navigate("SchermataImmagineProfilo")
             },
+            enabled = checkFields(),
             modifier = Modifier// Posiziona il pulsante in basso a destra
                 .padding(16.dp)
                 .constrainAs(bottoneAvanti){
