@@ -6,12 +6,11 @@ import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.service.AstaService;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,14 +19,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
 
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(AstaController.class)
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 @TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 class AstaControllerTest {
 
@@ -36,9 +38,6 @@ class AstaControllerTest {
 
     @MockBean
     private AstaService astaServiceMock;
-
-    @InjectMocks
-    private AstaController astaController;
 
     @Test
     void getAsteTest() throws Exception {
@@ -74,7 +73,7 @@ class AstaControllerTest {
         Page<Asta> risultati = new PageImpl<>(listaAste, pageable, sizeRisultato);
         when(astaServiceMock.getAll(pageable, stringaRicerca, tipoAsta, categoriaAsta)).thenReturn(risultati);
 
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/asta/ricerca")
+        MockHttpServletRequestBuilder requestBuilder = get("/asta/ricerca")
                 .param("page", "0")
                 .param("size", "12");
         if (stringaRicerca != null) {
@@ -88,12 +87,12 @@ class AstaControllerTest {
         }
         mockMvc.perform(requestBuilder
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(sizeRisultato))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].nome").value(stringaRicerca != null ? Matchers.everyItem(Matchers.containsString(stringaRicerca)) : Matchers.anything()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].tipo").value(tipoAsta != null ? Matchers.everyItem(Matchers.is(tipoAsta)) : Matchers.anything()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].stato").value("attivo"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].categoria").value(categoriaAsta != null ? Matchers.everyItem(Matchers.is(categoriaAsta)) : Matchers.anything()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(sizeRisultato))
+                .andExpect(jsonPath("$.content[*].nome").value(stringaRicerca != null ? everyItem(containsString(stringaRicerca)) : anything()))
+                .andExpect(jsonPath("$.content[*].tipo").value(tipoAsta != null ? everyItem(is(tipoAsta)) : anything()))
+                .andExpect(jsonPath("$.content[*].stato").value("attivo"))
+                .andExpect(jsonPath("$.content[*].categoria").value(categoriaAsta != null ? everyItem(is(categoriaAsta)) : anything()));
     }
 }

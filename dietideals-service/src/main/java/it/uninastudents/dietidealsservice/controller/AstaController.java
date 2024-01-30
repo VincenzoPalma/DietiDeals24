@@ -23,7 +23,7 @@ public class AstaController {
     private final AstaService astaService;
 
     @PostMapping("/asta/inserimento")
-    public ResponseEntity<Asta> saveAsta(@Valid @RequestBody Asta asta){
+    public ResponseEntity<Asta> saveAsta(@Valid @RequestBody Asta asta){//passare parametri singolarmente o un oggetto che li ingloba, validazioni su ipotetica classe CreaAsta
         Asta nuovaAsta = astaService.salvaAsta(asta);
         return new ResponseEntity<>(nuovaAsta, HttpStatus.CREATED);
     }
