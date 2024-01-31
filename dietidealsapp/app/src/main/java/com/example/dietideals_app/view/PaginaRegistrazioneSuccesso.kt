@@ -70,6 +70,7 @@ fun SchermataRegistrazioneSuccesso(navController: NavController) {
     // Ottieni l'immagine di sfondo da resources
     val background = painterResource(id = R.drawable.sfondo3)
 
+
     // Crea un presenter per la registrazione
     val presenter = AutenticazionePresenter()
 
