@@ -71,7 +71,9 @@ class MainActivity : ComponentActivity() {
                         composable("SchermataDiventaVenditore") {SchermataDiventaVenditore(navController = navController) }
                         composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
                         composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
-                        }
+                        composable("SchermataHome"){SchermataHome(navController = navController)}
+
+                    }
                 }
             }
         }
@@ -221,6 +223,7 @@ fun SchermataAutenticazione(navController: NavController) {
                 if (isLoginEnabled) {
                     presenter.effettuaLogin(username, password)
                 }
+                navController.navigate("SchermataHome")
             },
             modifier = Modifier
                 .constrainAs(accessButton) {
