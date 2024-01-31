@@ -6,9 +6,7 @@ import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.repository.AstaRepository;
 import it.uninastudents.dietidealsservice.repository.specs.AstaSpecs;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,8 +37,13 @@ public class AstaService {
         return repository.findAll(spec, pageable);
     }
 
-    public Page<Asta> getAstePartecipateUtente(Pageable pageable, UUID idProprietario, StatoAsta stato){
-        var spec = AstaSpecs.hasStato(stato).and(AstaSpecs.hasOfferta(idProprietario)); //specificare lo stato dell'offerta
+    public Page<Asta> getAstePartecipateByUtente(Pageable pageable, UUID idProprietario, StatoAsta stato){
+        var spec = AstaSpecs.hasStato(stato).and(AstaSpecs.hasOfferta(idProprietario));
+        return repository.findAll(spec, pageable);
+    }
+
+    public Page<Asta> getAsteVinteByUtente(Pageable pageable, UUID idProprietario){
+        var spec = AstaSpecs.hasStato(StatoAsta.TERMINATA).and(AstaSpecs.hasOffertaVincente(idProprietario));
         return repository.findAll(spec, pageable);
     }
 }

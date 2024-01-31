@@ -43,6 +43,6 @@ public class AstaController {
     @GetMapping("/asta/mieaste/astepartecipate")
     public Page<Asta> getAstePartecipate(@RequestParam int page, @RequestParam int size, @RequestParam UUID idUtente, @RequestParam StatoAsta stato){
         Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").ascending());
-        return astaService.getAstePartecipateUtente(pageable, idUtente, stato);
+        return astaService.getAstePartecipateByUtente(pageable, idUtente, stato);
     }
 }

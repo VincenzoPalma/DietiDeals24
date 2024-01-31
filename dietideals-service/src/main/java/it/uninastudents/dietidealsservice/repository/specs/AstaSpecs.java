@@ -6,6 +6,7 @@ import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -44,6 +45,15 @@ public final class AstaSpecs {
         return target != null ? (root, query, criteriaBuilder) -> {
             Join<Asta, Offerta> offerteJoin = root.join("offerte");
             return criteriaBuilder.equal(offerteJoin.get("utente").get("id"), target);
+        } : none();
+    }
+
+    public static Specification<Asta> hasOffertaVincente(UUID target) {
+        return target != null ? (root, query, criteriaBuilder) -> {
+            Join<Asta, Offerta> offerteJoin = root.join("offerte");
+            Predicate predicateUtente = criteriaBuilder.equal(offerteJoin.get("utente").get("id"), target);
+            Predicate predicateVincente = criteriaBuilder.equal(offerteJoin.get("vincente"), true);
+            return criteriaBuilder.and(predicateUtente, predicateVincente);
         } : none();
     }
 
