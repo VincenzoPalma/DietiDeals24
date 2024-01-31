@@ -21,6 +21,10 @@ public class CartaService {
         return repository.save(carta);
     }
 
+    public void cancellaCarta(UUID idCarta) {
+        repository.deleteById(idCarta);
+    }
+
     public List<Carta> getAll(UUID idUtente){
         var spec = CartaSpecs.hasUtente(idUtente);
         return repository.findAll(spec);
