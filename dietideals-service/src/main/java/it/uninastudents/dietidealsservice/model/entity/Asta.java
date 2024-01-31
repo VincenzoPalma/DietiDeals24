@@ -8,12 +8,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "asta")

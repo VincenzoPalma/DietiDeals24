@@ -8,23 +8,23 @@ import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.service.AstaService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,18 +39,45 @@ class AstaControllerTest {
     @MockBean
     private AstaService astaServiceMock;
 
+    @InjectMocks
+    private AstaController astaController;
+
     @Test
-    void getAsteTest() throws Exception {
+    void getAstePerNomeTipoCategoriaTest() throws Exception {
         //Caso in cui la lista dei risultati è vuota e sono presenti tutti i parametri
         getAsteTestAux(0, "stringa test non trovata", TipoAsta.INGLESE, CategoriaAsta.ALIMENTARI);
         //Caso in cui la lista dei risultati non è vuota e sono presenti tutti i parametri
         getAsteTestAux(3, "stringa test", TipoAsta.INVERSA, CategoriaAsta.ATTREZZI_E_UTENSILI);
+    }
+
+    @Test
+    void getAstePerNomeTest() throws Exception {
+        //Caso in cui la lista dei risultati è vuota ed è presente solo il parametro stringaRicerca
+        getAsteTestAux(0, "stringa test", null, null);
         //Caso in cui la lista dei risultati non è vuota ed è presente solo il parametro stringaRicerca
         getAsteTestAux(5, "stringa test", null, null);
+    }
+
+    @Test
+    void getAstePerTipoTest() throws Exception {
+        //Caso in cui la lista dei risultati è vuota ed è presente solo il parametro tipoAsta
+        getAsteTestAux(0, null, TipoAsta.INGLESE, null);
         //Caso in cui la lista dei risultati non è vuota ed è presente solo il parametro tipoAsta
         getAsteTestAux(8, null, TipoAsta.INGLESE, null);
+    }
+
+    @Test
+    void getAstePerCategoriaTest() throws Exception {
+        //Caso in cui la lista dei risultati è vuota ed è presente solo il parametro categoriaAsta
+        getAsteTestAux(0, null, null, CategoriaAsta.ARREDAMENTO);
         //Caso in cui la lista dei risultati non è vuota ed è presente solo il parametro categoriaAsta
         getAsteTestAux(2, null, null, CategoriaAsta.ARREDAMENTO);
+    }
+
+    @Test
+    void getAsteSenzaParametriTest() throws Exception {
+        //Caso in cui la lista dei risultati è vuota e non è presente alcun parametro
+        getAsteTestAux(0, null, null, null);
         //Caso in cui la lista dei risultati non è vuota e non è presente alcun parametro
         getAsteTestAux(11, null, null, null);
     }
@@ -88,11 +115,43 @@ class AstaControllerTest {
         mockMvc.perform(requestBuilder
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content.length()").value(sizeRisultato))
                 .andExpect(jsonPath("$.content[*].nome").value(stringaRicerca != null ? everyItem(containsString(stringaRicerca)) : anything()))
                 .andExpect(jsonPath("$.content[*].tipo").value(tipoAsta != null ? everyItem(is(tipoAsta)) : anything()))
                 .andExpect(jsonPath("$.content[*].stato").value("attivo"))
                 .andExpect(jsonPath("$.content[*].categoria").value(categoriaAsta != null ? everyItem(is(categoriaAsta)) : anything()));
+    }
+
+    @Test
+    void prova(){
+        int page = 0;
+        int size = 12;
+        String nome = "test nome";
+        TipoAsta tipo = TipoAsta.INGLESE;
+        CategoriaAsta categoria = CategoriaAsta.AUTO_E_MOTO;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").ascending());
+        Asta asta1 = new Asta();
+        Asta asta2 = new Asta();
+        asta1.setNome("test" + nome + "prova");
+        asta2.setNome("test" + nome + "prova");
+        asta1.setTipo(tipo);
+        asta2.setTipo(tipo);
+        asta1.setCategoria(categoria);
+        asta2.setCategoria(categoria);
+
+        ArrayList<Asta> listaAste = new ArrayList<>();
+        listaAste.add(asta1);
+        listaAste.add(asta2);
+
+        Page<Asta> risultatoAtteso = new PageImpl<>(listaAste);
+
+        when(astaServiceMock.getAll(pageable, nome, tipo, categoria)).thenReturn(risultatoAtteso);
+
+        Page<Asta> risultato = astaController.getAste(page, size, nome, tipo, categoria);
+
+        verify(astaServiceMock, times(1)).getAll(pageable, nome, tipo, categoria);
+        assertEquals(risultato, risultatoAtteso);
     }
 }

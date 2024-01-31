@@ -8,11 +8,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "carta")

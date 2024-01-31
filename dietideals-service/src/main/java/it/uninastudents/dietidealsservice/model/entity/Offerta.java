@@ -7,10 +7,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "offerta")
