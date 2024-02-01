@@ -31,6 +31,9 @@ import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,6 +80,7 @@ class PaginaSchermataHome : ComponentActivity() {
                 }
             }
         }
+
     }
 }
 
@@ -150,16 +154,17 @@ fun SchermataHome(navController: NavController) {
                 color = Color.Gray,
                 textAlign = TextAlign.Center,
                 fontSize = 25.sp,
-                modifier = Modifier.weight(1f) // Utilizza weight per far sì che la Text occupi lo spazio rimanente
+                modifier = Modifier.weight(1f),
             )
             Icon(
                 painter = painterResource(id = R.drawable.baseline_filter_list_24),
                 contentDescription = "filterButton",
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .size(30.dp)// Aggiunge uno spazio tra la Text e l'Icon
+                    .size(30.dp)
             )
         }
+
         LazyColumn(
             modifier = Modifier
                 .constrainAs(boxes) {
@@ -271,8 +276,32 @@ fun SchermataHome(navController: NavController) {
                 }
             }
         }
+        val homePressed by remember { mutableStateOf(false) }
+        val manageAuctionsPressed by remember { mutableStateOf(false) }
+        val createAuctionPressed by remember { mutableStateOf(false) }
+        val profilePressed by remember { mutableStateOf(false) }
 
 
+        @Composable
+        fun IconWithText(iconId: Int, text: String) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(2.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = iconId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp),
+                    tint = Color(0xFF0EA639)
+                )
+
+                Text(
+                    text = text,
+                    fontSize = 14.sp,
+                    color = Color(0xFF0EA639))//
+            }
+        }
 
         Box(
             modifier = Modifier
@@ -282,14 +311,35 @@ fun SchermataHome(navController: NavController) {
                 .fillMaxWidth()
                 .height(70.dp)
                 .background(Color.White)
-                .border(1.dp, Color.Black)
-                .padding(16.dp)
+                .border(0.5.dp, Color.Black)
+                .padding(8.dp)
         ){
-            Row (verticalAlignment = Alignment.CenterVertically,
-            ){
-
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                IconWithText(iconId = R.drawable.baseline_home_24, text = "Home")
+                Spacer(
+                    modifier = Modifier
+                        .width(0.dp)
+                        .weight(1f)
+                )
+                IconWithText(iconId = R.drawable.line_chart_svgrepo_com, text = "Gestisci Aste")
+                Spacer(
+                    modifier = Modifier
+                        .width(0.dp)
+                        .weight(1f)
+                )
+                IconWithText(iconId = R.drawable.hand_money_cash_hold_svgrepo_com, text = "Crea Asta")
+                Spacer(
+                    modifier = Modifier
+                        .width(0.dp)
+                        .weight(1f)
+                )
+                IconWithText(iconId = R.drawable.baseline_manage_accounts_24, text = "Profilo")
             }
-         }
+        }
     }
 }
 
