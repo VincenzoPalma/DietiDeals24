@@ -21,11 +21,11 @@ public class ContoCorrenteService {
         return repository.save(contoCorrente);
     }
 
-    public void eliminaContoCorrente(UUID idContoCorrente) {
+    public void cancellaContoCorrente(UUID idContoCorrente) {
         repository.deleteById(idContoCorrente);
     }
 
-    public Optional<ContoCorrente> findContoCorrenteByUtente(UUID idUtente){
+    public Optional<ContoCorrente> findContoCorrenteByUtente(UUID idUtente) {
         var spec = ContoCorrenteSpecs.hasUtente(idUtente);
         return repository.findOne(spec);
     }

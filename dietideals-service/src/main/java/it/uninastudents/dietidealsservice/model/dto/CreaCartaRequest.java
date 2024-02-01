@@ -1,7 +1,6 @@
-package it.uninastudents.dietidealsservice.model.entity;
+package it.uninastudents.dietidealsservice.model.dto;
 
-import it.uninastudents.dietidealsservice.model.base.BaseEntity;
-import jakarta.persistence.*;
+import it.uninastudents.dietidealsservice.model.entity.Utente;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,34 +11,25 @@ import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @NoArgsConstructor
 @Data
-@Entity
-@Table(name = "carta")
-public class Carta extends BaseEntity {
+public class CreaCartaRequest {
 
     @NotBlank
     @Pattern(regexp = "^[0-9]{16}$")
-    @Column(nullable = false)
     private String numero;
 
     @NotBlank
-    @Column(nullable = false)
     private String nomeTitolare;
 
     @NotBlank
     @Pattern(regexp = "^[0-9]{3}$")
-    @Column(nullable = false, length = 3)
     private String codiceCvvCvc;
 
     @Future
-    @Column(nullable = false)
     private OffsetDateTime dataScadenza;
 
     @NotNull
-    @ManyToOne
-    @JoinColumn(nullable = false)
     private Utente utente;
-
 }

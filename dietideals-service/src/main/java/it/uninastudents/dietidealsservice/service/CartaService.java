@@ -25,7 +25,7 @@ public class CartaService {
         repository.deleteById(idCarta);
     }
 
-    public List<Carta> getAll(UUID idUtente){
+    public List<Carta> getAllByUtente(UUID idUtente) {
         var spec = CartaSpecs.hasUtente(idUtente);
         return repository.findAll(spec);
     }

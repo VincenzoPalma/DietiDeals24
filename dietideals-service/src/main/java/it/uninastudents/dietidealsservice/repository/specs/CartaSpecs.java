@@ -14,7 +14,7 @@ public class CartaSpecs {
         return Specification.where(null);
     }
 
-    public static Specification<Carta> hasUtente(UUID target){
+    public static Specification<Carta> hasUtente(UUID target) {
         return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("utente").get("id"), target)) : none();
     }
 }

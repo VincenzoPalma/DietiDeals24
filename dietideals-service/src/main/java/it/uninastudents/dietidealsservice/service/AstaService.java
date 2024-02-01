@@ -35,18 +35,17 @@ public class AstaService {
         return repository.findAll(spec, pageable);
     }
 
-
-    public Page<Asta> getAsteUtenteByStato(Pageable pageable, UUID idProprietario, StatoAsta stato){
+    public Page<Asta> getAsteUtenteByStato(Pageable pageable, UUID idProprietario, StatoAsta stato) {
         var spec = AstaSpecs.hasProprietario(idProprietario).and(AstaSpecs.hasStato(stato));
         return repository.findAll(spec, pageable);
     }
 
-    public Page<Asta> getAstePartecipateByUtente(Pageable pageable, UUID idProprietario, StatoAsta stato){
+    public Page<Asta> getAstePartecipateByUtente(Pageable pageable, UUID idProprietario, StatoAsta stato) {
         var spec = AstaSpecs.hasStato(stato).and(AstaSpecs.hasOfferta(idProprietario));
         return repository.findAll(spec, pageable);
     }
 
-    public Page<Asta> getAsteVinteByUtente(Pageable pageable, UUID idProprietario){
+    public Page<Asta> getAsteVinteByUtente(Pageable pageable, UUID idProprietario) {
         var spec = AstaSpecs.hasStato(StatoAsta.TERMINATA).and(AstaSpecs.hasOffertaVincente(idProprietario));
         return repository.findAll(spec, pageable);
     }

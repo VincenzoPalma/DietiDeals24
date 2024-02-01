@@ -1,6 +1,5 @@
 package it.uninastudents.dietidealsservice.repository;
 
-import it.uninastudents.dietidealsservice.model.entity.Carta;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

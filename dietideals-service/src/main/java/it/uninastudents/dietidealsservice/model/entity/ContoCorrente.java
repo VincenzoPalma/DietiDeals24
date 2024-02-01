@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class ContoCorrente extends BaseEntity {
 
     @NotBlank
-    @Pattern(regexp = "^[a-zA-z0-9]{27}$")
+    @Pattern(regexp = "^[a-zA-Z0-9]{27}$")
     @Column(nullable = false)
     private String iban;
 

@@ -14,6 +14,7 @@ public class DietidealsServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DietidealsServiceApplication.class, args);
+
     }
 
 }
