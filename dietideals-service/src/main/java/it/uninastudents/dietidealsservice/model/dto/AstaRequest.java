@@ -11,10 +11,14 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 public class AstaRequest {
+
+    @NotNull
+    private UUID id;
 
     @NotBlank
     private String nome;

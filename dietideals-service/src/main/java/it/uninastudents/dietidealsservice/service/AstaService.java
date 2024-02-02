@@ -6,6 +6,7 @@ import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.repository.AstaRepository;
 import it.uninastudents.dietidealsservice.repository.specs.AstaSpecs;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class AstaService {
 
     private final AstaRepository repository;
+    private final EntityManager entityManager;
 
     public Asta salvaAsta(Asta asta) {
         return repository.save(asta);

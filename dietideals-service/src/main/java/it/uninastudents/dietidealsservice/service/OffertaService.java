@@ -1,8 +1,11 @@
 package it.uninastudents.dietidealsservice.service;
 
+import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
+import it.uninastudents.dietidealsservice.repository.AstaRepository;
 import it.uninastudents.dietidealsservice.repository.OffertaRepository;
 import it.uninastudents.dietidealsservice.repository.specs.OffertaSpecs;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +20,17 @@ import java.util.UUID;
 public class OffertaService {
 
     private final OffertaRepository repository;
+    private final AstaRepository astaRepository;
+    private final EntityManager entityManager;
 
-    public Offerta salvaOfferta(Offerta offerta) {
+    public Offerta salvaOfferta(Offerta offerta, UUID idAsta) {
+        //prendere l'utente
+        var asta = astaRepository.findById(idAsta).orElseThrow(() -> new IllegalArgumentException("ASTA NON TROVATA")); //gestione errori
+        var nuovaOfferta = new Offerta();
+        offerta.setAsta(asta); //entity manager non sa se l'asta esiste
+        //set user
+
+        //logica di business
         return repository.save(offerta);
     }
 

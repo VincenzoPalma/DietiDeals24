@@ -1,6 +1,7 @@
 package it.uninastudents.dietidealsservice.controller;
 
 import io.github.benas.randombeans.EnhancedRandomBuilder;
+import it.uninastudents.dietidealsservice.model.dto.AstaRequest;
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
@@ -129,20 +130,20 @@ class AstaControllerTest {
         String nome = "exampleName";
         TipoAsta tipo = TipoAsta.INGLESE;
         CategoriaAsta categoria = CategoriaAsta.LIBRI;
-        Asta asta1 = new Asta();
-        Asta asta2 = new Asta();
+        AstaRequest asta1 = new AstaRequest();
+        AstaRequest asta2 = new AstaRequest();
         asta1.setNome("test" + nome + "prova");
         asta2.setNome("test" + nome + "prova");
         asta1.setTipo(tipo);
         asta2.setTipo(tipo);
         asta1.setCategoria(categoria);
         asta2.setCategoria(categoria);
-        ArrayList<Asta> listaAste = new ArrayList<>();
+        ArrayList<AstaRequest> listaAste = new ArrayList<>();
         listaAste.add(asta1);
         listaAste.add(asta2);
-        Page<Asta> risultatoAtteso = new PageImpl<>(listaAste);
+        Page<AstaRequest> risultatoAtteso = new PageImpl<>(listaAste);
         when(astaServiceMock.getAll(pageable, nome, tipo, categoria)).thenReturn(risultatoAtteso);
-        Page<Asta> risultato = astaController.getAste(0, 12, nome, tipo, categoria);
+        Page<AstaRequest> risultato = astaController.getAste(0, 12, nome, tipo, categoria);
         verify(astaServiceMock, times(1)).getAll(pageable, nome, tipo, categoria);
         assertEquals(risultatoAtteso, risultato);
     }

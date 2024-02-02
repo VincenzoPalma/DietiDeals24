@@ -28,10 +28,11 @@ public class AstaController {
 
     @PostMapping("/asta/inserimento")
     public ResponseEntity<AstaRequest> saveAsta(@Valid @RequestBody AstaRequest astaRequest) {
-        Asta asta = mapper.astaDTOToAsta(astaRequest);
+        //ottenimento dell'utente tramite oauth
+        Asta asta = mapper.astaDTOToAsta(astaRequest); //rimuovere
         asta = astaService.salvaAsta(asta);
         AstaRequest astaAnswer = mapper.astaToAstaDTO(asta);
-        return new ResponseEntity<>(astaAnswer, HttpStatus.CREATED);
+        return new ResponseEntity.(astaAnswer, HttpStatus.CREATED);
     }
 
     @GetMapping("/asta/ricerca")
