@@ -23,31 +23,24 @@ import java.util.Set;
 })
 public class Utente extends BaseEntity {
 
-    @NotBlank
     @Column(nullable = false)
     private String username;
 
-    @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private RuoloUtente ruolo;
 
-    @NotBlank
     @Column(nullable = false)
     private String nome;
 
-    @NotBlank
     @Column(nullable = false)
     private String cognome;
 
-    @Email
     @Column(nullable = false)
     private String email;
 
-    @NotBlank
     @Column(nullable = false)
     private String password;
 
-    @Size(max = 300)
     @Column(length = 300)
     private String descrizione;
 
@@ -61,7 +54,6 @@ public class Utente extends BaseEntity {
 
     private String indirizzo;
 
-    @Pattern(regexp = "^[0-9]{11}$")
     private String partitaIva;
 
     private String urlDocumentoIdentita;

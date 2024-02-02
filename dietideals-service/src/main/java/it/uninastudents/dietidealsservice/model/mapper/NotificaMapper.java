@@ -1,10 +1,19 @@
 package it.uninastudents.dietidealsservice.model.mapper;
 
-import it.uninastudents.dietidealsservice.model.dto.CreateNotificaRequest;
+import it.uninastudents.dietidealsservice.model.dto.NotificaRequest;
 import it.uninastudents.dietidealsservice.model.entity.Notifica;
 import org.mapstruct.Mapper;
 
-@Mapper
+import java.util.List;
+
+@Mapper(componentModel = "spring")
 public interface NotificaMapper {
-    Notifica notificaDTOToNotifica(CreateNotificaRequest notificaRequest);
+
+    Notifica notificaDTOToNotifica(NotificaRequest notificaRequest);
+
+    NotificaRequest notificaToNotificaDTO(Notifica notifica);
+
+    List<Notifica> listNotificaDTOToListNotifica(List<NotificaRequest> listNotificaRequest);
+
+    List<NotificaRequest> listNotificaToListNotificaDTO(List<Notifica> listNotifica);
 }

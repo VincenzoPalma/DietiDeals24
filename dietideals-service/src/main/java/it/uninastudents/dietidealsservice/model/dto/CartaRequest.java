@@ -14,7 +14,7 @@ import java.time.OffsetDateTime;
 @EqualsAndHashCode
 @NoArgsConstructor
 @Data
-public class CreaCartaRequest {
+public class CartaRequest {
 
     @NotBlank
     @Pattern(regexp = "^[0-9]{16}$")

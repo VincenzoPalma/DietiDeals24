@@ -1,20 +1,6 @@
-# application-test.yml
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
-  h2:
-    console:
-      enabled: true
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    generate-ddl: true
-  security:
-    user:
-      name: user
-      password: password
-      roles: USER
+    datasource:
+      driverClassName: org.h2.Driver
+      url: jdbc:h2:mem:test;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;NON_KEYWORDS=key,value,type
+      username:
+      password:

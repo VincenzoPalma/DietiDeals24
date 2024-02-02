@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode
 @NoArgsConstructor
-public class CreaUtenteRequest {
+public class UtenteRequest {
 
     @NotBlank
     private String username;

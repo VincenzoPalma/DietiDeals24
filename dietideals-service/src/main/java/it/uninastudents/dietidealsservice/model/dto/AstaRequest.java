@@ -14,7 +14,7 @@ import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor
-public class CreaAstaRequest {
+public class AstaRequest {
 
     @NotBlank
     private String nome;

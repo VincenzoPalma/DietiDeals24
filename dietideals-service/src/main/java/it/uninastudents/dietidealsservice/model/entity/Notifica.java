@@ -15,17 +15,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "notifica")
 public class Notifica extends BaseEntity {
 
-    @NotNull
     @ManyToOne
     @JoinColumn(nullable = false)
     private Utente utente;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(nullable = false)
     private Asta asta;
 
-    @NotBlank
     @Column(nullable = false)
     private String contenuto;
 

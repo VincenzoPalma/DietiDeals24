@@ -18,18 +18,14 @@ import java.math.BigDecimal;
 @Table(name = "offerta")
 public class Offerta extends BaseEntity {
 
-    @NotNull
     @ManyToOne
     @JoinColumn(nullable = false)
     private Utente utente;
 
-    @NotBlank
     @ManyToOne
     @JoinColumn(nullable = false)
     private Asta asta;
 
-    @NotNull
-    @Positive
     @Column(nullable = false)
     private BigDecimal prezzo;
 
