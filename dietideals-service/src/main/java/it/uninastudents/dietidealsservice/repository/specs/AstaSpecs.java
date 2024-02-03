@@ -4,6 +4,7 @@ import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
+import it.uninastudents.dietidealsservice.model.entity.enums.StatoOfferta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
@@ -52,7 +53,7 @@ public final class AstaSpecs {
         return target != null ? (root, query, criteriaBuilder) -> {
             Join<Asta, Offerta> offerteJoin = root.join("offerte");
             Predicate predicateUtente = criteriaBuilder.equal(offerteJoin.get("utente").get("id"), target);
-            Predicate predicateVincente = criteriaBuilder.equal(offerteJoin.get("vincente"), true);
+            Predicate predicateVincente = criteriaBuilder.equal(offerteJoin.get("stato"), StatoOfferta.VINCENTE);
             return criteriaBuilder.and(predicateUtente, predicateVincente);
         } : none();
     }

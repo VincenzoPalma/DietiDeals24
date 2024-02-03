@@ -30,6 +30,9 @@ public class Asta extends BaseEntity {
 
     private OffsetDateTime dataScadenza;
 
+    @Column(nullable = false)
+    private BigDecimal prezzoBase;
+
     private BigDecimal sogliaRialzo;
 
     private Integer intervalloTempoOfferta;

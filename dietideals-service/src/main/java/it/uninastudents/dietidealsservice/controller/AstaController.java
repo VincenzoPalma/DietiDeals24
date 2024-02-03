@@ -1,21 +1,20 @@
 package it.uninastudents.dietidealsservice.controller;
 
 import it.uninastudents.dietidealsservice.model.dto.AstaRequest;
-import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.model.mapper.AstaMapper;
 import it.uninastudents.dietidealsservice.service.AstaService;
 import it.uninastudents.dietidealsservice.utils.ControllerUtils;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
@@ -27,13 +26,13 @@ public class AstaController {
     private final AstaMapper mapper;
 
     @PostMapping("/asta/inserimento")
-    public ResponseEntity<AstaRequest> saveAsta(@Valid @RequestBody AstaRequest astaRequest) {
+    /*public ResponseEntity<AstaRequest> saveAsta(@Valid @RequestBody AstaRequest astaRequest) {
         //ottenimento dell'utente tramite oauth
         Asta asta = mapper.astaDTOToAsta(astaRequest); //rimuovere
         asta = astaService.salvaAsta(asta);
         AstaRequest astaAnswer = mapper.astaToAstaDTO(asta);
         return new ResponseEntity.(astaAnswer, HttpStatus.CREATED);
-    }
+    }*/
 
     @GetMapping("/asta/ricerca")
     public Page<AstaRequest> getAste(@RequestParam int page, @RequestParam int size, @RequestParam String nome, @RequestParam TipoAsta tipo, @RequestParam CategoriaAsta categoria) {

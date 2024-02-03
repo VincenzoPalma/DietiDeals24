@@ -2,6 +2,9 @@ package it.uninastudents.dietidealsservice.model.dto;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
+import it.uninastudents.dietidealsservice.model.entity.enums.StatoOfferta;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -26,5 +29,6 @@ public class OffertaRequest {
     private BigDecimal prezzo;
 
     @NotNull
-    private boolean vincente;
+    @Enumerated(EnumType.STRING)
+    private StatoOfferta stato;
 }

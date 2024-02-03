@@ -1,6 +1,7 @@
 package it.uninastudents.dietidealsservice.repository.specs;
 
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
+import it.uninastudents.dietidealsservice.model.entity.enums.StatoOfferta;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,7 +19,7 @@ public class OffertaSpecs {
         return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("asta").get("id"), target)) : none();
     }
 
-    public static Specification<Offerta> isVincente() {
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("vincente"), true));
+    public static Specification<Offerta> hasStato(StatoOfferta target) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("stato"), target));
     }
 }

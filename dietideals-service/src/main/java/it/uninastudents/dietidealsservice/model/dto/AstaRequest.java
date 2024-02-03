@@ -33,6 +33,9 @@ public class AstaRequest {
     private OffsetDateTime dataScadenza;
 
     @Positive
+    private BigDecimal prezzoBase;
+
+    @Positive
     private BigDecimal sogliaRialzo;
 
     @Positive

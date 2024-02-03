@@ -3,8 +3,7 @@ package it.uninastudents.dietidealsservice.model.mapper;
 import it.uninastudents.dietidealsservice.model.dto.OffertaRequest;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import org.mapstruct.Mapper;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring")
 public interface OffertaMapper {
@@ -13,7 +12,7 @@ public interface OffertaMapper {
 
     OffertaRequest offertaToOffertaDTO(Offerta offerta);
 
-    List<Offerta> listOffertaDTOToListOfferta(List<OffertaRequest> listOffertaRequest);
+    Page<Offerta> listOffertaDTOToListOfferta(Page<OffertaRequest> listOffertaRequest);
 
-    List<OffertaRequest> listOffertaToListOffertaDTO(List<Offerta> listOfferta);
+    Page<OffertaRequest> listOffertaToListOffertaDTO(Page<Offerta> listOfferta);
 }
