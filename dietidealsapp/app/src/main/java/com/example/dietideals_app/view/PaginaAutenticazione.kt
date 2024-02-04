@@ -72,6 +72,7 @@ class MainActivity : ComponentActivity() {
                         composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
                         composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
                         composable("SchermataHome"){SchermataHome(navController = navController)}
+                        composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
 
                     }
                 }
@@ -234,7 +235,7 @@ fun SchermataAutenticazione(navController: NavController) {
                 .width(140.dp)
                 .height(48.dp),
             shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
-            enabled = isLoginEnabled
+            enabled = true //isLoginEnabled
         ) {
             Text("ACCEDI", fontSize = 20.sp)
         }
