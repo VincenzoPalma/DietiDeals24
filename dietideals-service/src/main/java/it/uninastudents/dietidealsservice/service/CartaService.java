@@ -17,7 +17,9 @@ public class CartaService {
 
     private final CartaRepository repository;
 
-    public Carta salvaCarta(Carta carta) {
+    public Carta salvaCarta(Carta carta, UUID idUtente) {
+        //recupero utente
+        //set utente
         return repository.save(carta);
     }
 

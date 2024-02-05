@@ -1,21 +1,24 @@
 package it.uninastudents.dietidealsservice.controller;
 
-import it.uninastudents.dietidealsservice.model.dto.AstaRequest;
+import it.uninastudents.dietidealsservice.model.dto.AstaDTO;
+import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.model.mapper.AstaMapper;
 import it.uninastudents.dietidealsservice.service.AstaService;
 import it.uninastudents.dietidealsservice.utils.ControllerUtils;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
@@ -25,36 +28,27 @@ public class AstaController {
     private final AstaService astaService;
     private final AstaMapper mapper;
 
-    @PostMapping("/asta/inserimento")
-    /*public ResponseEntity<AstaRequest> saveAsta(@Valid @RequestBody AstaRequest astaRequest) {
-        //ottenimento dell'utente tramite oauth
-        Asta asta = mapper.astaDTOToAsta(astaRequest); //rimuovere
-        asta = astaService.salvaAsta(asta);
-        AstaRequest astaAnswer = mapper.astaToAstaDTO(asta);
-        return new ResponseEntity.(astaAnswer, HttpStatus.CREATED);
-    }*/
-
-    @GetMapping("/asta/ricerca")
-    public Page<AstaRequest> getAste(@RequestParam int page, @RequestParam int size, @RequestParam String nome, @RequestParam TipoAsta tipo, @RequestParam CategoriaAsta categoria) {
-        Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
-        return mapper.pageAstaToPageAstaDTO(astaService.getAll(pageable, nome, tipo, categoria));
+    @PostMapping("/utente/{idUtente}/aste")
+    public ResponseEntity<Asta> saveAsta(@PathVariable UUID idUtente, @Valid @RequestBody AstaDTO astaDTO) {
+        Asta asta = astaService.salvaAsta(idUtente, mapper.astaDTOToAsta(astaDTO));
+        return ResponseEntity.created(URI.create("/utente/%s/aste/%s".formatted(idUtente.toString(), asta.getId().toString()))).body(asta);
     }
 
-    @GetMapping("/asta/mie_aste/aste_utente")
-    public Page<AstaRequest> getAsteUtente(@RequestParam int page, @RequestParam int size, @RequestParam UUID idUtente, @RequestParam StatoAsta stato) {
+    @GetMapping("/aste")
+    public ResponseEntity<Page<Asta>> getAste(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam String nome, @RequestParam TipoAsta tipo, @RequestParam CategoriaAsta categoria) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
-        return mapper.pageAstaToPageAstaDTO(astaService.getAsteUtenteByStato(pageable, idUtente, stato));
+        return new ResponseEntity<>(astaService.getAll(pageable, nome, tipo, categoria), HttpStatus.OK);
     }
 
-    @GetMapping("/asta/mie_aste/aste_partecipate")
-    public Page<AstaRequest> getAstePartecipate(@RequestParam int page, @RequestParam int size, @RequestParam UUID idUtente, @RequestParam StatoAsta stato) {
+    @GetMapping("/utente/{idUtente}/aste")
+    public  ResponseEntity<Page<Asta>> getAsteUtente(@PathVariable UUID idUtente, @RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam StatoAsta stato) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
-        return mapper.pageAstaToPageAstaDTO(astaService.getAstePartecipateByUtente(pageable, idUtente, stato));
+        return new ResponseEntity<>(astaService.getAsteUtenteByStato(pageable, idUtente, stato), HttpStatus.OK);
     }
 
-    @GetMapping("/asta/mie_aste/aste_vinte")
-    public Page<AstaRequest> getAstePartecipate(@RequestParam int page, @RequestParam int size, @RequestParam UUID idUtente) {
+    @GetMapping("/utente/{idUtente}/offerte/asta")
+    public ResponseEntity<Page<Asta>> getAstePartecipate(@PathVariable UUID idUtente, @RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam boolean vinta) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
-        return mapper.pageAstaToPageAstaDTO(astaService.getAsteVinteByUtente(pageable, idUtente));
+        return new ResponseEntity<>(astaService.getAsteACuiUtenteHaPartecipato(pageable, idUtente, vinta), HttpStatus.OK);
     }
 }

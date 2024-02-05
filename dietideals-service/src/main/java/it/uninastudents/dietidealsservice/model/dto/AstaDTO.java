@@ -1,6 +1,5 @@
 package it.uninastudents.dietidealsservice.model.dto;
 
-import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import jakarta.persistence.EnumType;
@@ -11,14 +10,10 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-public class AstaRequest {
-
-    @NotNull
-    private UUID id;
+public class AstaDTO {
 
     @NotBlank
     private String nome;
@@ -50,9 +45,5 @@ public class AstaRequest {
     @NotNull
     @Enumerated(EnumType.STRING)
     private TipoAsta tipo;
-
-    @NotNull
-    private Utente proprietario;
-
 
 }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,12 +28,12 @@ public class OffertaController {
     public ResponseEntity<Offerta> saveOfferta(@PathVariable UUID idAsta, @RequestBody @Positive BigDecimal prezzo) {
         Offerta offerta = offertaService.salvaOfferta(idAsta, prezzo);
         //se riceve un errore dal service, ritorna qualcosa per indicare l'errore
-        return ResponseEntity.created(URI.create("/asta/%s/offerte/%s".formatted(idAsta.toString(), offerta.getId().toString()))).body(offerta); //eventuale body;
+        return ResponseEntity.created(URI.create("/asta/%s/offerte/%s".formatted(idAsta.toString(), offerta.getId().toString()))).body(offerta);
     }
 
     @GetMapping("/aste/{idAsta}/offerte")
-    public Page<Offerta> getOfferte(@PathVariable UUID idAsta, @RequestParam @Min(0) int page, @RequestParam @Min(1) int size, @RequestParam StatoOfferta statoOfferta) {
+    public ResponseEntity<Page<Offerta>> getOfferte(@PathVariable UUID idAsta, @RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam StatoOfferta statoOfferta) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").descending());
-        return offertaService.findOffertaByStato(pageable, idAsta, statoOfferta);
+        return new ResponseEntity<>(offertaService.findOffertaByStato(pageable, idAsta, statoOfferta), HttpStatus.OK);
     }
 }

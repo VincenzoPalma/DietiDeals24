@@ -1,6 +1,6 @@
 package it.uninastudents.dietidealsservice.model.mapper;
 
-import it.uninastudents.dietidealsservice.model.dto.OffertaRequest;
+import it.uninastudents.dietidealsservice.model.dto.OffertaDTO;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import org.mapstruct.Mapper;
 import org.springframework.data.domain.Page;
@@ -8,11 +8,11 @@ import org.springframework.data.domain.Page;
 @Mapper(componentModel = "spring")
 public interface OffertaMapper {
 
-    Offerta offertaDTOToOfferta(OffertaRequest offertaRequest);
+    Offerta offertaDTOToOfferta(OffertaDTO offertaDTO);
 
-    OffertaRequest offertaToOffertaDTO(Offerta offerta);
+    OffertaDTO offertaToOffertaDTO(Offerta offerta);
 
-    Page<Offerta> listOffertaDTOToListOfferta(Page<OffertaRequest> listOffertaRequest);
+    Page<Offerta> listOffertaDTOToListOfferta(Page<OffertaDTO> listOffertaRequest);
 
-    Page<OffertaRequest> listOffertaToListOffertaDTO(Page<Offerta> listOfferta);
+    Page<OffertaDTO> listOffertaToListOffertaDTO(Page<Offerta> listOfferta);
 }

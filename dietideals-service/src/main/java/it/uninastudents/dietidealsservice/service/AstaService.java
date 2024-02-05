@@ -21,14 +21,11 @@ import java.util.UUID;
 public class AstaService {
 
     private final AstaRepository repository;
-    private final EntityManager entityManager;
 
-    public Asta salvaAsta(Asta asta) {
+    public Asta salvaAsta(UUID idUtente, Asta asta) {
+        //recupero utente
+        //set utente
         return repository.save(asta);
-    }
-
-    public void cancellaAsta(UUID idAsta) {
-        repository.deleteById(idAsta);
     }
 
     public Page<Asta> getAll(Pageable pageable, String nome, TipoAsta tipo, CategoriaAsta categoria) {
@@ -40,6 +37,14 @@ public class AstaService {
     public Page<Asta> getAsteUtenteByStato(Pageable pageable, UUID idProprietario, StatoAsta stato) {
         var spec = AstaSpecs.hasProprietario(idProprietario).and(AstaSpecs.hasStato(stato));
         return repository.findAll(spec, pageable);
+    }
+
+    public Page<Asta> getAsteACuiUtenteHaPartecipato(Pageable pageable, UUID idUtente, boolean vinta){
+        if (vinta){
+            return getAsteVinteByUtente(pageable, idUtente);
+        } else {
+            return getAstePartecipateByUtente(pageable, idUtente, StatoAsta.ATTIVA);
+        }
     }
 
     public Page<Asta> getAstePartecipateByUtente(Pageable pageable, UUID idProprietario, StatoAsta stato) {

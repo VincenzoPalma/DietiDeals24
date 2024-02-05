@@ -22,13 +22,13 @@ public class ContoCorrenteController {
 
     @PostMapping("/utente/{idUtente}/conto_corrente")
     public ResponseEntity<ContoCorrente> saveContoCorrente(@PathVariable UUID idUtente, @RequestBody @Valid ContoCorrenteDTO contoCorrenteDTO){
-        ContoCorrente contoCorrente = contoCorrenteService.salvaContoCorrente(contoCorrenteMapper.contoCorrenteDTOToContoCorrente(contoCorrenteDTO));
+        ContoCorrente contoCorrente = contoCorrenteService.salvaContoCorrente(idUtente, contoCorrenteMapper.contoCorrenteDTOToContoCorrente(contoCorrenteDTO));
         return ResponseEntity.created(URI.create("/utente/%s/conto_corrente/%s".formatted(idUtente.toString(), contoCorrente.getId().toString()))).body(contoCorrente);
     }
 
     @PutMapping("/conto_corrente")
     public ResponseEntity<ContoCorrente> modifyContoCorrente(@RequestBody @Valid ContoCorrente newContoCorrente){
-        ContoCorrente contoCorrente = contoCorrenteService.salvaContoCorrente(newContoCorrente);
+        ContoCorrente contoCorrente = contoCorrenteService.modificaContoCorrente(newContoCorrente);
         return ResponseEntity.ok().location(URI.create("conto_corrente/%s".formatted(contoCorrente.getId().toString()))).body(contoCorrente);
     }
 

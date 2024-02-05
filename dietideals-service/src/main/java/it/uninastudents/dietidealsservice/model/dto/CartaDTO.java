@@ -1,9 +1,7 @@
 package it.uninastudents.dietidealsservice.model.dto;
 
-import it.uninastudents.dietidealsservice.model.entity.Utente;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,7 +12,7 @@ import java.time.OffsetDateTime;
 @EqualsAndHashCode
 @NoArgsConstructor
 @Data
-public class CartaRequest {
+public class CartaDTO {
 
     @NotBlank
     @Pattern(regexp = "^[0-9]{16}$")
@@ -29,7 +27,4 @@ public class CartaRequest {
 
     @Future
     private OffsetDateTime dataScadenza;
-
-    @NotNull
-    private Utente utente;
 }

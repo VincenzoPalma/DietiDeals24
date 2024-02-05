@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode
-public class OffertaRequest {
+public class OffertaDTO {
     @NotNull
     private Utente utente;
 

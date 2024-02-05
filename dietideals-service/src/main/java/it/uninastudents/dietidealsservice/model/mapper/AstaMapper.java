@@ -1,6 +1,6 @@
 package it.uninastudents.dietidealsservice.model.mapper;
 
-import it.uninastudents.dietidealsservice.model.dto.AstaRequest;
+import it.uninastudents.dietidealsservice.model.dto.AstaDTO;
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import org.mapstruct.Mapper;
 import org.springframework.data.domain.Page;
@@ -8,12 +8,12 @@ import org.springframework.data.domain.Page;
 @Mapper(componentModel = "spring")
 public interface AstaMapper {
 
-    Asta astaDTOToAsta(AstaRequest astaRequest);
+    Asta astaDTOToAsta(AstaDTO astaDTO);
 
-    AstaRequest astaToAstaDTO(Asta asta);
+    AstaDTO astaToAstaDTO(Asta asta);
 
-    Page<AstaRequest> pageAstaToPageAstaDTO(Page<Asta> pageAsta);
+    Page<AstaDTO> pageAstaToPageAstaDTO(Page<Asta> pageAsta);
 
-    Page<Asta> pageAstaDTOToPageAsta(Page<AstaRequest> pageAstaRequest);
+    Page<Asta> pageAstaDTOToPageAsta(Page<AstaDTO> pageAstaRequest);
 
 }

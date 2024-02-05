@@ -17,12 +17,14 @@ public class ContoCorrenteService {
 
     private final ContoCorrenteRepository repository;
 
-    public ContoCorrente salvaContoCorrente(ContoCorrente contoCorrente) {
+    public ContoCorrente salvaContoCorrente(UUID idUtente, ContoCorrente contoCorrente) {
+        //recupero utente
+        //set utente
         return repository.save(contoCorrente);
     }
 
-    public void cancellaContoCorrente(UUID idContoCorrente) {
-        repository.deleteById(idContoCorrente);
+    public ContoCorrente modificaContoCorrente(ContoCorrente contoCorrente) {
+        return repository.save(contoCorrente);
     }
 
     public Optional<ContoCorrente> findContoCorrenteByUtente(UUID idUtente) {
