@@ -44,6 +44,7 @@ public class OffertaService {
             offertaVincente.get().setStato(StatoOfferta.NON_VINCENTE);
             repository.save(offertaVincente.get());
         }
+        //manda la notifica
         return repository.save(nuovaOfferta);
     }
 
