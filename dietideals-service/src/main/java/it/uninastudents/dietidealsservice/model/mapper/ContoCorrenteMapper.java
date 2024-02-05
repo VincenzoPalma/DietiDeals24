@@ -1,13 +1,13 @@
 package it.uninastudents.dietidealsservice.model.mapper;
 
-import it.uninastudents.dietidealsservice.model.dto.ContoCorrenteRequest;
+import it.uninastudents.dietidealsservice.model.dto.ContoCorrenteDTO;
 import it.uninastudents.dietidealsservice.model.entity.ContoCorrente;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface ContoCorrenteMapper {
 
-    ContoCorrente contoCorrenteDTOToContoCorrente(ContoCorrenteRequest contoCorrenteRequest);
+    ContoCorrente contoCorrenteDTOToContoCorrente(ContoCorrenteDTO contoCorrenteDTO);
 
-    ContoCorrenteRequest contoCorrenteToContoCorrenteDTO(ContoCorrente contoCorrente);
+    ContoCorrenteDTO contoCorrenteToContoCorrenteDTO(ContoCorrente contoCorrente);
 }
