@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -89,6 +90,7 @@ class PaginaProfiloUtente : ComponentActivity() {
                         composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
                         composable("SchermataHome"){SchermataHome(navController = navController)}
                         composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
+                        composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
                     }
                 }
             }
@@ -109,103 +111,86 @@ fun SchermataProfiloUtente(navController: NavController) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                ModalDrawerSheet {
+                ModalDrawerSheet(modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(0.7f)) {
                     Column(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .weight(1f)
+
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(30.dp)
                     ){
-                        Button(
-                            onClick = { /* Azione quando viene cliccato "Dati Utente" */ },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            shape = RoundedCornerShape(0,0)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
+                        Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { navController.navigate("") }
                             )
                             {
                                 Icon(
                                     painter = painterResource(id = R.drawable.baseline_account_circle_24),
                                     contentDescription ="Profilo Utente",
-                                    modifier = Modifier.size(40.dp)
+                                    modifier = Modifier.size(30.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "Dati Utente", fontSize = 30.sp)
+                                Text(text = "Dati Utente", fontSize = 25.sp)
                             }
-                        }
 
-                        Button(
-                            onClick = { /* Azione quando viene cliccato "Pagamenti" */ },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            shape = RoundedCornerShape(0,0)
-                        ) {
+
+
                             Row(
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickable { navController.navigate("") }
                             )
                             {
                                 Icon(
                                     painter = painterResource(id = R.drawable.baseline_attach_money_24),
                                     contentDescription ="Pagamenti",
-                                    modifier = Modifier.size(40.dp)
+                                    modifier = Modifier.size(30.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "Pagamenti", fontSize = 30.sp)
+                                Text(text = "Pagamenti", fontSize = 25.sp)
                             }
-                        }
 
-                        Button(
-                            onClick = { /* Azione quando viene cliccato "Diventa Venditore" */ },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            shape = RoundedCornerShape(0,0)
-                        ) {
+
+
                             Row(
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickable { navController.navigate("SchermataAutenticazione") }
                             )
                             {
                                 Icon(
                                     painter = painterResource(id = R.drawable.baseline_upgrade_24),
                                     contentDescription ="Diventa Venditore",
-                                    modifier = Modifier.size(40.dp)
+                                    modifier = Modifier.size(30.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(text = "Diventa Venditore", fontSize = 25.sp)
                             }
-                        }
+
 
                         // Bottone per chiudere il drawer
-                        Button(
-                            onClick = { /* Azione quando viene cliccata l'icona di chiusura */ },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            shape = RoundedCornerShape(0,0),
-                                    colors = ButtonColors(
-                                    containerColor = Color(0xFF9b0404),
-                            contentColor = Color.White,
-                            disabledContainerColor = Color.Gray,
-                            disabledContentColor = Color.Black
+
+
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clickable { navController.navigate("") }
+
+                    )
+                    {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_logout_24),
+                            contentDescription ="Logout",
+                            modifier = Modifier.size(30.dp),
+                            tint = Color(0xFF9B0404)
+
                         )
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            )
-                            {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_logout_24),
-                                    contentDescription ="Logout",
-                                    modifier = Modifier.size(40.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "Logout", fontSize = 30.sp)
-                            }
-                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Logout", fontSize = 25.sp,color = Color(0xFF9B0404))
                     }
                 }
             },
@@ -264,7 +249,8 @@ fun SchermataProfiloUtente(navController: NavController) {
                                     contentDescription = null,
                                     modifier = Modifier
                                         .clickable {
-                                            // Azione da eseguire quando si clicca sull'icona di ricerca
+                                            navController.navigate("SchermataModificaProfilo")
+
                                         }
                                         .size(40.dp)
 

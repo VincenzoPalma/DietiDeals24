@@ -73,6 +73,7 @@ class MainActivity : ComponentActivity() {
                         composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
                         composable("SchermataHome"){SchermataHome(navController = navController)}
                         composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
+                        composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
 
                     }
                 }
