@@ -17,81 +17,58 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
-import com.example.dietideals_app.model.DettagliUtente
-import com.example.dietideals_app.model.Notifica
-import com.example.dietideals_app.model.Utente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
-import com.example.dietideals_app.ui.theme.titleCustomFont
 import kotlinx.coroutines.launch
-import retrofit2.http.Url
-import java.time.LocalDateTime
-import kotlin.random.Random
 
 class PaginaProfiloUtente : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -237,320 +214,337 @@ fun SchermataProfiloUtente(navController: NavController) {
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    val (topbar,image,nameSurname,username,shortBio,shortBioHeader,sitoWeb,socialIcons,address,botttomBar) = createRefs()
-                    TopAppBar(title = {
-                        Text(
-                            text = "PROFILO",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .constrainAs(topbar)
-                                {
-                                    top.linkTo(parent.top)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                },
-                            fontWeight = FontWeight.Bold, // Imposta il grassetto
-                            fontSize = 40.sp
-                        ) // Imposta la dimensione del testo)
-                    },
-                        navigationIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_menu_24),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clickable {
-                                        scope.launch {
-                                            drawerState.apply {
-                                                if (isClosed) open() else close()
-                                            }
-                                        }
-                                        // Azione da eseguire quando si clicca sull'icona di navigazione
-                                    }
-                                    .size(35.dp)
-                            )
-                        }, colors = TopAppBarColors(
-                            containerColor = (MaterialTheme.colorScheme.primary),
-                            navigationIconContentColor = Color.White,
-                            titleContentColor = Color.White,
-                            actionIconContentColor = Color.White,
-                            scrolledContainerColor = Color.White
-                        ),
-                        actions = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_brush_24),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clickable {
-                                        // Azione da eseguire quando si clicca sull'icona di ricerca
-                                    }
-                                    .size(40.dp)
-
-                            )
-                        }
-                    )
+                    val (background) = createRefs()
                     Box(
                         modifier = Modifier
-                            .constrainAs(image) {
-                                top.linkTo(parent.top, margin = 80.dp)
+                            .constrainAs(background) {
+                                top.linkTo(parent.top)
                                 start.linkTo(parent.start)
                                 end.linkTo(parent.end)
-                            }
-                            .size(80.dp)
-                            .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
+                                bottom.linkTo(parent.bottom)
+                                width = Dimension.fillToConstraints
+                                height = Dimension.fillToConstraints
+                            }.background(Color.White)
                     ) {
-                        // Immagine all'interno della Box circolare
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_launcher_foreground), // Rimpiazza con la tua immagine
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
+                        TopAppBar(modifier = Modifier.align(Alignment.TopCenter),title = {
+                            Text(
+                                text = "PROFILO",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                fontWeight = FontWeight.Bold, // Imposta il grassetto
+                                fontSize = 40.sp
+                            ) // Imposta la dimensione del testo)
+                        },
+                            navigationIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_menu_24),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .clickable {
+                                            scope.launch {
+                                                drawerState.apply {
+                                                    if (isClosed) open() else close()
+                                                }
+                                            }
+                                            // Azione da eseguire quando si clicca sull'icona di navigazione
+                                        }
+                                        .size(35.dp)
+                                )
+                            }, colors = TopAppBarColors(
+                                containerColor = (MaterialTheme.colorScheme.primary),
+                                navigationIconContentColor = Color.White,
+                                titleContentColor = Color.White,
+                                actionIconContentColor = Color.White,
+                                scrolledContainerColor = Color.White
+                            ),
+                            actions = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_brush_24),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .clickable {
+                                            // Azione da eseguire quando si clicca sull'icona di ricerca
+                                        }
+                                        .size(40.dp)
+
+                                )
+                            }
                         )
-
-                    }
-                    Text(
-                        text = "MARIO ROSSI",
-                        modifier = Modifier
-                            .constrainAs(nameSurname) {
-                                top.linkTo(image.bottom, margin = 15.dp)
-                            }
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold, // Imposta il grassetto
-                    )
-                    Text(
-                        text = "@mariorossi",
-                        modifier = Modifier
-                            .constrainAs(username) {
-                                top.linkTo(nameSurname.bottom, margin = 1.dp)
-                            }
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        fontSize = 20.sp,
-                        color = Color.Gray// Imposta il grassetto
-                    )
-                    Text(
-                        text = "Short Bio:",
-                        modifier = Modifier
-                            .constrainAs(shortBioHeader) {
-                                top.linkTo(username.bottom, margin = 10.dp)
-                            }
-                            .padding(8.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Left,
-                        fontSize = 20.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Ciao! Sono Mario Rossi, venditore di aste con esperienza nel mondo delle opere d'arte. " +
-                                "Offro oggetti unici e rari con un servizio di alta qualità. S" +
-                                "copri tesori per la tua collezione personale! Grazie per il tuo interesse!",
-                        modifier = Modifier
-                            .constrainAs(shortBio) {
-                                top.linkTo(shortBioHeader.bottom, margin = 0.5.dp)
-                            }
-                            .padding(8.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Left,
-                        fontSize = 20.sp,
-                        color = Color.Black// Imposta il grassetto
-                    )
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(sitoWeb) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            top.linkTo(shortBio.bottom, margin = 0.5.dp)
+                        val screenWidth = LocalDensity.current.run {
+                            LocalConfiguration.current.screenWidthDp.dp
                         }
-                        .padding(8.dp),
-                         verticalAlignment = Alignment.CenterVertically){
-                        Text(text="Sito Web:",
-                            textAlign = TextAlign.Left,
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
-                            )
-                        val context = LocalContext.current
-
-                        val openUrlLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                            // Handle the result if needed
-                        }
-
-                        val text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary,fontSize = 20.sp)) {
-                                append("www.mariorossi.com")
-                                addStringAnnotation("URL", "https://www.example.com", 0, length)
-                            }
-                        }
-                        Spacer(modifier =  Modifier.width(7.dp))
-
-                        ClickableText(
-                            text = text,
-                            modifier = Modifier.padding(8.dp),
-                            onClick = { offset ->
-                                text.getStringAnnotations("URL", offset, offset)
-                                    .firstOrNull()?.let { annotation ->
-                                        val url = annotation.item
-                                        val intent = Intent(Intent.ACTION_VIEW, null)
-                                        ContextCompat.startActivity(context, intent, null)
-                                    }
-                            },
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-
-
-
-                    @Composable
-                    fun IconWithText(iconId: Int, text: String,route:String,color:Color) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(2.dp)
+                        Box(
+                            modifier = Modifier.offset(x=(screenWidth/2)-40.dp,y = 70.dp)
+                                .size(80.dp)
+                                .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
                         ) {
-                            Icon(
-                                painter = painterResource(id = iconId),
+                            // Immagine all'interno della Box circolare
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_launcher_foreground), // Rimpiazza con la tua immagine
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(30.dp)
-                                    .clickable { navController.navigate(route) },
-                                tint = color
-
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
                             )
 
-                            Text(
-                                text = text,
-                                fontSize = 15.sp,
-                                color = color
-                            )//
                         }
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .constrainAs(socialIcons)
-                            {
-                                top.linkTo(sitoWeb.bottom, margin = 5.dp)
-                            }
+                        Text(
+                            text = "MARIO ROSSI",
+                            modifier = Modifier
+                                .offset(y = 150.dp)
 
-                    ) {
-                        Spacer(
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold, // Imposta il grassetto
+                        )
+                        Text(
+                            text = "@mariorossi",
                             modifier = Modifier
-                                .width(20.dp)
+                                .offset(y = 180.dp)
 
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            fontSize = 20.sp,
+                            color = Color.Gray// Imposta il grassetto
                         )
-                        IconWithText(iconId = R.drawable.instagramicon, text = "Instagram", "",Color.Black)
-                        Spacer(
+                        Text(
+                            text = "Short Bio:",
                             modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.facebookicon,
-                            text = "Facebook",
-                            "",Color.Black
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.twittericon,
-                            text = "Twitter",
-                            "",Color.Black
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                    }
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(address) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            top.linkTo(socialIcons.bottom, margin = 5.dp)
-                        }
-                        .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically){
-                        Text(text="Indirizzo:",
+                                .offset(y = 200.dp)
+
+                                .padding(8.dp)
+                                .fillMaxWidth(),
                             textAlign = TextAlign.Left,
                             fontSize = 20.sp,
                             color = Color.Black,
                             fontWeight = FontWeight.Bold
                         )
+                        Text(
+                            text = "Ciao! Sono Mario Rossi, venditore di aste con esperienza nel mondo delle opere d'arte. " +
+                                    "Offro oggetti unici e rari con un servizio di alta qualità. S" +
+                                    "copri tesori per la tua collezione personale! Grazie per il tuo interesse!",
+                            modifier = Modifier
+                                .offset(y = 235.dp)
 
-                        Spacer(modifier =  Modifier.width(10.dp))
-                        Text(text="Via San Michele 25, Napoli(NA),Italia",
-                            modifier = Modifier.weight(1f),
-                            fontSize = 15.sp,
-                            color = Color.Black,
+                                .padding(8.dp)
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Left,
+                            fontSize = 20.sp,
+                            color = Color.Black// Imposta il grassetto
+                        )
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .offset(y = 400.dp)
 
+
+                            .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Sito Web:",
+                                textAlign = TextAlign.Left,
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
+                            )
+                            val context = LocalContext.current
+
+                            val openUrlLauncher =
+                                rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                                    // Handle the result if needed
+                                }
+
+                            val text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontSize = 20.sp
+                                    )
+                                ) {
+                                    append("www.mariorossi.com")
+                                    addStringAnnotation("URL", "https://www.example.com", 0, length)
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(7.dp))
+
+                            ClickableText(
+                                text = text,
+                                modifier = Modifier.padding(8.dp),
+                                onClick = { offset ->
+                                    text.getStringAnnotations("URL", offset, offset)
+                                        .firstOrNull()?.let { annotation ->
+                                            val url = annotation.item
+                                            val intent = Intent(Intent.ACTION_VIEW, null)
+                                            ContextCompat.startActivity(context, intent, null)
+                                        }
+                                },
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+
+
+
+                        @Composable
+                        fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(2.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = iconId),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .clickable { navController.navigate(route) },
+                                    tint = color
+
+                                )
+
+                                Text(
+                                    text = text,
+                                    fontSize = 15.sp,
+                                    color = color
+                                )//
+                            }
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .offset(y = 480.dp)
+
+
+                        ) {
+                            Spacer(
+                                modifier = Modifier
+                                    .width(20.dp)
+
+                            )
+                            IconWithText(
+                                iconId = R.drawable.instagramicon,
+                                text = "Instagram",
+                                "",
+                                Color.Black
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                            IconWithText(
+                                iconId = R.drawable.facebookicon,
+                                text = "Facebook",
+                                "", Color.Black
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                            IconWithText(
+                                iconId = R.drawable.twittericon,
+                                text = "Twitter",
+                                "", Color.Black
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                        }
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .offset(y = 550.dp)
+
+                            .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Indirizzo:",
+                                textAlign = TextAlign.Left,
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Via San Michele 25, Napoli(NA),Italia",
+                                modifier = Modifier.weight(1f),
+                                fontSize = 15.sp,
+                                color = Color.Black,
+
+                                )
+
+
+                        }
+                        BottomAppBar(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter)
+                                .background(color = Color.White) // Set the background color to white
+                                .border(1.dp, color = Color.Black)
+                                .height(60.dp)// Add a black border
+                        ) {
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                            IconWithText(
+                                iconId = R.drawable.baseline_home_24,
+                                text = "Home",
+                                "SchermataHome",
+                                Color(0xFF0EA639)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                            IconWithText(
+                                iconId = R.drawable.line_chart_svgrepo_com,
+                                text = "Gestisci Aste",
+                                "",
+                                Color(0xFF0EA639)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                            IconWithText(
+                                iconId = R.drawable.hand_money_cash_hold_svgrepo_com,
+                                text = "Crea Asta",
+                                "",
+                                Color(0xFF0EA639)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                            IconWithText(
+                                iconId = R.drawable.baseline_manage_accounts_24,
+                                text = "Profilo",
+                                "SchermataProfiloUtente",
+                                Color(0xFF0EA639)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
                             )
 
 
-                    }
-                    BottomAppBar(modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(botttomBar)
-                        {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }.background(color = Color.White) // Set the background color to white
-                        .border(1.dp, color = Color.Black)
-                        .height(60.dp)// Add a black border
-                        ) {
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(iconId = R.drawable.baseline_home_24, text = "Home","SchermataHome",Color(0xFF0EA639))
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(iconId = R.drawable.line_chart_svgrepo_com, text = "Gestisci Aste","",Color(0xFF0EA639))
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.hand_money_cash_hold_svgrepo_com, text = "Crea Asta","",Color(0xFF0EA639))
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(iconId = R.drawable.baseline_manage_accounts_24, text = "Profilo","SchermataProfiloUtente",Color(0xFF0EA639))
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-
-
+                        }
 
 
                     }
-
-
-
-
 
 
                 }
-
-
-                })
+            })
             }
 
 

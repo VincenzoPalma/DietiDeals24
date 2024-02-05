@@ -17,19 +17,17 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -55,13 +53,13 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -69,7 +67,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Notifica
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
-import com.example.dietideals_app.ui.theme.titleCustomFont
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import kotlin.random.Random
@@ -266,350 +263,355 @@ fun SchermataHome(navController: NavController) {
                 }
             }
             },
+
             content = {
                 ConstraintLayout(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    val (notificationBar, topBar, notificationBoxes, header, subTitle, buttons, boxes, bottomBar) = createRefs()
-                    TopAppBar(
-                        title = {
-                            if (!isSearchVisible) {
+                    val (background) = createRefs()
+                    Box(modifier = Modifier
+                        .constrainAs(background) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(parent.bottom)
+                            width = Dimension.fillToConstraints
+                            height = Dimension.fillToConstraints
+                        }.background(Color.White)
+                    ) {
+
+
+                        TopAppBar(modifier = Modifier.align(Alignment.TopCenter),
+                            title = {
+                                if (!isSearchVisible) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_search_24),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .clickable {
+                                                isSearchVisible = !isSearchVisible
+
+                                                // Azione da eseguire quando si clicca sull'icona di ricerca
+                                            }
+                                            .size(40.dp)
+
+
+                                    )
+                                    Text(
+                                        text = "DIETI DEALS 24",
+                                        textAlign = TextAlign.Left,
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 30.sp
+                                    )
+
+                                } else {
+                                    SearchBar(
+                                        query = query,
+                                        onQueryChange = { nuovaQuery -> query = nuovaQuery },
+                                        onSearch = { /* Gestisci l'azione di ricerca */ },
+                                        active = isSearchVisible,
+                                        onActiveChange = { attiva -> isSearchVisible = attiva }
+                                    ) {
+                                        TextField(
+                                            value = query,
+                                            onValueChange = { nuovaQuery -> query = nuovaQuery },
+                                            placeholder = { Text("Cerca Asta...") },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                }
+                            },
+                            colors = TopAppBarColors(
+                                containerColor = (MaterialTheme.colorScheme.primary),
+                                navigationIconContentColor = Color.White,
+                                titleContentColor = Color.White,
+                                actionIconContentColor = Color.White,
+                                scrolledContainerColor = Color.White
+                            ),
+
+                            actions = {
+
+                                Image(
+                                    painter = logoApp,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(50.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            },
+                            navigationIcon = {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.baseline_search_24),
+                                    painter = painterResource(id = R.drawable.baseline_notifications_24),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .clickable {
-                                            isSearchVisible = !isSearchVisible
-
-                                            // Azione da eseguire quando si clicca sull'icona di ricerca
-                                        }
-                                        .size(40.dp)
-
-                                )
-                                Text(
-                                    text = "DIETI DEALS 24",
-                                    textAlign = TextAlign.Left,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .constrainAs(topBar) {
-                                            top.linkTo(parent.top)
-                                            start.linkTo(parent.start)
-                                            end.linkTo(parent.end)
-                                        },
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 30.sp
-                                )
-
-                            } else {
-                                SearchBar(
-                                    query = query,
-                                    onQueryChange = { nuovaQuery -> query = nuovaQuery },
-                                    onSearch = { /* Gestisci l'azione di ricerca */ },
-                                    active = isSearchVisible,
-                                    onActiveChange = { èAttiva -> isSearchVisible = èAttiva }
-                                ) {
-                                    TextField(
-                                        value = query,
-                                        onValueChange = { nuovaQuery -> query = nuovaQuery },
-                                        placeholder = { Text("Cerca Asta...") },
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-                            }
-                        },
-                        colors = TopAppBarColors(
-                            containerColor = (MaterialTheme.colorScheme.primary),
-                            navigationIconContentColor = Color.White,
-                            titleContentColor = Color.White,
-                            actionIconContentColor = Color.White,
-                            scrolledContainerColor = Color.White
-                        ),
-                        actions = {
-
-                            Image(
-                                painter = logoApp,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp),
-                                contentScale = ContentScale.Crop
-                            )
-                        },
-                        navigationIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_notifications_24),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clickable {
-                                        scope.launch {
-                                            drawerState.apply {
-                                                if (isClosed) open() else close()
+                                            scope.launch {
+                                                drawerState.apply {
+                                                    if (isClosed) open() else close()
+                                                }
                                             }
+                                            // Azione da eseguire quando si clicca sull'icona di navigazione
                                         }
-                                        // Azione da eseguire quando si clicca sull'icona di navigazione
-                                    }
-                                    .size(35.dp)
-                            )
-                        }
-                    )
-                    Row(
-                        modifier = Modifier
-                            .constrainAs(subTitle) {
-                                top.linkTo(parent.top, margin = 70.dp)
+                                        .size(35.dp)
+                                )
                             }
-                            .fillMaxWidth()
-                            .padding(end = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_filter_list_24),
-                            contentDescription = "filterButton",
+                        )
+                        Row(
                             modifier = Modifier
-                                .padding(start = 8.dp)
-                                .size(30.dp)
-                        )
-                        Text(
-                            text = "Aste in Corso",
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center,
-                            fontSize = 25.sp,
-                            modifier = Modifier.weight(1f),
-                        )
 
-                    }
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .constrainAs(boxes) {
-                                top.linkTo(subTitle.bottom, margin = 200.dp)
-                                bottom.linkTo(bottomBar.top, margin = 50.dp)
-                            }
-                            .fillMaxSize()
-                            .padding(16.dp)
-                            .let {
-                                if (isSearchVisible || isNotificationVisible) {
-                                    it.clickable {
-                                        isSearchVisible = false
-                                        isNotificationVisible = false
-                                        searchText = "" // Resetta il testo di ricerca
-                                    }
-                                } else {
-                                    it
-                                }
-                            }
-
-                    ) {
-                        items(6) { index ->
-                            // Colonna per ogni elemento della lista
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    // Riquadro per ogni elemento della lista
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(1f) // Assegna un peso uguale alle Box
-                                            .height(200.dp)
-                                            .padding(8.dp)
-                                            .background(Color.White)
-                                            .border(1.dp, Color.Black),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-
-                                            ) {
-                                            // Immagine
-                                            Image(
-                                                painter = painterResource(id = R.drawable.defaultimage),
-                                                contentDescription = "Image",
-                                                modifier = Modifier
-                                                    .size(100.dp)
-                                            )
-
-                                            // Titolo
-                                            Text(
-                                                text = "Elemento $index-A",
-                                                color = Color.Black,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 20.sp,
-                                                modifier = Modifier
-                                                    .padding(4.dp)
-                                            )
-
-                                            // Bottone
-                                            Button(
-                                                onClick = { /* Azione del bottone */ },
-                                                modifier = Modifier.padding(4.dp),
-                                                shape = RoundedCornerShape(0, 0)
-                                            ) {
-                                                Text(
-                                                    String.format(
-                                                        "€%.2f",
-                                                        80.0 + Random.nextDouble() * 9.0
-                                                    ),
-                                                    fontSize = 10.sp
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    // Riquadro per ogni elemento della lista
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(1f) // Assegna un peso uguale alle Box
-                                            .height(200.dp)
-                                            .padding(8.dp)
-                                            .background(Color.White)
-                                            .border(1.dp, Color.Black),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            // Immagine
-                                            Image(
-                                                painter = painterResource(id = R.drawable.defaultimage),
-                                                contentDescription = "Image",
-                                                modifier = Modifier
-                                                    .size(100.dp)
-                                            )
-
-                                            // Titolo
-                                            Text(
-                                                text = "Elemento $index-B",
-                                                color = Color.Black,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 20.sp,
-                                                modifier = Modifier
-                                                    .padding(4.dp)
-                                            )
-
-                                            // Bottone
-                                            Button(
-                                                onClick = { /* Azione del bottone */ },
-                                                modifier = Modifier,
-                                                shape = RoundedCornerShape(0, 0)
-                                            ) {
-                                                Text(
-                                                    text = String.format(
-                                                        "€%.2f",
-                                                        80.0 + Random.nextDouble() * 9.0
-                                                    ),
-                                                    fontSize = 10.sp
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-
-
-
-
-
-                    @Composable
-                    fun IconWithText(iconId: Int, text: String, route: String) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(2.dp)
+                                .fillMaxWidth()
+                                .padding(end = 16.dp)
+                                .offset(y = 70.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start
                         ) {
                             Icon(
-                                painter = painterResource(id = iconId),
-                                contentDescription = null,
+                                painter = painterResource(id = R.drawable.baseline_filter_list_24),
+                                contentDescription = "filterButton",
                                 modifier = Modifier
+                                    .padding(start = 8.dp)
                                     .size(30.dp)
-                                    .clickable { navController.navigate(route) },
-                                tint = Color(0xFF0EA639)
-
+                            )
+                            Text(
+                                text = "Aste in Corso",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                fontSize = 25.sp,
+                                modifier = Modifier.weight(1f),
                             )
 
-                            Text(
-                                text = text,
-                                fontSize = 14.sp,
-                                color = Color(0xFF0EA639)
-                            )//
                         }
-                    }
 
-                    BottomAppBar(modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(bottomBar)
-                        {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
+                        LazyColumn(
+                            modifier = Modifier
+                                .offset(y = 80.dp)
+
+                                .fillMaxSize()
+                                .padding(16.dp)
+                                .let {
+                                    if (isSearchVisible || isNotificationVisible) {
+                                        it.clickable {
+                                            isSearchVisible = false
+                                            isNotificationVisible = false
+                                            searchText = "" // Resetta il testo di ricerca
+                                        }
+                                    } else {
+                                        it
+                                    }
+                                }
+
+                        ) {
+                            items(6) { index ->
+                                // Colonna per ogni elemento della lista
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    ) {
+                                        // Riquadro per ogni elemento della lista
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f) // Assegna un peso uguale alle Box
+                                                .height(200.dp)
+                                                .padding(8.dp)
+                                                .background(Color.White)
+                                                .border(1.dp, Color.Black),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Column(
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+
+                                                ) {
+                                                // Immagine
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.defaultimage),
+                                                    contentDescription = "Image",
+                                                    modifier = Modifier
+                                                        .size(100.dp)
+                                                )
+
+                                                // Titolo
+                                                Text(
+                                                    text = "Elemento $index-A",
+                                                    color = Color.Black,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 20.sp,
+                                                    modifier = Modifier
+                                                        .padding(4.dp)
+                                                )
+
+                                                // Bottone
+                                                Button(
+                                                    onClick = { /* Azione del bottone */ },
+                                                    modifier = Modifier.padding(4.dp),
+                                                    shape = RoundedCornerShape(0, 0)
+                                                ) {
+                                                    Text(
+                                                        String.format(
+                                                            "€%.2f",
+                                                            80.0 + Random.nextDouble() * 9.0
+                                                        ),
+                                                        fontSize = 10.sp
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                        // Riquadro per ogni elemento della lista
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f) // Assegna un peso uguale alle Box
+                                                .height(200.dp)
+                                                .padding(8.dp)
+                                                .background(Color.White)
+                                                .border(1.dp, Color.Black),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Column(
+                                                horizontalAlignment = Alignment.CenterHorizontally
+                                            ) {
+                                                // Immagine
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.defaultimage),
+                                                    contentDescription = "Image",
+                                                    modifier = Modifier
+                                                        .size(100.dp)
+                                                )
+
+                                                // Titolo
+                                                Text(
+                                                    text = "Elemento $index-B",
+                                                    color = Color.Black,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 20.sp,
+                                                    modifier = Modifier
+                                                        .padding(4.dp)
+                                                )
+
+                                                // Bottone
+                                                Button(
+                                                    onClick = { /* Azione del bottone */ },
+                                                    modifier = Modifier,
+                                                    shape = RoundedCornerShape(0, 0)
+                                                ) {
+                                                    Text(
+                                                        text = String.format(
+                                                            "€%.2f",
+                                                            80.0 + Random.nextDouble() * 9.0
+                                                        ),
+                                                        fontSize = 10.sp
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
                         }
-                        .background(color = Color.White) // Set the background color to white
-                        .border(1.dp, color = Color.Black)
-                        .height(60.dp)// Add a black border
-                    ) {
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.baseline_manage_accounts_24,
-                            text = "Profilo",
-                            "SchermataProfiloUtente"
-                        )
-
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.hand_money_cash_hold_svgrepo_com,
-                            text = "Crea Asta",
-                            ""
-                        )
 
 
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.line_chart_svgrepo_com,
-                            text = "Gestisci Aste",
-                            ""
-                        )
 
 
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
 
-                        IconWithText(
-                            iconId = R.drawable.baseline_home_24,
-                            text = "Home",
-                            "SchermataHome"
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
+                        @Composable
+                        fun IconWithText(iconId: Int, text: String, route: String) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(2.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = iconId),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .clickable { navController.navigate(route) },
+                                    tint = Color(0xFF0EA639)
+
+                                )
+
+                                Text(
+                                    text = text,
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF0EA639)
+                                )//
+                            }
+                        }
+
+                        BottomAppBar(modifier = Modifier
+                            .fillMaxWidth()
+
+                            .background(color = Color.White) // Set the background color to white
+                            .border(1.dp, color = Color.Black)
+                            .height(60.dp)// Add a black border
+                            .align(Alignment.BottomCenter)
+                        ) {
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                            IconWithText(
+                                iconId = R.drawable.baseline_manage_accounts_24,
+                                text = "Profilo",
+                                "SchermataProfiloUtente"
+                            )
+
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                            IconWithText(
+                                iconId = R.drawable.hand_money_cash_hold_svgrepo_com,
+                                text = "Crea Asta",
+                                ""
+                            )
+
+
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                            IconWithText(
+                                iconId = R.drawable.line_chart_svgrepo_com,
+                                text = "Gestisci Aste",
+                                ""
+                            )
+
+
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+
+                            IconWithText(
+                                iconId = R.drawable.baseline_home_24,
+                                text = "Home",
+                                "SchermataHome"
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .width(0.dp)
+                                    .weight(1f)
+                            )
+                        }
+
+
                     }
-
 
                 }
-
             })
     }
 }
