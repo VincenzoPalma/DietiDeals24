@@ -39,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -98,12 +99,14 @@ class PaginaModificaProfiloUtente : ComponentActivity() {
                         composable("SchermataHome"){SchermataHome(navController = navController)}
                         composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
                         composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
-                    }
-                }
-            }
-        }
+                        composable("SchermataPagamentiProfilo"){SchermataPagamentiProfilo(navController = navController)}
 
-    }
+}
+}
+}
+}
+
+}
 }
 
 @SuppressLint("SuspiciousIndentation")
@@ -282,7 +285,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                     ),
                     modifier = Modifier
                         .focusRequester(sitoWebFocusRequester)
-                        .height(35.dp),
+                        .height(50.dp),
                     keyboardActions = KeyboardActions(
                         onNext = { addressFocusRequester.requestFocus() }
                     ))
@@ -458,7 +461,7 @@ fun SchermataModificaProfilo(navController: NavController) {
 
 
 
-                                ElevatedButton(onClick = { isDialogVisible = false }) {
+                                TextButton(onClick = { isDialogVisible = false }) {
                                     Text("OK")
                                 }
                             }
@@ -492,7 +495,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                         imeAction = ImeAction.Done
                     ), modifier = Modifier
                         .focusRequester(addressFocusRequester)
-                        .height(35.dp)
+                        .height(50.dp)
                 )
 
 
@@ -500,7 +503,7 @@ fun SchermataModificaProfilo(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = 650.dp)
+                    .offset(y = 660.dp)
 
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,

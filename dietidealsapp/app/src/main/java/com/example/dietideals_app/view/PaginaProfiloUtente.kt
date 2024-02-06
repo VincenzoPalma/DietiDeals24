@@ -91,6 +91,7 @@ class PaginaProfiloUtente : ComponentActivity() {
                         composable("SchermataHome"){SchermataHome(navController = navController)}
                         composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
                         composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
+                        composable("SchermataPagamentiProfilo"){SchermataPagamentiProfilo(navController = navController)}
                     }
                 }
             }
@@ -139,7 +140,7 @@ fun SchermataProfiloUtente(navController: NavController) {
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.clickable { navController.navigate("") }
+                                modifier = Modifier.clickable { navController.navigate("SchermataPagamentiProfilo") }
                             )
                             {
                                 Icon(

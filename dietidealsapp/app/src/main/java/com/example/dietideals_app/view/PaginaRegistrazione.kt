@@ -665,30 +665,31 @@ fun SchermataRegistrazione(navController: NavController) {
             Text(text = "AVANTI", fontSize = 20.sp)
 
 
-            if (openDialog.value) {
-                DatePickerDialog(onDismissRequest = {
+
+
+        }
+        if (openDialog.value) {
+            DatePickerDialog(onDismissRequest = {
+                openDialog.value = false
+            }, confirmButton = {
+                TextButton(onClick = {
                     openDialog.value = false
-                }, confirmButton = {
-                    TextButton(onClick = {
-                        openDialog.value = false
 
-                    }) {
-                        Text("OK")
-                    }
-                }, dismissButton = {
-                    TextButton(onClick = {
-                        openDialog.value = false
-                    }) {
-                        Text("CANCEL")
-                    }
                 }) {
-                    DatePicker(
-                        state = state
-
-                    )
+                    Text("OK")
                 }
-            }
+            }, dismissButton = {
+                TextButton(onClick = {
+                    openDialog.value = false
+                }) {
+                    Text("CANCEL")
+                }
+            }) {
+                DatePicker(
+                    state = state
 
+                )
+            }
         }
 
     }
