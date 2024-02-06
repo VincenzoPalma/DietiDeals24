@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class NotificaRequest {
 
-    @NotNull
-    private Utente utente;
 
     @NotNull
     @ManyToOne
