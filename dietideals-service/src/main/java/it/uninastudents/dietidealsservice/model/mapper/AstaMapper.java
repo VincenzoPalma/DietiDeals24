@@ -12,8 +12,5 @@ public interface AstaMapper {
 
     AstaDTO astaToAstaDTO(Asta asta);
 
-    Page<AstaDTO> pageAstaToPageAstaDTO(Page<Asta> pageAsta);
-
-    Page<Asta> pageAstaDTOToPageAsta(Page<AstaDTO> pageAstaRequest);
 
 }

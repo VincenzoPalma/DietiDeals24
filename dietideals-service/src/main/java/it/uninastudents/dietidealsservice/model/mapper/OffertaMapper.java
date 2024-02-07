@@ -12,7 +12,4 @@ public interface OffertaMapper {
 
     OffertaDTO offertaToOffertaDTO(Offerta offerta);
 
-    Page<Offerta> listOffertaDTOToListOfferta(Page<OffertaDTO> listOffertaRequest);
-
-    Page<OffertaDTO> listOffertaToListOffertaDTO(Page<Offerta> listOfferta);
 }

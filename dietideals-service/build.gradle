@@ -43,6 +43,10 @@ dependencies {
 	implementation 'io.github.benas:random-beans:3.9.0'
 	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+	implementation 'software.amazon.awssdk:cognitoidentityprovider:2.23.18'
+	implementation(platform("software.amazon.awssdk:bom:2.23.19"))
+	implementation 'com.amazonaws:aws-java-sdk-cognitoidentity:1.12.653'
+	implementation 'com.amazonaws:aws-java-sdk-cognitoidp:1.12.653'
 }
 
 tasks.named("test"){

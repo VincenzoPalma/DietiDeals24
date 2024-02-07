@@ -12,6 +12,7 @@ import java.util.UUID;
 @Transactional
 @RequiredArgsConstructor
 public class UtenteService {
+
     private final UtenteRepository repository;
 
     public Utente salvaUtente(Utente utente) {
