@@ -2,7 +2,6 @@ package com.example.dietideals_app.view
 
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,8 +13,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,10 +24,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,7 +35,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
@@ -70,14 +64,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
-import kotlinx.coroutines.launch
 
 class PaginaModificaProfiloUtente : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -258,14 +250,13 @@ fun SchermataModificaProfilo(navController: NavController) {
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
-                val context = LocalContext.current
+                LocalContext.current
 
-                val openUrlLauncher =
-                    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                        // Handle the result if needed
-                    }
+                rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
+                    // Handle the result if needed
+                }
 
-                val text = buildAnnotatedString {
+                buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
                             color = MaterialTheme.colorScheme.primary,

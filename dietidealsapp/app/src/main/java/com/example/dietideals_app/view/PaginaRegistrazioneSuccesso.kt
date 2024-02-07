@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -148,12 +149,12 @@ fun SchermataRegistrazioneSuccesso(navController: NavController) {
         }
 
         // Bottone centrato sotto il testo
-        Button(
+        ElevatedButton(
             onClick = {
                 presenter.effettuaRegistrazione()
                 navController.navigate("SchermataAutenticazione")
             },
-            shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
+
             modifier = Modifier
                 .padding(bottom = 16.dp) // Aggiungi il margine inferiore desiderato
                 .constrainAs(loginButton) {

@@ -16,12 +16,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -238,9 +237,8 @@ fun SchermataRegistrazioneDatiVenditore(navController: NavController) {
 
 
 
-            Button(
+            ElevatedButton(
                 onClick = { getContent.launch("application/pdf") },
-                shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp)
             ) {
                 Text(
                     text = if (selectedDocument == null) "CARICA" else "CARICATO",
@@ -256,7 +254,7 @@ fun SchermataRegistrazioneDatiVenditore(navController: NavController) {
             },
             label = {
                 Text(
-                    "PARTITA IVA",
+                    "Partita Iva",
                     color = if (isPartitaIvaValid) Color(0xFF0EA639) else if (!isPartitaIvaValid && partitaIva.isNotEmpty()) Color(
                         0xFF9B0404
                     ) else Color.Black
@@ -495,12 +493,12 @@ fun SchermataRegistrazioneDatiVenditore(navController: NavController) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // Bottone Annulla
-            Button(
+            ElevatedButton(
                 onClick = {
                     presenter.effettuaRegistrazione()
                     navController.navigate("SchermataDiventaVenditore")
                 },
-                shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
+
                 colors = ButtonColors(
                     containerColor = Color(0xFF9b0404),
                     contentColor = Color.White,
@@ -516,13 +514,12 @@ fun SchermataRegistrazioneDatiVenditore(navController: NavController) {
             }
 
             // Bottone Conferma
-            Button(
+            ElevatedButton(
                 enabled = checkFields(),
                 onClick = {
                     presenter.effettuaRegistrazione()
                     navController.navigate("SchermataRegistrazioneSuccesso")
                 },
-                shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
 
                 ) {
                 Text(
@@ -532,7 +529,6 @@ fun SchermataRegistrazioneDatiVenditore(navController: NavController) {
             }
         }
     }
-
 }
 
 

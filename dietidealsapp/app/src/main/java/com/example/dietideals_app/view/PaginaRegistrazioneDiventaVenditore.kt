@@ -16,13 +16,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -82,7 +80,7 @@ fun SchermataDiventaVenditore(navController: NavController) {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (backgroundImage, title, sellerText, contentBox, notNowButton, subTitle) = createRefs()
+        val (backgroundImage, title, sellerText, contentBox, notNowButton) = createRefs()
 
 
         // Immagine di sfondo
@@ -166,53 +164,30 @@ fun SchermataDiventaVenditore(navController: NavController) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                .size(380.dp)
+                .size(450.dp)
                 .background(Color.White)
                 .padding(16.dp)
         ) {
             // Testi e contenuti della Box
             Text(
-                text = "PASSA ALL'ACCOUNT VENDITORE",
+                text = "PASSA ALL'ACCOUNT VENDITORE!\n\n" +
+                        "I VANTAGGI:\n\n" +
+                        "1) CREARE ASTE ALL'INGLESE\n" +
+                        "2) CREARE ASTE SILENZIOSE\n" +
+                        "3) PARTECIPARE ALLE ASTE INVERSE",
                 textAlign = TextAlign.Center,
                 style = TextStyle(fontWeight = FontWeight.Bold),
                 fontSize = 20.sp,
             )
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = "I VANTAGGI",
-                textAlign = TextAlign.Center,
-                style = TextStyle(fontWeight = FontWeight.Bold),
-                fontSize = 20.sp,
-            )
-            Spacer(modifier = Modifier.height(40.dp))
-            Text(
-                text = "1) CREARE ASTE ALL'INGLESE",
-                textAlign = TextAlign.Left,
-                fontStyle = FontStyle.Italic,
-                fontSize = 20.sp,
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = "2) CREARE ASTE SILENZIOSE",
-                textAlign = TextAlign.Left,
-                fontStyle = FontStyle.Italic,
-                fontSize = 20.sp,
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = "3) PARTECIPARE ALLE ASTE INVERSE",
-                textAlign = TextAlign.Left,
-                fontStyle = FontStyle.Italic,
-                fontSize = 20.sp,
-            )
+
 
             Spacer(modifier = Modifier.height(30.dp))
 
             // Bottone "DIVENTA UN VENDITORE"
-            Button(
+            ElevatedButton(
                 onClick = { presenter.effettuaRegistrazione()
                     navController.navigate("SchermataRegistrazioneDatiVenditore")},
-                shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
+
                 modifier = Modifier
                     .padding(bottom = 16.dp) // Aggiungi un margine inferiore
                     .fillMaxWidth() // Usa tutta la larghezza disponibile
@@ -222,44 +197,36 @@ fun SchermataDiventaVenditore(navController: NavController) {
                     fontSize = 20.sp, // Imposta la dimensione del font desiderata
                     modifier = Modifier.padding(8.dp) // Aggiungi spaziatura interna al testo
                 )
-            }
-        }
 
-        // Bottone "NON ORA"
-        Button(
-            onClick = {
-                presenter.effettuaRegistrazione()
-                navController.navigate("SchermataRegistrazioneSuccesso")
-            },
-            shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
-            modifier = Modifier
-                .padding(bottom = 25.dp) // Aggiungi un margine inferiore
-                .constrainAs(notNowButton){
-                    top.linkTo(contentBox.bottom, margin = 5.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
+            }
+            TextButton(
+                onClick = {
+                    presenter.effettuaRegistrazione()
+                    navController.navigate("SchermataRegistrazioneSuccesso")
                 },
-            colors = ButtonColors(containerColor=Color(0xFF9b0404), contentColor = Color.White, disabledContainerColor = Color.Gray, disabledContentColor = Color.Black)
-        ) {
+                // Aggiungi un margine inferiore
+
+
+            ) {
+                Text(
+                    text = "NON ORA",
+                    fontSize = 20.sp, // Imposta la dimensione del font desiderata
+                    modifier = Modifier.padding(8.dp) ,
+                    color = Color.Red// Aggiungi spaziatura interna al testo
+                )
+            }
+
+            // Testo sotto il bottone "NON ORA"
             Text(
-                text = "NON ORA",
-                fontSize = 20.sp, // Imposta la dimensione del font desiderata
-                modifier = Modifier.padding(8.dp) // Aggiungi spaziatura interna al testo
+                text = "POTRAI PASSARE AD UN ACCOUNT VENDITORE IN UN SECONDO MOMENTO",
+                textAlign = TextAlign.Center,
+                color = Color.Gray,
+                fontSize = 9.sp,
             )
         }
 
-        // Testo sotto il bottone "NON ORA"
-        Text(
-            text = "POTRAI PASSARE AD UN ACCOUNT VENDITORE IN UN SECONDO MOMENTO",
-            textAlign = TextAlign.Center,
-            color = Color.Gray,
-            fontSize = 8.sp,
-            modifier = Modifier.constrainAs(subTitle){
-                top.linkTo(notNowButton.top, margin = 70.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
-        )
+        // Bottone "NON ORA"
+
     }
 }
 

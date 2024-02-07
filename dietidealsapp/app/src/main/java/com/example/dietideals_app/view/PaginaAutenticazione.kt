@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -75,6 +77,7 @@ class MainActivity : ComponentActivity() {
                         composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
                         composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
                         composable("SchermataPagamentiProfilo"){SchermataPagamentiProfilo(navController = navController)}
+                        composable("SchermataGestioneAste"){SchermataGestioneAste(navController = navController)}
 
                     }
                 }
@@ -221,7 +224,7 @@ fun SchermataAutenticazione(navController: NavController) {
         )
 
         // Bottone accesso
-        Button(
+        ElevatedButton(
             onClick = {
                 if (isLoginEnabled) {
                     presenter.effettuaLogin(username, password)
@@ -236,7 +239,6 @@ fun SchermataAutenticazione(navController: NavController) {
                 }
                 .width(140.dp)
                 .height(48.dp),
-            shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
             enabled = true //isLoginEnabled
         ) {
             Text("ACCEDI", fontSize = 20.sp)
@@ -299,7 +301,7 @@ fun SchermataAutenticazione(navController: NavController) {
                 }
         )
         // Bottone registrazione
-        Button(
+        ElevatedButton(
             onClick = {
                 presenter.effettuaRegistrazione()
                 navController.navigate("SchermataRegistrazione")
@@ -312,8 +314,7 @@ fun SchermataAutenticazione(navController: NavController) {
 
                 }
                 .width(180.dp)
-                .height(48.dp),
-            shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp),
+                .height(48.dp)
         ) {
             Text("REGISTRATI", fontSize = 20.sp)
         }

@@ -21,8 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,14 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,7 +52,6 @@ import com.example.dietideals_app.R
 import com.example.dietideals_app.presenter.AutenticazionePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
-import retrofit2.http.Url
 
 class RegistrazioneImmagineProfilo : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -209,14 +202,14 @@ fun SchermataImmagineProfilo(navController: NavController) {
                         end.linkTo(parent.end)
                     }, fontFamily = titleCustomFont
                 )
-                Button(onClick = {
+        ElevatedButton(onClick = {
                     presenter.effettuaRegistrazione()
                     navController.navigate("SchermataDiventaVenditore")
                 }, modifier = Modifier.constrainAs(bottoneAvanti) {
                     top.linkTo(testoOpzionale.bottom, margin = 100.dp)
                     bottom.linkTo(parent.bottom, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
-                }, shape = CutCornerShape(topStart = 0.dp, bottomEnd = 0.dp)) {
+                }) {
                     Text(text = "AVANTI", fontSize = 20.sp)
                 }
             }

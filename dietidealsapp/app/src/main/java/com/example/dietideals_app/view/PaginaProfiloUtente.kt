@@ -26,11 +26,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -56,6 +53,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,8 +66,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.DatiVenditore
+import com.example.dietideals_app.model.DettagliUtente
+import com.example.dietideals_app.model.Utente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import kotlinx.coroutines.launch
+import java.io.File
+import java.time.LocalDate
 
 class PaginaProfiloUtente : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,8 +108,50 @@ class PaginaProfiloUtente : ComponentActivity() {
 @Composable
 fun SchermataProfiloUtente(navController: NavController) {
 
-    var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+
+    val upgradeIcon = painterResource(id = R.drawable.baseline_upgrade_24)
+    val accountIcon = painterResource(id = R.drawable.baseline_account_circle_24)
+    val menuIcon = painterResource(id = R.drawable.baseline_menu_24)
+    val logoutIcon = painterResource(id = R.drawable.baseline_logout_24)
+    val paymentIcon = painterResource(id = R.drawable.baseline_attach_money_24)
+    val profilePicture = painterResource(id = R.drawable.ic_launcher_foreground)
+    val homeIcon = R.drawable.baseline_home_24
+    val gestisciAste = R.drawable.line_chart_svgrepo_com
+    val creaAsta = R.drawable.hand_money_cash_hold_svgrepo_com
+    val account = R.drawable.baseline_manage_accounts_24
+    val colorGreen = 0xFF0EA639
+
+    val utente = Utente(
+        "mrossi",
+        "mario.rossi@example.com",
+        "password123",
+        "Mario",
+        "Rossi",
+        LocalDate.of(1990, 5, 15),
+        File("percorso/immagineProfilo.jpg"),
+        DatiVenditore(
+            "123456789",
+            "Mario Rossi",
+            "BIC123",
+            "IT123456789",
+            File("percorso/documentoRiconoscimento.jpg")
+        ),
+        DettagliUtente(
+            "Sono Mario Rossi, un appassionato venditore di aste con una vasta esperienza nel settore. " +
+                    "Offro una selezione di oggetti unici e preziosi, curando ogni dettaglio delle mie aste per garantire esperienze indimenticabili ai miei acquirenti. " +
+                    "Conosco il valore degli oggetti che metto all'asta e mi impegno a offrire un servizio clienti impeccabile. " +
+                    "Sono qui per fornire autenticità, qualità e emozioni nel mondo delle aste.",
+            " www.mario-rossi.com",
+            "Via Roma, 123, 00100, Roma, Italia",
+            "instagram_utente",
+            "facebook_utente",
+            "twitter_utente"
+        )
+    )
+
 
 
         ModalNavigationDrawer(
@@ -128,7 +173,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                             )
                             {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.baseline_account_circle_24),
+                                    painter = accountIcon,
                                     contentDescription ="Profilo Utente",
                                     modifier = Modifier.size(30.dp)
                                 )
@@ -144,7 +189,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                             )
                             {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.baseline_attach_money_24),
+                                    painter = paymentIcon,
                                     contentDescription ="Pagamenti",
                                     modifier = Modifier.size(30.dp)
                                 )
@@ -160,7 +205,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                             )
                             {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.baseline_upgrade_24),
+                                    painter = upgradeIcon,
                                     contentDescription ="Diventa Venditore",
                                     modifier = Modifier.size(30.dp)
                                 )
@@ -184,7 +229,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     )
                     {
                         Icon(
-                            painter = painterResource(id = R.drawable.baseline_logout_24),
+                            painter = logoutIcon,
                             contentDescription ="Logout",
                             modifier = Modifier.size(30.dp),
                             tint = Color(0xFF9B0404)
@@ -224,7 +269,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         },
                             navigationIcon = {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.baseline_menu_24),
+                                    painter = menuIcon,
                                     contentDescription = null,
                                     modifier = Modifier
                                         .clickable {
@@ -268,7 +313,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         ) {
                             // Immagine all'interno della Box circolare
                             Image(
-                                painter = painterResource(id = R.drawable.ic_launcher_foreground), // Rimpiazza con la tua immagine
+                                painter = profilePicture, // Rimpiazza con la tua immagine
                                 contentDescription = null,
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -277,7 +322,7 @@ fun SchermataProfiloUtente(navController: NavController) {
 
                         }
                         Text(
-                            text = "MARIO ROSSI",
+                            text = utente.nome + " " + utente.cognome,
                             modifier = Modifier
                                 .offset(y = 150.dp)
 
@@ -287,7 +332,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                             fontWeight = FontWeight.Bold, // Imposta il grassetto
                         )
                         Text(
-                            text = "@mariorossi",
+                            text = "@"+utente.username,
                             modifier = Modifier
                                 .offset(y = 180.dp)
 
@@ -308,24 +353,23 @@ fun SchermataProfiloUtente(navController: NavController) {
                             color = Color.Black,
                             fontWeight = FontWeight.Bold
                         )
-                        Text(
-                            text = "Ciao! Sono Mario Rossi, venditore di aste con esperienza nel mondo delle opere d'arte. " +
-                                    "Offro oggetti unici e rari con un servizio di alta qualità. S" +
-                                    "copri tesori per la tua collezione personale! Grazie per il tuo interesse!",
-                            modifier = Modifier
-                                .offset(y = 235.dp)
-
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            textAlign = TextAlign.Left,
-                            fontSize = 20.sp,
-                            color = Color.Black// Imposta il grassetto
-                        )
+                        utente.dettagliUtente?.descrizione?.let {
+                            Text(
+                                text = it,
+                                modifier = Modifier
+                                    .offset(y = 235.dp)
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Left,
+                                fontSize = 20.sp,
+                                color = Color.Black,// Imposta il grassetto
+                                        maxLines = 6, // Imposta il numero massimo di righe
+                                overflow = TextOverflow.Ellipsis// Aggiunge tre puntini alla fine del testo se viene troncato
+                            )
+                        }
                         Row(modifier = Modifier
                             .fillMaxWidth()
                             .offset(y = 400.dp)
-
-
                             .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically) {
                             Text(
@@ -337,10 +381,9 @@ fun SchermataProfiloUtente(navController: NavController) {
                             )
                             val context = LocalContext.current
 
-                            val openUrlLauncher =
-                                rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                                    // Handle the result if needed
-                                }
+                            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                                // Handle the result if needed
+                            }
 
                             val text = buildAnnotatedString {
                                 withStyle(
@@ -349,7 +392,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                                         fontSize = 20.sp
                                     )
                                 ) {
-                                    append("www.mariorossi.com")
+                                    append(utente.dettagliUtente?.sitoWeb)
                                     addStringAnnotation("URL", "https://www.example.com", 0, length)
                                 }
                             }
@@ -361,7 +404,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                                 onClick = { offset ->
                                     text.getStringAnnotations("URL", offset, offset)
                                         .firstOrNull()?.let { annotation ->
-                                            val url = annotation.item
+                                            annotation.item
                                             val intent = Intent(Intent.ACTION_VIEW, null)
                                             ContextCompat.startActivity(context, intent, null)
                                         }
@@ -455,13 +498,15 @@ fun SchermataProfiloUtente(navController: NavController) {
                             )
 
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text(
-                                text = "Via San Michele 25, Napoli(NA),Italia",
-                                modifier = Modifier.weight(1f),
-                                fontSize = 15.sp,
-                                color = Color.Black,
+                            utente.dettagliUtente?.indirizzo?.let {
+                                Text(
+                                    text = it,
+                                    modifier = Modifier.weight(1f),
+                                    fontSize = 15.sp,
+                                    color = Color.Black,
 
-                                )
+                                    )
+                            }
 
 
                         }
@@ -478,61 +523,60 @@ fun SchermataProfiloUtente(navController: NavController) {
                                     .width(0.dp)
                                     .weight(1f)
                             )
+
                             IconWithText(
-                                iconId = R.drawable.baseline_home_24,
+                                iconId = homeIcon,
                                 text = "Home",
                                 "SchermataHome",
-                                Color(0xFF0EA639)
+                                Color(colorGreen)
                             )
                             Spacer(
                                 modifier = Modifier
                                     .width(0.dp)
                                     .weight(1f)
                             )
+
                             IconWithText(
-                                iconId = R.drawable.line_chart_svgrepo_com,
+                                iconId = gestisciAste,
                                 text = "Gestisci Aste",
                                 "",
-                                Color(0xFF0EA639)
+                                Color(colorGreen)
                             )
                             Spacer(
                                 modifier = Modifier
                                     .width(0.dp)
                                     .weight(1f)
                             )
+
                             IconWithText(
-                                iconId = R.drawable.hand_money_cash_hold_svgrepo_com,
+                                iconId = creaAsta,
                                 text = "Crea Asta",
                                 "",
-                                Color(0xFF0EA639)
+                                Color(colorGreen)
                             )
                             Spacer(
                                 modifier = Modifier
                                     .width(0.dp)
                                     .weight(1f)
                             )
+
                             IconWithText(
-                                iconId = R.drawable.baseline_manage_accounts_24,
+                                iconId = account,
                                 text = "Profilo",
                                 "SchermataProfiloUtente",
-                                Color(0xFF0EA639)
+                                Color(colorGreen)
                             )
                             Spacer(
                                 modifier = Modifier
                                     .width(0.dp)
                                     .weight(1f)
                             )
-
-
                         }
-
-
                     }
-
-
                 }
-            })
             }
+        )
+}
 
 
 

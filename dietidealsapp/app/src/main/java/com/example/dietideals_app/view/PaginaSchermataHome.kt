@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -90,7 +91,7 @@ class PaginaSchermataHome : ComponentActivity() {
                         composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
                         composable("SchermataHome"){SchermataHome(navController = navController)}
                         composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
-                    }
+                        composable("SchermataGestioneAste"){SchermataGestioneAste(navController = navController)}}
                 }
             }
         }
@@ -320,7 +321,7 @@ fun SchermataHome(navController: NavController) {
                                             value = query,
                                             onValueChange = { nuovaQuery -> query = nuovaQuery },
                                             placeholder = { Text("Cerca Asta...") },
-                                            modifier = Modifier.weight(1f)
+                                            modifier = Modifier.height(50.dp)
                                         )
                                     }
                                 }
@@ -441,7 +442,7 @@ fun SchermataHome(navController: NavController) {
 
                                                 // Titolo
                                                 Text(
-                                                    text = "Elemento $index-A",
+                                                    text = "Asta $index-A",
                                                     color = Color.Black,
                                                     fontWeight = FontWeight.Bold,
                                                     fontSize = 20.sp,
@@ -450,10 +451,9 @@ fun SchermataHome(navController: NavController) {
                                                 )
 
                                                 // Bottone
-                                                Button(
+                                                ElevatedButton(
                                                     onClick = { /* Azione del bottone */ },
-                                                    modifier = Modifier.padding(4.dp),
-                                                    shape = RoundedCornerShape(0, 0)
+                                                    modifier = Modifier.padding(4.dp)
                                                 ) {
                                                     Text(
                                                         String.format(
@@ -489,7 +489,7 @@ fun SchermataHome(navController: NavController) {
 
                                                 // Titolo
                                                 Text(
-                                                    text = "Elemento $index-B",
+                                                    text = "Asta $index-B",
                                                     color = Color.Black,
                                                     fontWeight = FontWeight.Bold,
                                                     fontSize = 20.sp,
@@ -498,10 +498,10 @@ fun SchermataHome(navController: NavController) {
                                                 )
 
                                                 // Bottone
-                                                Button(
+                                                ElevatedButton(
                                                     onClick = { /* Azione del bottone */ },
                                                     modifier = Modifier,
-                                                    shape = RoundedCornerShape(0, 0)
+
                                                 ) {
                                                     Text(
                                                         text = String.format(
@@ -586,7 +586,7 @@ fun SchermataHome(navController: NavController) {
                             IconWithText(
                                 iconId = R.drawable.line_chart_svgrepo_com,
                                 text = "Gestisci Aste",
-                                ""
+                                "SchermataGestioneAste"
                             )
 
 
