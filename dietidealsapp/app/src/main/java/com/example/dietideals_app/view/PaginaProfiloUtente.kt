@@ -201,7 +201,7 @@ fun SchermataProfiloUtente(navController: NavController) {
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.clickable { navController.navigate("SchermataDiventaVenditore") }
+                                modifier = Modifier.clickable { navController.navigate("SchermataRegistrazioneDatiVenditore") }
                             )
                             {
                                 Icon(
