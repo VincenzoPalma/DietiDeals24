@@ -13,9 +13,4 @@ public class UtenteController {
     private final UtenteService utenteService;
     private final UtenteMapper utenteMapper;
 
-    @GetMapping("/prova")
-    public String getProva(){
-        return "cia strunz";
-    }
-
 }

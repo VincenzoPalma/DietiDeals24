@@ -30,7 +30,7 @@ public class AstaService {
 
     public Page<Asta> getAll(Pageable pageable, String nome, TipoAsta tipo, CategoriaAsta categoria) {
         var finalName = nome != null ? "%".concat(nome.toUpperCase()).concat("%") : null;
-        var spec = AstaSpecs.hasNome(finalName).or(AstaSpecs.hasTipo(tipo)).or(AstaSpecs.hasCategoria(categoria));
+        var spec = AstaSpecs.hasNome(finalName).and(AstaSpecs.hasTipo(tipo)).and(AstaSpecs.hasCategoria(categoria));
         return repository.findAll(spec, pageable);
     }
 

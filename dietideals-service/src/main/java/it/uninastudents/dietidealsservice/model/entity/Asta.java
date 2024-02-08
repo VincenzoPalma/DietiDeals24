@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -46,6 +47,7 @@ public class Asta extends BaseEntity {
     @Column(nullable = false)
     private StatoAsta stato;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(nullable = false)
     private Utente proprietario;
