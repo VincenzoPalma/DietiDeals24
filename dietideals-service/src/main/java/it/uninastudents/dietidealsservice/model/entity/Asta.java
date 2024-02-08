@@ -1,5 +1,6 @@
 package it.uninastudents.dietidealsservice.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.uninastudents.dietidealsservice.model.base.BaseEntity;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
@@ -8,8 +9,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import net.minidev.json.annotate.JsonIgnore;
-
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -52,6 +51,7 @@ public class Asta extends BaseEntity {
     @JoinColumn(nullable = false)
     private Utente proprietario;
 
+    @JsonIgnore
     @OneToMany
     private Set<Offerta> offerte;
 

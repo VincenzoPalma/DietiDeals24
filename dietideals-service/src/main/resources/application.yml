@@ -4,6 +4,11 @@ spring:
     username: postgres
     password: 26102002
     driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_MqNmedT71
 
   jpa:
     hibernate:

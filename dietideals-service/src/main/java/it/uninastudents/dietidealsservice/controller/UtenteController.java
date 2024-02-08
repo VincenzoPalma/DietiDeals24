@@ -13,4 +13,8 @@ public class UtenteController {
     private final UtenteService utenteService;
     private final UtenteMapper utenteMapper;
 
+    @GetMapping("/GetUser")
+    private String GetUser(){
+        return "mammt";
+    }
 }
