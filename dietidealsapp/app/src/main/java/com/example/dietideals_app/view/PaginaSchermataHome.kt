@@ -91,7 +91,8 @@ class PaginaSchermataHome : ComponentActivity() {
                         composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
                         composable("SchermataHome"){SchermataHome(navController = navController)}
                         composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
-                        composable("SchermataGestioneAste"){SchermataGestioneAste(navController = navController)}}
+                        composable("SchermataGestioneAste"){SchermataGestioneAste(navController = navController)}
+                        composable("SchermataCreazioneAsta"){SchermataCreazioneAsta(navController = navController)}}
                 }
             }
         }
