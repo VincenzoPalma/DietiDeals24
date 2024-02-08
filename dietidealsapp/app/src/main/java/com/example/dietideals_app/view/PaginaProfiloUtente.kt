@@ -169,7 +169,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     ){
                         Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickable { navController.navigate("") }
+                            modifier = Modifier.clickable { navController.navigate("SchermataProfiloUtente") }
                             )
                             {
                                 Icon(
@@ -201,7 +201,7 @@ fun SchermataProfiloUtente(navController: NavController) {
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.clickable { navController.navigate("SchermataAutenticazione") }
+                                modifier = Modifier.clickable { navController.navigate("SchermataDiventaVenditore") }
                             )
                             {
                                 Icon(
@@ -224,7 +224,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
-                            .clickable { navController.navigate("") }
+                            .clickable { navController.navigate("SchermataAutenticazione") }
 
                     )
                     {

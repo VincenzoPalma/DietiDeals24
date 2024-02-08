@@ -575,7 +575,7 @@ fun SchermataHome(navController: NavController) {
                             IconWithText(
                                 iconId = R.drawable.hand_money_cash_hold_svgrepo_com,
                                 text = "Crea Asta",
-                                ""
+                                "SchermataCreazioneAsta"
                             )
 
 
