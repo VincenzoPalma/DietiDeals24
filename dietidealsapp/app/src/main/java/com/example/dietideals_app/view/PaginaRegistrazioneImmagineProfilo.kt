@@ -63,12 +63,31 @@ class RegistrazioneImmagineProfilo : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
+                    NavHost(
+                        navController = navController,
+                        startDestination = "SchermataAutenticazione"
+                    ) {
+                        composable("SchermataAutenticazione") {
+                            SchermataAutenticazione(
+                                navController = navController
+                            )
+                        }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController) }
-                        composable("SchermataDiventaVenditore") {SchermataDiventaVenditore(navController = navController) }
-                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
+                        composable("SchermataImmagineProfilo") {
+                            SchermataImmagineProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataDiventaVenditore") {
+                            SchermataDiventaVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneDatiVenditore") {
+                            SchermataRegistrazioneDatiVenditore(
+                                navController = navController
+                            )
+                        }
                     }
                 }
             }
@@ -150,73 +169,75 @@ fun SchermataImmagineProfilo(navController: NavController) {
         LocalContext.current as ComponentActivity
         var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
         // Definisci il contratto per l'activity result
-        val getContent = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-            // Gestisci l'URI dell'immagine selezionata
-            // Puoi eseguire ulteriori operazioni qui, come caricare l'immagine
-            uri?.let {
-                selectedImageUri = it
+        val getContent =
+            rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+                // Gestisci l'URI dell'immagine selezionata
+                // Puoi eseguire ulteriori operazioni qui, come caricare l'immagine
+                uri?.let {
+                    selectedImageUri = it
+                }
             }
+
+        // Cerchio con icona di una matita al centro
+        Box(
+            modifier = Modifier
+                .constrainAs(profileImage) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .size(150.dp)
+                .clip(CircleShape)
+                .background(
+                    Color.White
+                )
+                .clickable {
+                    getContent.launch("image/*")
+                }
+                .border(5.dp, Color(0xFF0EA639), shape = CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Icon(
+                painter = if (selectedImageUri == null) painterResource(id = R.drawable.baseline_brush_24) else painterResource(
+                    id = R.drawable.baseline_done_24
+                ),
+                contentDescription = null,
+                tint = Color(0xFF0EA639),
+                modifier = Modifier.size(70.dp)
+            )
         }
-
-                // Cerchio con icona di una matita al centro
-                Box(
-                    modifier = Modifier
-                        .constrainAs(profileImage) {
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                        .size(150.dp)
-                        .clip(CircleShape)
-                        .background(
-                            Color.White
-                        )
-                        .clickable {
-                            getContent.launch("image/*")
-                        }
-                        .border(5.dp, Color(0xFF0EA639), shape = CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-
-                    Icon(
-                        painter = if (selectedImageUri == null) painterResource(id = R.drawable.baseline_brush_24) else painterResource(id = R.drawable.baseline_done_24) ,
-                        contentDescription = null,
-                        tint = Color(0xFF0EA639),
-                        modifier = Modifier.size(70.dp)
-                    )
-                }
-                Text(
-                    text = "IMMAGINE DEL PROFILO",
-                    modifier = Modifier.constrainAs(testoImmagine) {
-                        top.linkTo(profileImage.bottom, margin = 30.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
-                    color = Color(0xFF0EA639), fontSize = 20.sp, fontFamily = titleCustomFont,
-                )
-                Text(text = "(OPZIONALE)", color = Color(0xFF0EA639), fontSize = 20.sp,
-                    modifier = Modifier.constrainAs(testoOpzionale) {
-                        top.linkTo(testoImmagine.bottom, margin = 1.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }, fontFamily = titleCustomFont
-                )
+        Text(
+            text = "IMMAGINE DEL PROFILO",
+            modifier = Modifier.constrainAs(testoImmagine) {
+                top.linkTo(profileImage.bottom, margin = 30.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            },
+            color = Color(0xFF0EA639), fontSize = 20.sp, fontFamily = titleCustomFont,
+        )
+        Text(
+            text = "(OPZIONALE)", color = Color(0xFF0EA639), fontSize = 20.sp,
+            modifier = Modifier.constrainAs(testoOpzionale) {
+                top.linkTo(testoImmagine.bottom, margin = 1.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }, fontFamily = titleCustomFont
+        )
         ElevatedButton(onClick = {
-                    presenter.effettuaRegistrazione()
-                    navController.navigate("SchermataDiventaVenditore")
-                }, modifier = Modifier.constrainAs(bottoneAvanti) {
-                    top.linkTo(testoOpzionale.bottom, margin = 100.dp)
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
-                    end.linkTo(parent.end, margin = 16.dp)
-                }) {
-                    Text(text = "AVANTI", fontSize = 20.sp)
-                }
-            }
-
+            presenter.effettuaRegistrazione()
+            navController.navigate("SchermataDiventaVenditore")
+        }, modifier = Modifier.constrainAs(bottoneAvanti) {
+            top.linkTo(testoOpzionale.bottom, margin = 100.dp)
+            bottom.linkTo(parent.bottom, margin = 16.dp)
+            end.linkTo(parent.end, margin = 16.dp)
+        }) {
+            Text(text = "AVANTI", fontSize = 20.sp)
+        }
     }
 
-
+}
 
 
 @Preview(showBackground = true)

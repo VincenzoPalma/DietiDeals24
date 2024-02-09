@@ -55,13 +55,36 @@ class Diventavenditore : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
+                    NavHost(
+                        navController = navController,
+                        startDestination = "SchermataAutenticazione"
+                    ) {
+                        composable("SchermataAutenticazione") {
+                            SchermataAutenticazione(
+                                navController = navController
+                            )
+                        }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") { SchermataImmagineProfilo(navController = navController) }
-                        composable("SchermataDiventaVenditore") { SchermataDiventaVenditore(navController = navController) }
-                        composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
-                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
+                        composable("SchermataImmagineProfilo") {
+                            SchermataImmagineProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataDiventaVenditore") {
+                            SchermataDiventaVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneSuccesso") {
+                            SchermataRegistrazioneSuccesso(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneDatiVenditore") {
+                            SchermataRegistrazioneDatiVenditore(
+                                navController = navController
+                            )
+                        }
                     }
                 }
             }
@@ -185,8 +208,10 @@ fun SchermataDiventaVenditore(navController: NavController) {
 
             // Bottone "DIVENTA UN VENDITORE"
             ElevatedButton(
-                onClick = { presenter.effettuaRegistrazione()
-                    navController.navigate("SchermataRegistrazioneDatiVenditore")},
+                onClick = {
+                    presenter.effettuaRegistrazione()
+                    navController.navigate("SchermataRegistrazioneDatiVenditore")
+                },
 
                 modifier = Modifier
                     .padding(bottom = 16.dp) // Aggiungi un margine inferiore
@@ -211,7 +236,7 @@ fun SchermataDiventaVenditore(navController: NavController) {
                 Text(
                     text = "NON ORA",
                     fontSize = 20.sp, // Imposta la dimensione del font desiderata
-                    modifier = Modifier.padding(8.dp) ,
+                    modifier = Modifier.padding(8.dp),
                     color = Color.Red// Aggiungi spaziatura interna al testo
                 )
             }

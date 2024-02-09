@@ -1,12 +1,9 @@
 package com.example.dietideals_app.view
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,17 +21,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -46,7 +40,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -60,20 +53,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -101,19 +90,50 @@ class PaginaCreazioneAsta : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
+                    NavHost(
+                        navController = navController,
+                        startDestination = "SchermataAutenticazione"
+                    ) {
+                        composable("SchermataAutenticazione") {
+                            SchermataAutenticazione(
+                                navController = navController
+                            )
+                        }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") { SchermataImmagineProfilo(navController = navController) }
-                        composable("SchermataDiventaVenditore") { SchermataDiventaVenditore(navController = navController) }
-                        composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
-                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
-                        composable("SchermataHome"){SchermataHome(navController = navController)}
-                        composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
-                        composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
-                        composable("SchermataPagamentiProfilo"){SchermataPagamentiProfilo(navController = navController)}
-                        composable("SchermataGestioneAste"){SchermataGestioneAste(navController = navController)}
-                        composable("SchermataCreazioneAsta"){SchermataCreazioneAsta(navController = navController)}
+                        composable("SchermataImmagineProfilo") {
+                            SchermataImmagineProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataDiventaVenditore") {
+                            SchermataDiventaVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneSuccesso") {
+                            SchermataRegistrazioneSuccesso(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneDatiVenditore") {
+                            SchermataRegistrazioneDatiVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataHome") { SchermataHome(navController = navController) }
+                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
+                        composable("SchermataModificaProfilo") {
+                            SchermataModificaProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataPagamentiProfilo") {
+                            SchermataPagamentiProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
+                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
                     }
                 }
             }
@@ -130,21 +150,35 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
     var isDialogVisible by remember { mutableStateOf(false) }
     var isConfirmDialogVisible by remember { mutableStateOf(false) }
-    val categorie = arrayOf("Elettronica","Informatica","Giocattoli","Alimentari","Servizi","Arredamento","Auto e Moto","Libri","Abbigliamento","Attrezzi ed utensili","Bellezza","Musica","Arte")
+    val categorie = arrayOf(
+        "Elettronica",
+        "Informatica",
+        "Giocattoli",
+        "Alimentari",
+        "Servizi",
+        "Arredamento",
+        "Auto e Moto",
+        "Libri",
+        "Abbigliamento",
+        "Attrezzi ed utensili",
+        "Bellezza",
+        "Musica",
+        "Arte"
+    )
     val colorGreen = 0xFF0EA639
     val colorRed = 0xFF9B0404
     val defaultImage = painterResource(id = R.drawable.defaultimage)
-    val selectedTabIndex = remember { mutableIntStateOf(1) }
-    val tabNames = listOf("All'inglese","Silenziosa","Inversa")
-    var nomeAsta by remember{ mutableStateOf("")}
-    var sogliaRialzo by remember{ mutableStateOf("10")}
+    val selectedTabIndex = remember { mutableIntStateOf(2) }
+    val tabNames = listOf("All'inglese", "Silenziosa", "Inversa")
+    var nomeAsta by remember { mutableStateOf("") }
+    var sogliaRialzo by remember { mutableStateOf("10") }
 
 
-    var oreIntervallo by remember{ mutableStateOf("1")}
+    var oreIntervallo by remember { mutableStateOf("1") }
     val ore = minOf(maxOf(oreIntervallo.toIntOrNull() ?: 0, 0), 3)
     oreIntervallo = ore.toString()
     val oreIntervalloFocusRequested = remember { FocusRequester() }
-    var minutiIntervallo by remember{ mutableStateOf("0")}
+    var minutiIntervallo by remember { mutableStateOf("0") }
     val minutiIntervalloFocusRequested = remember { FocusRequester() }
     var prezzoBase by remember { mutableStateOf("") }
     var descrizione by remember { mutableStateOf("") }
@@ -163,16 +197,16 @@ fun SchermataCreazioneAsta(navController: NavController) {
         mutableStateOf("Seleziona Categoria")
     }
 
-   /* LocalContext.current as ComponentActivity
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    // Definisci il contratto per l'activity result
-    val getContent = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-        // Gestisci l'URI dell'immagine selezionata
-        // Puoi eseguire ulteriori operazioni qui, come caricare l'immagine
-        uri?.let {
-            selectedImageUri = it
-        }
-    }*/
+    /* LocalContext.current as ComponentActivity
+     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+     // Definisci il contratto per l'activity result
+     val getContent = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+         // Gestisci l'URI dell'immagine selezionata
+         // Puoi eseguire ulteriori operazioni qui, come caricare l'immagine
+         uri?.let {
+             selectedImageUri = it
+         }
+     }*/
 
 
     ConstraintLayout(
@@ -229,7 +263,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
                 }
             )
-            
+
             Column(
                 modifier = Modifier
 
@@ -242,24 +276,33 @@ fun SchermataCreazioneAsta(navController: NavController) {
                     for (index in tabNames.indices) {
                         Tab(
                             selected = selectedTabIndex.intValue == index,
-                            onClick = { selectedTabIndex.intValue = index
-                                      currentPage.value = 0},
+                            onClick = {
+                                selectedTabIndex.intValue = index
+                                currentPage.value = 0
+                            },
                             // Puoi personalizzare l'aspetto delle schede qui, ad esempio aggiungendo icone, testo, etc.
                             text = {
-                                Text(text = tabNames[index],fontSize = 15.sp)
+                                Text(text = tabNames[index], fontSize = 15.sp)
                             }
                         )
                     }
+                }
+                @SuppressLint("SimpleDateFormat")
+                fun convertMillisToDate(millis: Long): String {
+                    val formatter = SimpleDateFormat("dd/MM/yyyy")
+                    return formatter.format(Date(millis))
                 }
 
                 // Contenuto dinamico in base alla scheda corrente
                 when (selectedTabIndex.value) {
                     0 -> {
-                        when(currentPage.value){
-                            0-> {
-                                Box(modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp))
+                        when (currentPage.value) {
+                            0 -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp)
+                                )
                                 {
                                     Text(
                                         text = "DETTAGLI ASTA",
@@ -268,16 +311,18 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontWeight = FontWeight.Bold, // Imposta il testo in grassetto
                                         modifier = Modifier.fillMaxWidth()
                                     )
-                                   OutlinedTextField(value = nomeAsta, onValueChange = {nomeAsta = it},
-                                   label = { Text(text = "Nome Asta")}, modifier = Modifier
-                                           .fillMaxWidth()
-                                           .offset(y = 40.dp),
-                                       keyboardOptions = KeyboardOptions.Default.copy(
-                                           imeAction = ImeAction.Next
-                                       ),
-                                       keyboardActions = KeyboardActions(
-                                           onNext = { prezzoBaseFocusRequested.requestFocus() }
-                                       ))
+                                    OutlinedTextField(value = nomeAsta,
+                                        onValueChange = { nomeAsta = it },
+                                        label = { Text(text = "Nome Asta") },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 40.dp),
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            imeAction = ImeAction.Next
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onNext = { prezzoBaseFocusRequested.requestFocus() }
+                                        ))
                                     HorizontalDivider(
                                         // Aggiungi una linea divisoria
                                         modifier = Modifier
@@ -286,14 +331,21 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     )
 
 
-                                    Row (modifier = Modifier
-                                        .fillMaxWidth()
-                                        .offset(y = 130.dp),
-                                        verticalAlignment = Alignment.CenterVertically){
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 130.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
 
-                                        Text(text = "Prezzo Base: € ", fontWeight = FontWeight.Bold,fontSize = 20.sp)
+                                        Text(
+                                            text = "Prezzo Base: € ",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp
+                                        )
 
-                                        OutlinedTextField(value = prezzoBase, onValueChange = {prezzoBase = it},
+                                        OutlinedTextField(value = prezzoBase,
+                                            onValueChange = { prezzoBase = it },
                                             keyboardOptions = KeyboardOptions.Default.copy(
                                                 imeAction = ImeAction.Next
                                             ),
@@ -305,7 +357,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                                 .width(100.dp)
                                                 .height(50.dp),
                                             textStyle = TextStyle(fontSize = 15.sp)
-                                            )
+                                        )
 
                                     }
                                     HorizontalDivider(
@@ -314,13 +366,21 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                             .fillMaxWidth()
                                             .offset(y = 190.dp)
                                     )
-                                    Row(modifier = Modifier
-                                        .offset(y = 200.dp)
-                                        .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
-                                        Text(text = "Categoria:  ", fontWeight = FontWeight.Bold,fontSize = 20.sp)
+                                    Row(
+                                        modifier = Modifier
+                                            .offset(y = 200.dp)
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Categoria:  ",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp
+                                        )
 
-                                        ElevatedButton(onClick = { isDialogVisible = true}) {
-                                        Text(text = "$categoriaSelezionata")}
+                                        ElevatedButton(onClick = { isDialogVisible = true }) {
+                                            Text(text = "$categoriaSelezionata")
+                                        }
 
                                     }
                                     HorizontalDivider(
@@ -329,8 +389,9 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                             .fillMaxWidth()
                                             .offset(y = 260.dp)
                                     )
-                                    OutlinedTextField(value = descrizione, onValueChange = {descrizione= it},
-                                        label = {Text (text="Descrizione")},
+                                    OutlinedTextField(
+                                        value = descrizione, onValueChange = { descrizione = it },
+                                        label = { Text(text = "Descrizione") },
                                         modifier = Modifier
                                             .offset(y = 270.dp)
                                             .fillMaxWidth()
@@ -339,14 +400,17 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         keyboardOptions = KeyboardOptions.Default.copy(
                                             imeAction = ImeAction.Done
                                         ),
-                                        )
-                                    Row(modifier = Modifier.fillMaxWidth(),
+                                    )
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.End,
-                                        ){
-                                        ElevatedButton(onClick = { currentPage.value= 1 },modifier = Modifier
-                                            .offset(y = 430.dp)
-                                            .padding(8.dp)) {
-                                            Text (text = "Avanti",fontSize = 20.sp)
+                                    ) {
+                                        ElevatedButton(
+                                            onClick = { currentPage.value = 1 }, modifier = Modifier
+                                                .offset(y = 500.dp)
+                                                .padding(8.dp)
+                                        ) {
+                                            Text(text = "Avanti", fontSize = 20.sp)
 
                                         }
 
@@ -354,209 +418,242 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
                                 }
                             }
-                                1->{
-                                    Box(modifier = Modifier
+
+                            1 -> {
+                                Box(
+                                    modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(16.dp))
+                                        .padding(16.dp)
+                                )
+                                {
+                                    Text(
+                                        text = "DETTAGLI OPZIONALI",
+                                        fontSize = 25.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Bold, // Imposta il testo in grassetto
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 10.dp),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+
+                                        Box(modifier = Modifier.size(250.dp)) {
+                                            Image(
+                                                painter = defaultImage,
+                                                contentDescription = null,
+                                                modifier = Modifier.matchParentSize()
+                                            )
+                                            Icon(
+                                                imageVector = Icons.Default.Edit,
+                                                contentDescription = "Edit",
+                                                tint = Color.Black,
+                                                modifier = Modifier
+                                                    .size(48.dp)
+                                                    .align(Alignment.Center)
+                                                    .shadow(15.dp)
+                                                    .clickable {  /*getContent.launch("image/*") */*/ }
+                                            )
+                                        }
+
+
+                                    }
+                                    HorizontalDivider(
+                                        // Aggiungi una linea divisoria
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 235.dp)
+                                    )
+
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 250.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    )
                                     {
                                         Text(
-                                            text = "DETTAGLI OPZIONALI",
+                                            text = "Soglia di rialzo € ",
                                             fontSize = 25.sp,
-                                            textAlign = TextAlign.Center,
+
                                             fontWeight = FontWeight.Bold, // Imposta il testo in grassetto
-                                            modifier = Modifier.fillMaxWidth()
                                         )
-                                        Row(modifier = Modifier
-                                            .fillMaxWidth()
-                                            .offset(y = 10.dp), horizontalArrangement = Arrangement.Center){
-
-                                            Box(modifier = Modifier.size(250.dp)) {
-                                                Image(
-                                                    painter = defaultImage,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.matchParentSize()
-                                                )
-                                                Icon(
-                                                    imageVector = Icons.Default.Edit,
-                                                    contentDescription = "Edit",
-                                                    tint = Color.Black,
-                                                    modifier = Modifier
-                                                        .size(48.dp)
-                                                        .align(Alignment.Center)
-                                                        .shadow(15.dp)
-                                                        .clickable {  /*getContent.launch("image/*") */*/ }
-                                                )
-                                            }
-
-
-                                        }
-                                        HorizontalDivider(
-                                            // Aggiungi una linea divisoria
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .offset(y = 235.dp)
-                                        )
-
-
-                                        Row(modifier = Modifier
-                                            .fillMaxWidth()
-                                            .offset(y = 250.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center)
-                                        {
-                                            Text(
-                                                text = "Soglia di rialzo € ",
-                                                fontSize = 25.sp,
-
-                                                fontWeight = FontWeight.Bold, // Imposta il testo in grassetto
-                                            )
-                                            OutlinedTextField(value = sogliaRialzo, onValueChange = {
+                                        OutlinedTextField(
+                                            value = sogliaRialzo,
+                                            onValueChange = {
                                                 if (it.toIntOrNull() ?: 0 >= 10) {
                                                     sogliaRialzo = it
                                                 }
                                             },
-                                                keyboardOptions = KeyboardOptions.Default.copy(
-                                                    imeAction = ImeAction.Next,
-                                                    keyboardType = KeyboardType.Number // Imposta la tastiera numerica
-                                                ),
-                                                keyboardActions = KeyboardActions(
-                                                    onNext = { oreIntervalloFocusRequested.requestFocus() }
-                                                ),
-                                                modifier = Modifier
-                                                    .width(90.dp)
-                                                    .height(60.dp),
-                                                textStyle = TextStyle(fontSize = 20.sp,fontWeight = FontWeight.Bold),
-                                            )
-
-
-                                        }
-                                        HorizontalDivider(
-                                            // Aggiungi una linea divisoria
+                                            keyboardOptions = KeyboardOptions.Default.copy(
+                                                imeAction = ImeAction.Next,
+                                                keyboardType = KeyboardType.Number // Imposta la tastiera numerica
+                                            ),
+                                            keyboardActions = KeyboardActions(
+                                                onNext = { oreIntervalloFocusRequested.requestFocus() }
+                                            ),
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .offset(y = 325.dp)
-                                        )
-                                        Text(
-                                            text = "INTERVALLO DI TEMPO OFFERTA",
-                                            fontSize = 20.sp,
-                                            textAlign = TextAlign.Center,
-                                            fontWeight = FontWeight.Bold,
-
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .offset(y = 340.dp)
-                                        )
-                                        Row(modifier = Modifier
-                                            .fillMaxWidth()
-                                            .offset(y = 380.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center)
-                                        {
-                                            OutlinedTextField(
-                                                value = oreIntervallo,
-                                                onValueChange = {  oreIntervallo = it.take(1)
-                                                    if (it.isDigitsOnly() && it.toInt() in 0..3) {
-                                                    oreIntervallo = it
-
-                                                }
-                                                } , // Limita il testo a massimo 2 cifre
-                                                keyboardOptions = KeyboardOptions.Default.copy(
-                                                    imeAction = ImeAction.Next,
-                                                    keyboardType = KeyboardType.Number // Tastiera numerica
-                                                ),
-                                                keyboardActions = KeyboardActions(
-                                                    onNext = { minutiIntervalloFocusRequested.requestFocus() }
-                                                ),
-                                                modifier = Modifier
-                                                    .focusRequester(oreIntervalloFocusRequested)
-                                                    .width(50.dp)
-                                                    .height(55.dp),
-                                                textStyle = TextStyle(fontSize = 20.sp,fontWeight = FontWeight.Bold),
-                                                visualTransformation = VisualTransformation.None // Per mantenere il testo visibile come è stato inserito
-                                            )
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            Text(
-                                                text = "ORE",
+                                                .width(90.dp)
+                                                .height(60.dp),
+                                            textStyle = TextStyle(
                                                 fontSize = 20.sp,
-
-                                            )
-                                            Spacer(modifier = Modifier.width(10.dp))
-
-
-                                            if (oreIntervallo.toIntOrNull() == 0) {
-                                                val minuti = minOf(maxOf(minOf(minutiIntervallo.toIntOrNull() ?: 0, 60), 30), 60)
-                                                minutiIntervallo = minuti.toString()
-                                            }
-                                            if (oreIntervallo.toIntOrNull() == 3) {
-                                                val minuti = 0
-                                                minutiIntervallo = minuti.toString()
-                                            }
-
-
-                                            OutlinedTextField(value = minutiIntervallo, onValueChange = {minutiIntervallo = it.take(2)
-                                                if (it.isDigitsOnly() && it.toInt() in 0..60) {
-                                                    minutiIntervallo = it
-
-                                                } },
-                                                keyboardOptions = KeyboardOptions.Default.copy(
-                                                    imeAction = ImeAction.Next,
-                                                    keyboardType = KeyboardType.Number // Tastiera numerica
-                                                ),
-
-                                                modifier = Modifier
-                                                    .focusRequester(minutiIntervalloFocusRequested)
-                                                    .width(60.dp)
-                                                    .height(55.dp),
-                                                textStyle = TextStyle(fontSize = 20.sp,fontWeight = FontWeight.Bold)
-                                            )
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            Text(
-                                                text = "MINUTI",
-                                                fontSize = 20.sp,
-                                            )
-
-
-
-                                        }
-
-                                        Row(modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.End,
-                                        ){
-                                            ElevatedButton(onClick = { isConfirmDialogVisible = true },modifier = Modifier
-                                                .offset(y = 470.dp)
-                                                .padding(8.dp)) {
-                                                Text (text = "Conferma",fontSize = 20.sp)
-
-                                            }
-
-                                        }
-
-
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                        )
 
 
                                     }
+                                    HorizontalDivider(
+                                        // Aggiungi una linea divisoria
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 325.dp)
+                                    )
+                                    Text(
+                                        text = "INTERVALLO DI TEMPO OFFERTA",
+                                        fontSize = 20.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Bold,
+
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 340.dp)
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 380.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    )
+                                    {
+                                        OutlinedTextField(
+                                            value = oreIntervallo,
+                                            onValueChange = {
+                                                oreIntervallo = it.take(1)
+                                                if (it.isDigitsOnly() && it.toInt() in 0..3) {
+                                                    oreIntervallo = it
+
+                                                }
+                                            }, // Limita il testo a massimo 2 cifre
+                                            keyboardOptions = KeyboardOptions.Default.copy(
+                                                imeAction = ImeAction.Next,
+                                                keyboardType = KeyboardType.Number // Tastiera numerica
+                                            ),
+                                            keyboardActions = KeyboardActions(
+                                                onNext = { minutiIntervalloFocusRequested.requestFocus() }
+                                            ),
+                                            modifier = Modifier
+                                                .focusRequester(oreIntervalloFocusRequested)
+                                                .width(50.dp)
+                                                .height(55.dp),
+                                            textStyle = TextStyle(
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            visualTransformation = VisualTransformation.None // Per mantenere il testo visibile come è stato inserito
+                                        )
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Text(
+                                            text = "ORE",
+                                            fontSize = 20.sp,
+
+                                            )
+                                        Spacer(modifier = Modifier.width(10.dp))
+
+
+                                        if (oreIntervallo.toIntOrNull() == 0) {
+                                            val minuti = minOf(
+                                                maxOf(
+                                                    minOf(
+                                                        minutiIntervallo.toIntOrNull() ?: 0, 60
+                                                    ), 30
+                                                ), 60
+                                            )
+                                            minutiIntervallo = minuti.toString()
+                                        }
+                                        if (oreIntervallo.toIntOrNull() == 3) {
+                                            val minuti = 0
+                                            minutiIntervallo = minuti.toString()
+                                        }
+
+
+                                        OutlinedTextField(
+                                            value = minutiIntervallo, onValueChange = {
+                                                minutiIntervallo = it.take(2)
+                                                if (it.isDigitsOnly() && it.toInt() in 0..60) {
+                                                    minutiIntervallo = it
+
+                                                }
+                                            },
+                                            keyboardOptions = KeyboardOptions.Default.copy(
+                                                imeAction = ImeAction.Next,
+                                                keyboardType = KeyboardType.Number // Tastiera numerica
+                                            ),
+
+                                            modifier = Modifier
+                                                .focusRequester(minutiIntervalloFocusRequested)
+                                                .width(60.dp)
+                                                .height(55.dp),
+                                            textStyle = TextStyle(
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        )
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Text(
+                                            text = "MINUTI",
+                                            fontSize = 20.sp,
+                                        )
+
+
+                                    }
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End,
+                                    ) {
+                                        ElevatedButton(
+                                            onClick = { isConfirmDialogVisible = true },
+                                            modifier = Modifier
+                                                .offset(y = 500.dp)
+                                                .padding(8.dp)
+                                        ) {
+                                            Text(text = "Conferma", fontSize = 20.sp)
+
+                                        }
+
+                                    }
+
+
                                 }
-
                             }
-                        }
 
+                        }
+                    }
 
 
                     1 -> {
-                        var prezzoMinimo by remember { mutableStateOf("")}
-                        val prezzoMinimoFocusRequested = remember{FocusRequester()}
-                        val dataScadenzaFocusRequested = remember{FocusRequester()}
-                      
-                        
-                        @SuppressLint("SimpleDateFormat")
-                        fun convertMillisToDate(millis: Long): String {
-                            val formatter = SimpleDateFormat("GG/MM/yyyy")
-                            return formatter.format(Date(millis))
-                        }
-                        
-                        
+                        var prezzoMinimo by remember { mutableStateOf("") }
+                        val prezzoMinimoFocusRequested = remember { FocusRequester() }
+                        val dataScadenzaFocusRequested = remember { FocusRequester() }
 
-                        when(currentPage.value){
-                            0-> {
-                                Box(modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp))
+
+
+
+
+
+                        when (currentPage.value) {
+                            0 -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp)
+                                )
                                 {
                                     Text(
                                         text = "DETTAGLI ASTA",
@@ -593,7 +690,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     ) {
 
                                         Text(
-                                            text = "Prezzo minimo: € ",
+                                            text = "Prezzo massimo: € ",
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 20.sp
                                         )
@@ -636,111 +733,308 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         }
 
                                     }
-                                        HorizontalDivider(
-                                            // Aggiungi una linea divisoria
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .offset(y = 260.dp)
+                                    HorizontalDivider(
+                                        // Aggiungi una linea divisoria
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 260.dp)
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .offset(y = 270.dp)
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Data di scadenza ",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp
                                         )
-                                        Row(
-                                            modifier = Modifier
-                                                .offset(y = 270.dp)
-                                                .fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically
+
+                                        TextButton(
+                                            onClick = { openDateDialog.value = true },
                                         ) {
+
                                             Text(
-                                                text = "Data di scadenza ",
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 20.sp
-                                            )
-
-                                            TextButton(
-                                                onClick = { openDateDialog.value = true },
-                                            ) {
-
-                                                Text(
-                                                    text = if (state.selectedDateMillis == null) "__/__/____" else convertMillisToDate(
-                                                        state.selectedDateMillis!!
-                                                    ),
-                                                    modifier = Modifier
-
-                                                        .focusRequester(dataScadenzaFocusRequested)
-
-
-                                                )
-
-                                            }
-
-                                        }
-                                        HorizontalDivider(
-                                            // Aggiungi una linea divisoria
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .offset(y = 330.dp)
-                                        )
-
-                                        Row(
-                                            modifier = Modifier
-                                                .offset(y = 340.dp)
-                                                .fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                text = "Orario di scadenza ",
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 20.sp
-                                            )
-
-                                            TextButton(
-                                                onClick = { openTimeDialog.value = true },
-                                            ) { Text(text = "__ : __")}
-
-                                        }
-                                        OutlinedTextField(
-                                            value = descrizione,
-                                            onValueChange = { descrizione = it },
-                                            label = { Text(text = "Descrizione") },
-                                            modifier = Modifier
-                                                .offset(y = 400.dp)
-                                                .fillMaxWidth()
-                                                .height(150.dp)
-                                                .focusRequester(descrizioneFocusRequested),
-                                            keyboardOptions = KeyboardOptions.Default.copy(
-                                                imeAction = ImeAction.Done
-                                            ),
-                                        )
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.End,
-                                        ) {
-                                            ElevatedButton(
-                                                onClick = { currentPage.value = 1 },
+                                                text = if (state.selectedDateMillis == null) "__/__/____" else convertMillisToDate(
+                                                    state.selectedDateMillis!!
+                                                ),
                                                 modifier = Modifier
-                                                    .offset(y = 500.dp)
-                                                    .padding(8.dp)
-                                            ) {
-                                                Text(text = "Avanti", fontSize = 20.sp)
 
-                                            }
+                                                    .focusRequester(dataScadenzaFocusRequested)
+
+
+                                            )
+
+                                        }
+
+                                    }
+                                    HorizontalDivider(
+                                        // Aggiungi una linea divisoria
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 330.dp)
+                                    )
+
+                                    Row(
+                                        modifier = Modifier
+                                            .offset(y = 340.dp)
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Orario di scadenza ",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp
+                                        )
+
+                                        TextButton(
+                                            onClick = { openTimeDialog.value = true },
+                                        ) {
+                                            Text(
+                                                text =
+                                                if (selectedHour == 0 && selectedMinute == 0) "__ : __" else {
+                                                    "$selectedHour : $selectedMinute"
+                                                }
+                                            )
+                                        }
+
+                                    }
+                                    OutlinedTextField(
+                                        value = descrizione,
+                                        onValueChange = { descrizione = it },
+                                        label = { Text(text = "Descrizione") },
+                                        modifier = Modifier
+                                            .offset(y = 400.dp)
+                                            .fillMaxWidth()
+                                            .height(100.dp)
+                                            .focusRequester(descrizioneFocusRequested),
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            imeAction = ImeAction.Done
+                                        ),
+                                    )
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End,
+                                    ) {
+                                        ElevatedButton(
+                                            onClick = { currentPage.value = 1 },
+                                            modifier = Modifier
+                                                .offset(y = 500.dp)
+                                                .padding(8.dp)
+                                        ) {
+                                            Text(text = "Avanti", fontSize = 20.sp)
 
                                         }
 
                                     }
 
-                            }
-                            1->{
-                                Text("Contenuto della pagina 2 della scheda 2")
-                                Button(onClick = { currentPage.value = 0 }) {
-                                    Text("Torna Indietro")
                                 }
+
+                            }
+
+                            1 -> {
+
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp)
+                                )
+                                {
+                                    Text(
+                                        text = "DETTAGLI OPZIONALI",
+                                        fontSize = 25.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Bold, // Imposta il testo in grassetto
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 10.dp),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+
+                                        Box(modifier = Modifier.size(250.dp)) {
+                                            Image(
+                                                painter = defaultImage,
+                                                contentDescription = null,
+                                                modifier = Modifier.matchParentSize()
+                                            )
+                                            Icon(
+                                                imageVector = Icons.Default.Edit,
+                                                contentDescription = "Edit",
+                                                tint = Color.Black,
+                                                modifier = Modifier
+                                                    .size(48.dp)
+                                                    .align(Alignment.Center)
+                                                    .shadow(15.dp)
+                                                    .clickable {  /*getContent.launch("image/*") */*/ }
+                                            )
+                                        }
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End,
+                                    ) {
+                                        ElevatedButton(
+                                            onClick = { isConfirmDialogVisible = true },
+                                            modifier = Modifier
+                                                .offset(y = 500.dp)
+                                                .padding(8.dp)
+                                        ) {
+                                            Text(text = "Conferma", fontSize = 20.sp)
+
+                                        }
+
+                                    }
+
+
+                                }
+
                             }
 
                         }
                     }
+
                     2 -> {
-                        // Pagina 3 della scheda 1
-                        Text("Contenuto della pagina 3 della scheda 1")
+                        var prezzoMassimo by remember { mutableStateOf("") }
+                        val prezzoMassimoFocusRequested = remember { FocusRequester() }
+                        val dataScadenzaFocusRequested = remember { FocusRequester() }
+                        when (currentPage.value) {
+                            0 -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp)
+                                )
+                                {
+                                    Text(
+                                        text = "DETTAGLI ASTA",
+                                        fontSize = 25.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Bold, // Imposta il testo in grassetto
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    OutlinedTextField(value = nomeAsta,
+                                        onValueChange = { nomeAsta = it },
+                                        label = { Text(text = "Nome Asta") },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 40.dp),
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            imeAction = ImeAction.Next
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onNext = { prezzoMassimoFocusRequested.requestFocus() }
+                                        ))
+                                    HorizontalDivider(
+                                        // Aggiungi una linea divisoria
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 120.dp)
+                                    )
+
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 130.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+
+                                        Text(
+                                            text = "Prezzo minimo: € ",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp
+                                        )
+
+                                        OutlinedTextField(value = prezzoMassimo,
+                                            onValueChange = { prezzoMassimo = it },
+                                            keyboardOptions = KeyboardOptions.Default.copy(
+                                                imeAction = ImeAction.Next
+                                            ),
+                                            keyboardActions = KeyboardActions(
+                                                onNext = { prezzoMassimoFocusRequested.requestFocus() }
+                                            ),
+                                            modifier = Modifier
+                                                .focusRequester(descrizioneFocusRequested)
+                                                .width(100.dp)
+                                                .height(50.dp),
+                                            textStyle = TextStyle(fontSize = 15.sp)
+                                        )
+
+                                    }
+                                    HorizontalDivider(
+                                        // Aggiungi una linea divisoria
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 190.dp)
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .offset(y = 200.dp)
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Categoria:  ",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp
+                                        )
+                                        ElevatedButton(onClick = { isDialogVisible = true }) {
+                                            Text(text = "$categoriaSelezionata")
+                                        }
+
+                                    }
+                                    HorizontalDivider(
+                                        // Aggiungi una linea divisoria
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 260.dp)
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .offset(y = 270.dp)
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Data di scadenza ",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp
+                                        )
+
+                                        TextButton(
+                                            onClick = { openDateDialog.value = true },
+                                        ) {
+
+                                            Text(
+                                                text = if (state.selectedDateMillis == null) "__/__/____" else convertMillisToDate(
+                                                    state.selectedDateMillis!!
+                                                ),
+                                                modifier = Modifier
+
+                                                    .focusRequester(dataScadenzaFocusRequested)
+
+
+                                            )
+
+                                        }
+
+                                    }
+                                }
+
+                            }
+
+                            1 -> {
+
+                            }
+                        }
+
                     }
+
                 }
             }
             if (isDialogVisible) {
@@ -754,7 +1048,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                             modifier = Modifier
                                 .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
+                        ) {
 
                             LazyColumn(
                                 modifier = Modifier
@@ -801,12 +1095,15 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                 .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(text = "ASTA CREATA!\n\n" +
-                                    "ASTA CREATA CON SUCCESSO " +
-                                    "POTRAI VEDERE LA TUA ASTA IN ASTE ATTIVE", textAlign = TextAlign.Center)
-                            TextButton(onClick = {isConfirmDialogVisible = false}) {
-                                Text(text = "OK",fontSize = 20.sp)
-                                
+                            Text(
+                                text = "ASTA CREATA!\n\n" +
+                                        "ASTA CREATA CON SUCCESSO " +
+                                        "POTRAI VEDERE LA TUA ASTA IN ASTE ATTIVE",
+                                textAlign = TextAlign.Center
+                            )
+                            TextButton(onClick = { isConfirmDialogVisible = false }) {
+                                Text(text = "OK", fontSize = 20.sp)
+
                             }
 
 
@@ -843,13 +1140,13 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
             if (openTimeDialog.value) {
 
-                AlertDialog(
+                BasicAlertDialog(
                     onDismissRequest = { openTimeDialog.value = false },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier
-                            .background(color = Color.LightGray.copy(alpha = .3f))
+                            .background(color = Color.White)
                             .padding(top = 28.dp, start = 20.dp, end = 20.dp, bottom = 12.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -875,11 +1172,10 @@ fun SchermataCreazioneAsta(navController: NavController) {
                 }
             }
         }
-            
-            
-        }
-    }
 
+
+    }
+}
 
 
 @Preview(showBackground = true)

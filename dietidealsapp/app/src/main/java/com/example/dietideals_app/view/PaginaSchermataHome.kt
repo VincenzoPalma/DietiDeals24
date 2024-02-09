@@ -22,9 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -82,17 +80,41 @@ class PaginaSchermataHome : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
+                    NavHost(
+                        navController = navController,
+                        startDestination = "SchermataAutenticazione"
+                    ) {
+                        composable("SchermataAutenticazione") {
+                            SchermataAutenticazione(
+                                navController = navController
+                            )
+                        }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") { SchermataImmagineProfilo(navController = navController) }
-                        composable("SchermataDiventaVenditore") { SchermataDiventaVenditore(navController = navController) }
-                        composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
-                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
-                        composable("SchermataHome"){SchermataHome(navController = navController)}
-                        composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
-                        composable("SchermataGestioneAste"){SchermataGestioneAste(navController = navController)}
-                        composable("SchermataCreazioneAsta"){SchermataCreazioneAsta(navController = navController)}}
+                        composable("SchermataImmagineProfilo") {
+                            SchermataImmagineProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataDiventaVenditore") {
+                            SchermataDiventaVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneSuccesso") {
+                            SchermataRegistrazioneSuccesso(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneDatiVenditore") {
+                            SchermataRegistrazioneDatiVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataHome") { SchermataHome(navController = navController) }
+                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
+                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
+                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
+                    }
                 }
             }
         }
@@ -106,7 +128,7 @@ fun SchermataHome(navController: NavController) {
     val logoApp = painterResource(id = R.drawable.iconaapp)
     var isSearchVisible by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
-    var isNotificationVisible by remember { mutableStateOf(false)}
+    var isNotificationVisible by remember { mutableStateOf(false) }
     var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf("") }
@@ -128,19 +150,21 @@ fun SchermataHome(navController: NavController) {
 
 
 
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl ) {
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                ModalDrawerSheet( modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(0.7f)) {
-                Column(
+                ModalDrawerSheet(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(30.dp)
-                ){
+                        .fillMaxHeight()
+                        .fillMaxWidth(0.7f)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(30.dp)
+                    ) {
 
                         Column(
                             modifier = Modifier
@@ -260,10 +284,10 @@ fun SchermataHome(navController: NavController) {
                                 }
                             }
 
-                    }
+                        }
 
+                    }
                 }
-            }
             },
 
             content = {
@@ -272,15 +296,17 @@ fun SchermataHome(navController: NavController) {
                         .fillMaxSize()
                 ) {
                     val (background) = createRefs()
-                    Box(modifier = Modifier
-                        .constrainAs(background) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            bottom.linkTo(parent.bottom)
-                            width = Dimension.fillToConstraints
-                            height = Dimension.fillToConstraints
-                        }.background(Color.White)
+                    Box(
+                        modifier = Modifier
+                            .constrainAs(background) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                                bottom.linkTo(parent.bottom)
+                                width = Dimension.fillToConstraints
+                                height = Dimension.fillToConstraints
+                            }
+                            .background(Color.White)
                     ) {
 
 
@@ -503,7 +529,7 @@ fun SchermataHome(navController: NavController) {
                                                     onClick = { /* Azione del bottone */ },
                                                     modifier = Modifier,
 
-                                                ) {
+                                                    ) {
                                                     Text(
                                                         text = String.format(
                                                             "€%.2f",
@@ -548,13 +574,14 @@ fun SchermataHome(navController: NavController) {
                             }
                         }
 
-                        BottomAppBar(modifier = Modifier
-                            .fillMaxWidth()
+                        BottomAppBar(
+                            modifier = Modifier
+                                .fillMaxWidth()
 
-                            .background(color = Color.White) // Set the background color to white
-                            .border(1.dp, color = Color.Black)
-                            .height(60.dp)// Add a black border
-                            .align(Alignment.BottomCenter)
+                                .background(color = Color.White) // Set the background color to white
+                                .border(1.dp, color = Color.Black)
+                                .height(60.dp)// Add a black border
+                                .align(Alignment.BottomCenter)
                         ) {
                             Spacer(
                                 modifier = Modifier
@@ -616,7 +643,6 @@ fun SchermataHome(navController: NavController) {
             })
     }
 }
-
 
 
 @Preview(showBackground = true)

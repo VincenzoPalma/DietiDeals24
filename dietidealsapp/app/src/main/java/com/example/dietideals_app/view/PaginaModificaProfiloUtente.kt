@@ -81,24 +81,55 @@ class PaginaModificaProfiloUtente : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
+                    NavHost(
+                        navController = navController,
+                        startDestination = "SchermataAutenticazione"
+                    ) {
+                        composable("SchermataAutenticazione") {
+                            SchermataAutenticazione(
+                                navController = navController
+                            )
+                        }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") { SchermataImmagineProfilo(navController = navController) }
-                        composable("SchermataDiventaVenditore") { SchermataDiventaVenditore(navController = navController) }
-                        composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
-                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
-                        composable("SchermataHome"){SchermataHome(navController = navController)}
-                        composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
-                        composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
-                        composable("SchermataPagamentiProfilo"){SchermataPagamentiProfilo(navController = navController)}
+                        composable("SchermataImmagineProfilo") {
+                            SchermataImmagineProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataDiventaVenditore") {
+                            SchermataDiventaVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneSuccesso") {
+                            SchermataRegistrazioneSuccesso(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneDatiVenditore") {
+                            SchermataRegistrazioneDatiVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataHome") { SchermataHome(navController = navController) }
+                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
+                        composable("SchermataModificaProfilo") {
+                            SchermataModificaProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataPagamentiProfilo") {
+                            SchermataPagamentiProfilo(
+                                navController = navController
+                            )
+                        }
 
-}
-}
-}
-}
+                    }
+                }
+            }
+        }
 
-}
+    }
 }
 
 @SuppressLint("SuspiciousIndentation")
@@ -369,7 +400,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
                             .padding(16.dp)
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .padding(16.dp)
@@ -377,15 +408,20 @@ fun SchermataModificaProfilo(navController: NavController) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .fillMaxWidth()) {
+                                    .fillMaxWidth()
+                            ) {
                                 Text(
                                     text = "Instagram",
 
                                     )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Icon(painter = painterResource(id = R.drawable.instagramicon), contentDescription ="iconaInstagram" )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.instagramicon),
+                                    contentDescription = "iconaInstagram"
+                                )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                OutlinedTextField(value = instagramLink, onValueChange = {instagramLink = it},
+                                OutlinedTextField(value = instagramLink,
+                                    onValueChange = { instagramLink = it },
                                     shape = RoundedCornerShape(15.dp),
                                     keyboardOptions = KeyboardOptions.Default.copy(
                                         imeAction = ImeAction.Next
@@ -400,15 +436,20 @@ fun SchermataModificaProfilo(navController: NavController) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .fillMaxWidth()) {
+                                    .fillMaxWidth()
+                            ) {
                                 Text(
                                     text = "Facebook",
 
                                     )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Icon(painter = painterResource(id = R.drawable.facebookicon), contentDescription ="iconaFacebook" )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.facebookicon),
+                                    contentDescription = "iconaFacebook"
+                                )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                OutlinedTextField(value = facebookLink, onValueChange = {facebookLink = it},
+                                OutlinedTextField(value = facebookLink,
+                                    onValueChange = { facebookLink = it },
                                     shape = RoundedCornerShape(15.dp),
                                     keyboardOptions = KeyboardOptions.Default.copy(
                                         imeAction = ImeAction.Next
@@ -424,15 +465,20 @@ fun SchermataModificaProfilo(navController: NavController) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .fillMaxWidth()) {
+                                    .fillMaxWidth()
+                            ) {
                                 Text(
                                     text = "Twitter",
 
                                     )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Icon(painter = painterResource(id = R.drawable.twittericon), contentDescription ="iconaInstagram" )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.twittericon),
+                                    contentDescription = "iconaInstagram"
+                                )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                OutlinedTextField(value = twitterLink, onValueChange = {twitterLink = it},
+                                OutlinedTextField(
+                                    value = twitterLink, onValueChange = { twitterLink = it },
                                     shape = RoundedCornerShape(15.dp),
                                     keyboardOptions = KeyboardOptions.Default.copy(
                                         imeAction = ImeAction.Done
@@ -448,8 +494,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                                     .fillMaxWidth()
                                     .padding(top = 8.dp),
                                 horizontalArrangement = Arrangement.End
-                            ){
-
+                            ) {
 
 
                                 TextButton(onClick = { isDialogVisible = false }) {
@@ -503,8 +548,9 @@ fun SchermataModificaProfilo(navController: NavController) {
 
             ) {
                 ElevatedButton(
-                    onClick = { navController.navigate("SchermataProfiloUtente") }, modifier = Modifier
-                        
+                    onClick = { navController.navigate("SchermataProfiloUtente") },
+                    modifier = Modifier
+
                 ) {
                     Text(text = "Conferma")
 
@@ -512,9 +558,8 @@ fun SchermataModificaProfilo(navController: NavController) {
             }
         }
 
-        }
     }
-
+}
 
 
 @Preview(showBackground = true)

@@ -63,18 +63,49 @@ class PaginaGestioneAste : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
+                    NavHost(
+                        navController = navController,
+                        startDestination = "SchermataAutenticazione"
+                    ) {
+                        composable("SchermataAutenticazione") {
+                            SchermataAutenticazione(
+                                navController = navController
+                            )
+                        }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") { SchermataImmagineProfilo(navController = navController) }
-                        composable("SchermataDiventaVenditore") { SchermataDiventaVenditore(navController = navController) }
-                        composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
-                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
-                        composable("SchermataHome"){SchermataHome(navController = navController)}
-                        composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
-                        composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
-                        composable("SchermataPagamentiProfilo"){SchermataPagamentiProfilo(navController = navController)}
-                        composable("SchermataGestioneAste"){SchermataGestioneAste(navController = navController)}
+                        composable("SchermataImmagineProfilo") {
+                            SchermataImmagineProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataDiventaVenditore") {
+                            SchermataDiventaVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneSuccesso") {
+                            SchermataRegistrazioneSuccesso(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneDatiVenditore") {
+                            SchermataRegistrazioneDatiVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataHome") { SchermataHome(navController = navController) }
+                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
+                        composable("SchermataModificaProfilo") {
+                            SchermataModificaProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataPagamentiProfilo") {
+                            SchermataPagamentiProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
                     }
                 }
             }
@@ -87,7 +118,6 @@ class PaginaGestioneAste : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataGestioneAste(navController: NavController) {
-
 
 
     val colorGreen = 0xFF0EA639
@@ -146,9 +176,11 @@ fun SchermataGestioneAste(navController: NavController) {
             )
 
 
-            Column(modifier = Modifier
-                .fillMaxHeight()
-                .offset(y = 60.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .offset(y = 60.dp)
+            ) {
                 // TabRow per contenere le schede
                 TabRow(selectedTabIndex.intValue) {
                     // Itera attraverso le schede e le aggiunge a TabRow
@@ -158,7 +190,7 @@ fun SchermataGestioneAste(navController: NavController) {
                             onClick = { selectedTabIndex.intValue = index },
                             // Puoi personalizzare l'aspetto delle schede qui, ad esempio aggiungendo icone, testo, etc.
                             text = {
-                                Text(text = tabNames[index],fontSize = 10.sp)
+                                Text(text = tabNames[index], fontSize = 10.sp)
                             }
                         )
                     }
@@ -219,7 +251,7 @@ fun SchermataGestioneAste(navController: NavController) {
                                                     )
 
                                                 //TAB ASTE ATTIVE
-                                                if(selectedTabIndex.intValue == 0) {
+                                                if (selectedTabIndex.intValue == 0) {
                                                     Text(
                                                         text = "Offerta Iniziale",
                                                         color = Color.Black,
@@ -230,7 +262,7 @@ fun SchermataGestioneAste(navController: NavController) {
 
 
                                                 ///TAB ASTE CONCLUSE
-                                                if(selectedTabIndex.intValue == 1){
+                                                if (selectedTabIndex.intValue == 1) {
                                                     Text(
                                                         text = "Venduto per",
                                                         color = Color.Black,
@@ -266,7 +298,7 @@ fun SchermataGestioneAste(navController: NavController) {
                                                 * */
 
                                                 //TAB ASTE VINTE
-                                                if(selectedTabIndex.intValue == 3){
+                                                if (selectedTabIndex.intValue == 3) {
                                                     Text(
                                                         text = "Acquistato per",
                                                         color = Color.Black,
@@ -302,7 +334,6 @@ fun SchermataGestioneAste(navController: NavController) {
                                                 * */
 
 
-
                                                 // Prezzo in verde
                                                 Text(
                                                     text = "€100,00",
@@ -319,15 +350,14 @@ fun SchermataGestioneAste(navController: NavController) {
 
                                                 // Altre informazioni
 
-                                                if((selectedTabIndex.intValue % 2)!=0) {
+                                                if ((selectedTabIndex.intValue % 2) != 0) {
                                                     Text(
                                                         text = "Conclusa il 08/11/23",
                                                         color = Color(colorRed),
                                                         fontSize = 10.sp,
 
                                                         )
-                                                }
-                                                else{
+                                                } else {
                                                     Text(
                                                         text = "Tempo rimanente : 2 Giorni",
                                                         color = Color.Black,
@@ -337,8 +367,6 @@ fun SchermataGestioneAste(navController: NavController) {
 
                                                 }
                                             }
-
-
 
 
                                         }
@@ -358,8 +386,6 @@ fun SchermataGestioneAste(navController: NavController) {
                     }
 
 
-
-
                     1 -> {
                         ProductDetails()
 
@@ -368,7 +394,8 @@ fun SchermataGestioneAste(navController: NavController) {
                     2 -> {
                         ProductDetails()
                     }
-                    3->{
+
+                    3 -> {
                         ProductDetails()
                     }
                 }
@@ -397,13 +424,14 @@ fun SchermataGestioneAste(navController: NavController) {
                 }
             }
 
-            BottomAppBar(modifier = Modifier
-                .fillMaxWidth()
+            BottomAppBar(
+                modifier = Modifier
+                    .fillMaxWidth()
 
-                .background(color = Color.White) // Set the background color to white
-                .border(1.dp, color = Color.Black)
-                .height(60.dp)// Add a black border
-                .align(Alignment.BottomCenter)
+                    .background(color = Color.White) // Set the background color to white
+                    .border(1.dp, color = Color.Black)
+                    .height(60.dp)// Add a black border
+                    .align(Alignment.BottomCenter)
             ) {
                 Spacer(
                     modifier = Modifier

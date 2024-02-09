@@ -577,7 +577,8 @@ fun SchermataRegistrazione(navController: NavController) {
 
             // Secondo TextField (Cognome)
             var isValidCognome by remember { mutableStateOf(false) }
-            OutlinedTextField(value = cognome,
+            OutlinedTextField(
+                value = cognome,
                 onValueChange = {
                     cognome = it
                     isValidCognome = isCognomeValid(it)
@@ -661,8 +662,6 @@ fun SchermataRegistrazione(navController: NavController) {
 
             ) {
             Text(text = "AVANTI", fontSize = 20.sp)
-
-
 
 
         }

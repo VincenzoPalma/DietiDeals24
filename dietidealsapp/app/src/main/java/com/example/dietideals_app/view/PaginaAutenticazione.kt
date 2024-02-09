@@ -13,15 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -66,19 +63,50 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") {SchermataAutenticazione(navController = navController)}
-                        composable("SchermataRegistrazione") {SchermataRegistrazione(navController = navController)}
-                        composable("SchermataImmagineProfilo") {SchermataImmagineProfilo(navController = navController)}
-                        composable("SchermataDiventaVenditore") {SchermataDiventaVenditore(navController = navController) }
-                        composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
-                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
-                        composable("SchermataHome"){SchermataHome(navController = navController)}
-                        composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
-                        composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
-                        composable("SchermataPagamentiProfilo"){SchermataPagamentiProfilo(navController = navController)}
-                        composable("SchermataGestioneAste"){SchermataGestioneAste(navController = navController)}
-                        composable("SchermataCreazioneAsta"){SchermataCreazioneAsta(navController = navController)}
+                    NavHost(
+                        navController = navController,
+                        startDestination = "SchermataAutenticazione"
+                    ) {
+                        composable("SchermataAutenticazione") {
+                            SchermataAutenticazione(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
+                        composable("SchermataImmagineProfilo") {
+                            SchermataImmagineProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataDiventaVenditore") {
+                            SchermataDiventaVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneSuccesso") {
+                            SchermataRegistrazioneSuccesso(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneDatiVenditore") {
+                            SchermataRegistrazioneDatiVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataHome") { SchermataHome(navController = navController) }
+                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
+                        composable("SchermataModificaProfilo") {
+                            SchermataModificaProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataPagamentiProfilo") {
+                            SchermataPagamentiProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
+                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
 
                     }
                 }
@@ -90,10 +118,12 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SchermataAutenticazione(navController: NavController) {
-    val presenter = AutenticazionePresenter() // Istanza del presenter per la gestione dell'autenticazione
+    val presenter =
+        AutenticazionePresenter() // Istanza del presenter per la gestione dell'autenticazione
     var username by remember { mutableStateOf("") } // Variabile per memorizzare l'username
     var password by remember { mutableStateOf("") } // Variabile per memorizzare la password
-    val passwordFocusRequester = remember { FocusRequester() } // Richiede il focus per l'input della password
+    val passwordFocusRequester =
+        remember { FocusRequester() } // Richiede il focus per l'input della password
     // Valori per le immagini della schermata
     val background = painterResource(id = R.drawable.sfondo1)
     val logoFacebook = painterResource(id = R.drawable.facebookicon)
@@ -158,9 +188,15 @@ fun SchermataAutenticazione(navController: NavController) {
         )
 
         // Text field email
-       OutlinedTextField(
+        OutlinedTextField(
             label = { Text("E-mail") },
-            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null, tint = Color(0xFF0EA639)) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = null,
+                    tint = Color(0xFF0EA639)
+                )
+            },
             shape = RoundedCornerShape(15.dp),
             value = username,
             onValueChange = {
@@ -188,14 +224,22 @@ fun SchermataAutenticazione(navController: NavController) {
             value = password,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
             shape = RoundedCornerShape(15.dp),
-            leadingIcon = { Icon(painter = painterResource(id =R.drawable.baseline_lock_24), contentDescription = null,tint = Color(0xFF0EA639) ) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_lock_24),
+                    contentDescription = null,
+                    tint = Color(0xFF0EA639)
+                )
+            },
             trailingIcon = {
                 Icon(
-                    painter = painterResource(id = if(!passwordVisibile) R.drawable.baseline_remove_red_eye_24 else R.drawable.closed_eye_icon), /*Cambio dinamico dell'icona per visualizzare la password*/
+                    painter = painterResource(id = if (!passwordVisibile) R.drawable.baseline_remove_red_eye_24 else R.drawable.closed_eye_icon), /*Cambio dinamico dell'icona per visualizzare la password*/
                     contentDescription = null,
-                    modifier = Modifier.clickable { passwordVisibile = !passwordVisibile
-                 },
-                    tint = Color(0xFF0EA639))
+                    modifier = Modifier.clickable {
+                        passwordVisibile = !passwordVisibile
+                    },
+                    tint = Color(0xFF0EA639)
+                )
             },
             onValueChange = {
                 password = it

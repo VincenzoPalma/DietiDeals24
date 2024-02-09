@@ -83,17 +83,48 @@ class PaginaPagamentiProfilo : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "SchermataAutenticazione") {
-                        composable("SchermataAutenticazione") { SchermataAutenticazione(navController = navController) }
+                    NavHost(
+                        navController = navController,
+                        startDestination = "SchermataAutenticazione"
+                    ) {
+                        composable("SchermataAutenticazione") {
+                            SchermataAutenticazione(
+                                navController = navController
+                            )
+                        }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") { SchermataImmagineProfilo(navController = navController) }
-                        composable("SchermataDiventaVenditore") { SchermataDiventaVenditore(navController = navController) }
-                        composable("SchermataRegistrazioneSuccesso") { SchermataRegistrazioneSuccesso(navController = navController) }
-                        composable("SchermataRegistrazioneDatiVenditore"){SchermataRegistrazioneDatiVenditore(navController = navController)}
-                        composable("SchermataHome"){SchermataHome(navController = navController)}
-                        composable("SchermataProfiloUtente"){SchermataProfiloUtente(navController = navController)}
-                        composable("SchermataModificaProfilo"){SchermataModificaProfilo(navController = navController)}
-                        composable("SchermataPagamentiProfilo"){SchermataPagamentiProfilo(navController = navController)}
+                        composable("SchermataImmagineProfilo") {
+                            SchermataImmagineProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataDiventaVenditore") {
+                            SchermataDiventaVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneSuccesso") {
+                            SchermataRegistrazioneSuccesso(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataRegistrazioneDatiVenditore") {
+                            SchermataRegistrazioneDatiVenditore(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataHome") { SchermataHome(navController = navController) }
+                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
+                        composable("SchermataModificaProfilo") {
+                            SchermataModificaProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataPagamentiProfilo") {
+                            SchermataPagamentiProfilo(
+                                navController = navController
+                            )
+                        }
                     }
                 }
             }
@@ -101,6 +132,7 @@ class PaginaPagamentiProfilo : ComponentActivity() {
 
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataPagamentiProfilo(navController: NavController) {
@@ -133,6 +165,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
         // Controllo se il numero di carta ha una lunghezza valida
         return numeroCarta.length == 16
     }
+
     fun isCvcValid(): Boolean {
         // Controllo se il numero di carta ha una lunghezza valida
         return cvc.length == 3
@@ -228,9 +261,10 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                                         horizontalArrangement = Arrangement.End
 
-                                    ){
-                                        Icon(painter = painterResource(id = R.drawable.trash_svgrepo_com), contentDescription = "deleteCard",
-                                            modifier=Modifier.clickable{
+                                    ) {
+                                        Icon(painter = painterResource(id = R.drawable.trash_svgrepo_com),
+                                            contentDescription = "deleteCard",
+                                            modifier = Modifier.clickable {
                                                 listaCarte.removeAt(index)
                                             })
 
@@ -276,9 +310,12 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                                 Icon(painter = painterResource(id = R.drawable.baseline_add_card_24),
                                     contentDescription = "deleteCard",
-                                    modifier = Modifier.fillMaxSize(0.7f)
-                                        .clickable { pulisciCampi()
-                                            isDialogVisible = true }
+                                    modifier = Modifier
+                                        .fillMaxSize(0.7f)
+                                        .clickable {
+                                            pulisciCampi()
+                                            isDialogVisible = true
+                                        }
                                 )
 
                             }
@@ -302,7 +339,8 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                         ) {
                             Text(text = "Nome Titolare")
                             Spacer(modifier = Modifier.height(8.dp))
-                            OutlinedTextField(value = nomeTitolare, onValueChange = {nomeTitolare = it},
+                            OutlinedTextField(
+                                value = nomeTitolare, onValueChange = { nomeTitolare = it },
                                 shape = RoundedCornerShape(15.dp),
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     imeAction = ImeAction.Next
@@ -313,14 +351,23 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     onNext = { numeroCartaFocusrequested.requestFocus() }
                                 ),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = if ( nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
-                                    focusedBorderColor = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
-                                ),)
+                                    unfocusedBorderColor = if (nomeTitolare.isNotEmpty()) Color(
+                                        0xFF0EA639
+                                    ) else Color.Gray,
+                                    focusedBorderColor = if (nomeTitolare.isNotEmpty()) Color(
+                                        0xFF0EA639
+                                    ) else Color.Gray,
+                                ),
+                            )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(text = "Numero Carta")
                             Spacer(modifier = Modifier.height(8.dp))
-                            OutlinedTextField(value = numeroCarta, onValueChange = {numeroCarta = it
-                                isNumeroCartaValid()},
+                            OutlinedTextField(
+                                value = numeroCarta,
+                                onValueChange = {
+                                    numeroCarta = it
+                                    isNumeroCartaValid()
+                                },
                                 shape = RoundedCornerShape(15.dp),
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     imeAction = ImeAction.Next
@@ -329,28 +376,37 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     Icon(
                                         painter = painterResource(
                                             id = if (isNumeroCartaValid()) R.drawable.baseline_done_24 else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) R.drawable.baseline_close_24 else R.drawable.empty
-                                        ), contentDescription = "",tint = if (isNumeroCartaValid()) Color(0xFF0EA639) else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) Color(
+                                        ),
+                                        contentDescription = "",
+                                        tint = if (isNumeroCartaValid()) Color(0xFF0EA639) else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) Color(
                                             0xFF9B0404
                                         ) else Color.Gray,
-                                        modifier = if (numeroCarta.isEmpty()) Modifier.alpha(0f) else Modifier)},
+                                        modifier = if (numeroCarta.isEmpty()) Modifier.alpha(0f) else Modifier
+                                    )
+                                },
 
-                                   modifier=Modifier.height(50.dp)
+                                modifier = Modifier
+                                    .height(50.dp)
                                     .focusRequester(numeroCartaFocusrequested),
                                 keyboardActions = KeyboardActions(
                                     onNext = { dataScadenzaFocusRequested.requestFocus() }
                                 ),
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = if (isNumeroCartaValid()) Color(0xFF0EA639) else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) Color(
-                                            0xFF9B0404
-                                        ) else Color.Gray,
-                                focusedBorderColor = if (isNumeroCartaValid()) Color(0xFF0EA639) else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) Color(
-                                    0xFF9B0404
-                                ) else Color.Gray,
-                            ),)
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = if (isNumeroCartaValid()) Color(
+                                        0xFF0EA639
+                                    ) else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) Color(
+                                        0xFF9B0404
+                                    ) else Color.Gray,
+                                    focusedBorderColor = if (isNumeroCartaValid()) Color(0xFF0EA639) else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) Color(
+                                        0xFF9B0404
+                                    ) else Color.Gray,
+                                ),
+                            )
                             Spacer(modifier = Modifier.height(16.dp))
 
                             Row(modifier = Modifier.fillMaxWidth())
-                            { Text(text = "Data Scadenza")
+                            {
+                                Text(text = "Data Scadenza")
                                 Spacer(modifier = Modifier.width(16.dp))
 
                                 Text(text = "CCV/CVC")
@@ -365,7 +421,9 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 return formatter.format(Date(millis))
                             }
 
-                            Row(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                            Row(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)) {
                                 TextButton(
                                     onClick = { openDialog.value = true },
                                 ) {
@@ -382,8 +440,10 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     )
                                     Spacer(modifier = Modifier.width(70.dp))
                                     OutlinedTextField(
-                                        value = cvc, onValueChange = { cvc = it
-                                            isCvcValid()},
+                                        value = cvc, onValueChange = {
+                                            cvc = it
+                                            isCvcValid()
+                                        },
                                         shape = RoundedCornerShape(15.dp),
                                         keyboardOptions = KeyboardOptions.Default.copy(
                                             imeAction = ImeAction.Done
@@ -391,14 +451,17 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                         modifier = Modifier
                                             .height(50.dp)
                                             .focusRequester(cvcFocusRequested),
-                                     colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = if (isCvcValid()) Color(0xFF0EA639) else if (!isCvcValid() && cvc.isNotEmpty()) Color(
-                                        0xFF9B0404
-                                    ) else Color.Gray,
-                                    focusedBorderColor = if (isCvcValid()) Color(0xFF0EA639) else if (!isCvcValid() && cvc.isNotEmpty()) Color(
-                                        0xFF9B0404
-                                    ) else Color.Gray,
-                                    ))
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            unfocusedBorderColor = if (isCvcValid()) Color(
+                                                0xFF0EA639
+                                            ) else if (!isCvcValid() && cvc.isNotEmpty()) Color(
+                                                0xFF9B0404
+                                            ) else Color.Gray,
+                                            focusedBorderColor = if (isCvcValid()) Color(0xFF0EA639) else if (!isCvcValid() && cvc.isNotEmpty()) Color(
+                                                0xFF9B0404
+                                            ) else Color.Gray,
+                                        )
+                                    )
 
                                 }
 
@@ -410,18 +473,28 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     .fillMaxWidth()
                                     .padding(top = 8.dp),
 
-                            ) {
+                                ) {
                                 TextButton(onClick = { isDialogVisible = false }) {
-                                    Text("ANNULLA",color = Color(0xFF9B0404))
+                                    Text("ANNULLA", color = Color(0xFF9B0404))
                                 }
                                 Spacer(modifier = Modifier.width(80.dp))
 
 
-                                TextButton(onClick = {
-                                    listaCarte.add(Carta(numeroCarta,nomeTitolare,cvc.toShort(),Instant.ofEpochMilli(state.selectedDateMillis!!).atZone(ZoneId.systemDefault()).toLocalDate()))
-                                      isDialogVisible = false
-                                                     },
-                                    enabled = checkField()) {
+                                TextButton(
+                                    onClick = {
+                                        listaCarte.add(
+                                            Carta(
+                                                numeroCarta,
+                                                nomeTitolare,
+                                                cvc.toShort(),
+                                                Instant.ofEpochMilli(state.selectedDateMillis!!)
+                                                    .atZone(ZoneId.systemDefault()).toLocalDate()
+                                            )
+                                        )
+                                        isDialogVisible = false
+                                    },
+                                    enabled = checkField()
+                                ) {
                                     Text("OK")
                                 }
                             }
@@ -449,8 +522,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     )
                                 }
                             }
-
-
 
 
                         }
