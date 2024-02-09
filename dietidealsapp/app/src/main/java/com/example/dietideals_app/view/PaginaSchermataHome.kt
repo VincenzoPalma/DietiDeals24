@@ -64,7 +64,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.Asta
 import com.example.dietideals_app.model.Notifica
+import com.example.dietideals_app.presenter.SchermataHomePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -124,7 +126,7 @@ class PaginaSchermataHome : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SchermataHome(navController: NavController) {
+    fun SchermataHome(navController: NavController) {
     val logoApp = painterResource(id = R.drawable.iconaapp)
     var isSearchVisible by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
@@ -136,19 +138,16 @@ fun SchermataHome(navController: NavController) {
         // Implementa questa funzione secondo le tue esigenze
         // Restituisce una lista di notifiche
         return listOf(
-            Notifica("Notifica 1", LocalDateTime.now()),
-            Notifica("Notifica 2", LocalDateTime.now()),
-            Notifica("Notifica 3", LocalDateTime.now()),
-            Notifica("Notifica 4", LocalDateTime.now()),
-            Notifica("Notifica 5", LocalDateTime.now()),
-            Notifica("Notifica 6", LocalDateTime.now())
+            //Notifica("Notifica 1", LocalDateTime.now()),
+            //Notifica("Notifica 2", LocalDateTime.now()),
+            //Notifica("Notifica 3", LocalDateTime.now()),
+            //Notifica("Notifica 4", LocalDateTime.now()),
+            //Notifica("Notifica 5", LocalDateTime.now()),
+            //Notifica("Notifica 6", LocalDateTime.now())
         )
     }
 
     var notifications by remember { mutableStateOf(generateNotifications()) }
-
-
-
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(

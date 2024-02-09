@@ -47,6 +47,7 @@ dependencies {
 	implementation(platform("software.amazon.awssdk:bom:2.23.19"))
 	implementation 'com.amazonaws:aws-java-sdk-cognitoidentity:1.12.653'
 	implementation 'com.amazonaws:aws-java-sdk-cognitoidp:1.12.653'
+
 }
 
 tasks.named("test"){

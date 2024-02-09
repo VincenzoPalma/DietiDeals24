@@ -68,9 +68,6 @@ import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Carta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
 import java.util.Date
 
 class PaginaPagamentiProfilo : ComponentActivity() {
@@ -148,7 +145,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
     val state = rememberDatePickerState()
     val openDialog = remember { mutableStateOf(false) }
     val listaCarte = mutableListOf<Carta>()
-    listaCarte.add(Carta("1234567890123456", "Mario Rossi", 123, LocalDate.of(2024, 12, 31)))
 
     fun pulisciCampi() {
         nomeTitolare = ""
@@ -482,16 +478,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                                 TextButton(
                                     onClick = {
-                                        listaCarte.add(
-                                            Carta(
-                                                numeroCarta,
-                                                nomeTitolare,
-                                                cvc.toShort(),
-                                                Instant.ofEpochMilli(state.selectedDateMillis!!)
-                                                    .atZone(ZoneId.systemDefault()).toLocalDate()
-                                            )
-                                        )
-                                        isDialogVisible = false
+
                                     },
                                     enabled = checkField()
                                 ) {

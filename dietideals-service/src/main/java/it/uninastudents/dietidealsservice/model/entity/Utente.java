@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -30,6 +32,9 @@ public class Utente extends BaseEntity {
 
     @Column(nullable = false)
     private String cognome;
+
+    @Column(nullable = false)
+    private LocalDate dataNascita; //cancellare ogni utente e avviare il programma per aggiungere questo attributo al db
 
     @Column(nullable = false)
     private String email;

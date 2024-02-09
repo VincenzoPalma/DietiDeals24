@@ -66,9 +66,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
-import com.example.dietideals_app.model.DatiVenditore
-import com.example.dietideals_app.model.DettagliUtente
 import com.example.dietideals_app.model.Utente
+import com.example.dietideals_app.model.enum.RuoloUtente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import kotlinx.coroutines.launch
 import java.io.File
@@ -162,25 +161,23 @@ fun SchermataProfiloUtente(navController: NavController) {
         "Mario",
         "Rossi",
         LocalDate.of(1990, 5, 15),
-        File("percorso/immagineProfilo.jpg"),
-        DatiVenditore(
-            "123456789",
-            "Mario Rossi",
-            "BIC123",
-            "IT123456789",
-            File("percorso/documentoRiconoscimento.jpg")
-        ),
-        DettagliUtente(
-            "Sono Mario Rossi, un appassionato venditore di aste con una vasta esperienza nel settore. " +
-                    "Offro una selezione di oggetti unici e preziosi, curando ogni dettaglio delle mie aste per garantire esperienze indimenticabili ai miei acquirenti. " +
-                    "Conosco il valore degli oggetti che metto all'asta e mi impegno a offrire un servizio clienti impeccabile. " +
-                    "Sono qui per fornire autenticità, qualità e emozioni nel mondo delle aste.",
-            " www.mario-rossi.com",
-            "Via Roma, 123, 00100, Roma, Italia",
-            "instagram_utente",
-            "facebook_utente",
-            "twitter_utente"
-        )
+        "12345678999",
+        File("path/file"),
+        File("path/file"),
+        null,
+        mutableSetOf(),
+        mutableSetOf(),
+        mutableSetOf(),
+        mutableSetOf(),
+        RuoloUtente.COMPRATORE,
+        "Sono Mario Rossi, un appassionato venditore di aste con una vasta esperienza nel settore." +
+                " Offro una selezione di oggetti unici e preziosi, curando ogni dettaglio delle mie aste per garantire esperienze indimenticabili ai miei acquirenti." +
+            "Conosco il valore degli oggetti che metto all'asta e mi impegno a offrire un servizio clienti impeccabile." + "Sono qui per fornire autenticità, qualità e emozioni nel mondo delle aste.",
+        "www.marione.com",
+        "Via Roma, 123, 00100, Roma, Italia",
+        "instagram",
+        "facebook",
+        "twitter"
     )
 
 
@@ -388,7 +385,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
                     )
-                    utente.dettagliUtente?.descrizione?.let {
+                    utente.descrizione?.let {
                         Text(
                             text = it,
                             modifier = Modifier
@@ -429,7 +426,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                                     fontSize = 20.sp
                                 )
                             ) {
-                                append(utente.dettagliUtente?.sitoWeb)
+                                append(utente.sitoWeb)
                                 addStringAnnotation("URL", "https://www.example.com", 0, length)
                             }
                         }
@@ -537,7 +534,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         )
 
                         Spacer(modifier = Modifier.width(10.dp))
-                        utente.dettagliUtente?.indirizzo?.let {
+                        utente.indirizzo?.let {
                             Text(
                                 text = it,
                                 modifier = Modifier.weight(1f),

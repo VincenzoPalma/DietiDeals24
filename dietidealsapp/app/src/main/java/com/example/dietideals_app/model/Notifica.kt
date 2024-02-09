@@ -1,22 +1,20 @@
 package com.example.dietideals_app.model
 
-import java.time.LocalDateTime
+class Notifica(val contenuto : String, val utente: Utente, val asta: Asta) {
 
-class Notifica(val contenuto : String, val data : LocalDateTime) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Notifica
+        if (other !is Notifica) return false
 
         if (contenuto != other.contenuto) return false
-        return data == other.data
+        if (utente != other.utente) return false
+        return asta == other.asta
     }
 
     override fun hashCode(): Int {
         var result = contenuto.hashCode()
-        result = 31 * result + data.hashCode()
+        result = 31 * result + utente.hashCode()
+        result = 31 * result + asta.hashCode()
         return result
     }
-
 }
