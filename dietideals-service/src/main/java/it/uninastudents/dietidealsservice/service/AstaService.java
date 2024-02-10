@@ -1,6 +1,8 @@
 package it.uninastudents.dietidealsservice.service;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
+import it.uninastudents.dietidealsservice.model.entity.User;
+import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
@@ -8,23 +10,27 @@ import it.uninastudents.dietidealsservice.repository.AstaRepository;
 import it.uninastudents.dietidealsservice.repository.specs.AstaSpecs;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class AstaService {
 
     private final AstaRepository repository;
 
-    public Asta salvaAsta(UUID idUtente, Asta asta) {
-        //recupero utente
-        //set utente
+    public Asta salvaAsta(Asta asta) {
+        asta.setStato(StatoAsta.ATTIVA);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(); //modificare nell'utente proprio (security filter)
+        //asta.setProprietario(utente);
         return repository.save(asta);
     }
 

@@ -28,16 +28,20 @@ public class AstaController {
     private final AstaService astaService;
     private final AstaMapper mapper;
 
-    @PostMapping("/utente/{idUtente}/aste")
-    public ResponseEntity<Asta> saveAsta(@PathVariable UUID idUtente, @Valid @RequestBody AstaDTO astaDTO) {
-        Asta asta = astaService.salvaAsta(idUtente, mapper.astaDTOToAsta(astaDTO));
-        return ResponseEntity.created(URI.create("/utente/%s/aste/%s".formatted(idUtente.toString(), asta.getId().toString()))).body(asta);
+    @PostMapping("/utente/aste")
+    public ResponseEntity<Asta> saveAsta(@Valid @RequestBody AstaDTO astaDTO) {
+        Asta asta = astaService.salvaAsta(mapper.astaDTOToAsta(astaDTO));
+        return ResponseEntity.created(URI.create("/utente/aste/%s".formatted(asta.getId().toString()))).body(asta);
     }
 
     @GetMapping("/aste")
-    public ResponseEntity<Page<Asta>> getAste(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam(name = "nome", required = false) String nome, @RequestParam(name = "tipo", required = false) TipoAsta tipo, @RequestParam(name = "categoria", required = false) CategoriaAsta categoria) {
+    public ResponseEntity<Page<Asta>> getAste(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page,
+                                              @RequestParam(name = "size", defaultValue = "12") @Min(1) int size,
+                                              @RequestParam(name = "nome", required = false) String nome,
+                                              @RequestParam(name = "tipo", required = false) TipoAsta tipo,
+                                              @RequestParam(name = "categoria", required = false) CategoriaAsta categoria) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
-        return new ResponseEntity<>(astaService.getAll(pageable, nome, tipo, categoria), HttpStatus.OK);
+        return ResponseEntity.ok(astaService.getAll(pageable, nome, tipo, categoria));
     }
 
     @GetMapping("/utente/{idUtente}/aste")

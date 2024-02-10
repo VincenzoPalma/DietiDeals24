@@ -4,14 +4,52 @@ spring:
     username: postgres
     password: 26102002
     driver-class-name: org.postgresql.Driver
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_MqNmedT71
-
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
     generate-ddl: true
+security:
+  firebase-props:
+    enable-strict-server-session: false
+    enable-check-session-revoked: false
+    enable-logout-everywhere: false
+    session-expiry-in-days: 5
+    cookie-props:
+      max-age-in-minutes: 7200
+      http-only: true
+      secure: true
+      domain: http://localhost:8080
+      path: /
+    allow-credentials: true
+    allowed-origins:
+      - http://localhost:8080
+      - http://localhost:3000
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - Authorization
+      - Origin
+      - Content-Type
+      - Accept
+      - Accept-Encoding
+      - Accept-Language
+      - Access-Control-Allow-Origin
+      - Access-Control-Allow-Headers
+      - Access-Control-Request-Method
+      - X-Requested-With
+      - X-Auth-Token
+      - X-Xsrf-Token
+      - Cache-Control
+      - Id-Token
+    allowed-public-apis:
+      - /favicon.ico
+      - /session/login
+      - /public/**
+    exposed-headers:
+      - X-Xsrf-Token

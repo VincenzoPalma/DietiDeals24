@@ -21,6 +21,7 @@ import java.util.Set;
 })
 public class Utente extends BaseEntity {
 
+    //rimuovere password e username
     @Column(nullable = false)
     private String username;
 
@@ -34,7 +35,7 @@ public class Utente extends BaseEntity {
     private String cognome;
 
     @Column(nullable = false)
-    private LocalDate dataNascita; //cancellare ogni utente e avviare il programma per aggiungere questo attributo al db
+    private LocalDate dataNascita;
 
     @Column(nullable = false)
     private String email;
