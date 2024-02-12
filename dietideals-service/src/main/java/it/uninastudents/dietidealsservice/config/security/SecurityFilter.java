@@ -3,11 +3,10 @@ package it.uninastudents.dietidealsservice.config.security;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
-import it.uninastudents.dietidealsservice.model.entity.User;
+import it.uninastudents.dietidealsservice.model.entity.Userio;
 import it.uninastudents.dietidealsservice.service.SecurityService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -67,21 +66,21 @@ public class SecurityFilter extends OncePerRequestFilter {
         }
     }
 
-    private User mapFirebaseTokenToInternalUser(FirebaseToken decodedToken) {
+    private Userio mapFirebaseTokenToInternalUser(FirebaseToken decodedToken) {
         // Verificare che nella propria UtenteRepository esista un utente con la mail presa da decodedToken
         // Se esiste, restituire quell'utente
         // Se non esiste, creare un nuovo utente utilizzando i dati presenti in decoded token, ovvero name (username) e email. Restituire l'utente appena creato
         // Eventuali ruoli / scope, li prendi da getClaims
         // Quindi in getClaims (e' una mappa) avrai "rol" con valore uno degli enum che hai in UtenteRuolo
 
-        User user = null;
+        Userio userio = null;
         if (decodedToken != null) {
-            user = new User();
-            user.setUid(decodedToken.getUid());
-            user.setName(decodedToken.getName());
-            user.setEmail(decodedToken.getEmail());
-            user.setEmailVerified(decodedToken.isEmailVerified());
+            userio = new Userio();
+            userio.setUid(decodedToken.getUid());
+            userio.setName(decodedToken.getName());
+            userio.setEmail(decodedToken.getEmail());
+            userio.setEmailVerified(decodedToken.isEmailVerified());
         }
-        return user;
+        return userio;
     }
 }

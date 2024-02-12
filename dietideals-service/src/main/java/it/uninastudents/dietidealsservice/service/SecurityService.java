@@ -3,21 +3,21 @@ package it.uninastudents.dietidealsservice.service;
 import it.uninastudents.dietidealsservice.config.security.CookieUtils;
 import it.uninastudents.dietidealsservice.config.security.SecurityProperties;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
+@RequiredArgsConstructor
 public class SecurityService {
 
-    @Autowired
-    HttpServletRequest httpServletRequest;
+    private final HttpServletRequest httpServletRequest;
 
-    @Autowired
-    CookieUtils cookieUtils;
+    private final CookieUtils cookieUtils;
 
-    @Autowired
-    SecurityProperties securityProps;
+    private final SecurityProperties securityProps;
 
     public boolean isPublic() {
         return securityProps.getAllowedPublicApis().contains(httpServletRequest.getRequestURI());

@@ -17,7 +17,7 @@ public class ContoCorrenteService {
 
     private final ContoCorrenteRepository repository;
 
-    public ContoCorrente salvaContoCorrente(UUID idUtente, ContoCorrente contoCorrente) {
+    public ContoCorrente salvaContoCorrente(ContoCorrente contoCorrente) {
         //recupero utente
         //set utente
         return repository.save(contoCorrente);
@@ -27,8 +27,10 @@ public class ContoCorrenteService {
         return repository.save(contoCorrente);
     }
 
-    public Optional<ContoCorrente> findContoCorrenteByUtente(UUID idUtente) {
-        var spec = ContoCorrenteSpecs.hasUtente(idUtente);
-        return repository.findOne(spec);
-    }
+//    public Optional<ContoCorrente> findContoCorrenteByUtente() {
+//        //recupero utente
+//        //set utente
+//        var spec = ContoCorrenteSpecs.hasUtente(idUtente);
+//        return repository.findOne(spec);
+//    }
 }
