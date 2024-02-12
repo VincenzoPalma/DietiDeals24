@@ -100,26 +100,6 @@ class PaginaCreazioneAsta : ComponentActivity() {
                             )
                         }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") {
-                            SchermataImmagineProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataDiventaVenditore") {
-                            SchermataDiventaVenditore(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazioneSuccesso") {
-                            SchermataRegistrazioneSuccesso(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazioneDatiVenditore") {
-                            SchermataRegistrazioneDatiVenditore(
-                                navController = navController
-                            )
-                        }
                         composable("SchermataHome") { SchermataHome(navController = navController) }
                         composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
                         composable("SchermataModificaProfilo") {
@@ -134,6 +114,8 @@ class PaginaCreazioneAsta : ComponentActivity() {
                         }
                         composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
                         composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
+                        composable("SchermataPaginaAsta") { SchermataPaginaAsta(navController = navController) }
+
                     }
                 }
             }
@@ -168,7 +150,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
     val colorGreen = 0xFF0EA639
     val colorRed = 0xFF9B0404
     val defaultImage = painterResource(id = R.drawable.defaultimage)
-    val selectedTabIndex = remember { mutableIntStateOf(2) }
+    val selectedTabIndex = remember { mutableIntStateOf(0) }
     val tabNames = listOf("All'inglese", "Silenziosa", "Inversa")
     var nomeAsta by remember { mutableStateOf("") }
     var sogliaRialzo by remember { mutableStateOf("10") }
@@ -919,7 +901,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     )
                                     OutlinedTextField(value = nomeAsta,
                                         onValueChange = { nomeAsta = it },
-                                        label = { Text(text = "Nome Asta") },
+                                        label = { Text(text = "Che cosa stai cercando?") },
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .offset(y = 40.dp),
@@ -1023,12 +1005,84 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
                                         }
 
+
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End,
+                                    ) {
+                                        ElevatedButton(
+                                            onClick = { currentPage.value = 1 },
+                                            modifier = Modifier
+                                                .offset(y = 500.dp)
+                                                .padding(8.dp)
+                                        ) {
+                                            Text(text = "Avanti", fontSize = 20.sp)
+
+                                        }
+
                                     }
                                 }
 
                             }
 
                             1 -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp)
+                                )
+                                {
+                                    Text(
+                                        text = "DETTAGLI OPZIONALI",
+                                        fontSize = 25.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Bold, // Imposta il testo in grassetto
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = 10.dp),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+
+                                        Box(modifier = Modifier.size(250.dp)) {
+                                            Image(
+                                                painter = defaultImage,
+                                                contentDescription = null,
+                                                modifier = Modifier.matchParentSize()
+                                            )
+                                            Icon(
+                                                imageVector = Icons.Default.Edit,
+                                                contentDescription = "Edit",
+                                                tint = Color.Black,
+                                                modifier = Modifier
+                                                    .size(48.dp)
+                                                    .align(Alignment.Center)
+                                                    .shadow(15.dp)
+                                                    .clickable {  /*getContent.launch("image/*") */*/ }
+                                            )
+                                        }
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End,
+                                    ) {
+                                        ElevatedButton(
+                                            onClick = { isConfirmDialogVisible = true },
+                                            modifier = Modifier
+                                                .offset(y = 500.dp)
+                                                .padding(8.dp)
+                                        ) {
+                                            Text(text = "Conferma", fontSize = 20.sp)
+
+                                        }
+
+                                    }
+
+
+                                }
 
                             }
                         }

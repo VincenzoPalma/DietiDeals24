@@ -92,30 +92,22 @@ class PaginaSchermataHome : ComponentActivity() {
                             )
                         }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") {
-                            SchermataImmagineProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataDiventaVenditore") {
-                            SchermataDiventaVenditore(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazioneSuccesso") {
-                            SchermataRegistrazioneSuccesso(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazioneDatiVenditore") {
-                            SchermataRegistrazioneDatiVenditore(
-                                navController = navController
-                            )
-                        }
                         composable("SchermataHome") { SchermataHome(navController = navController) }
                         composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
+                        composable("SchermataModificaProfilo") {
+                            SchermataModificaProfilo(
+                                navController = navController
+                            )
+                        }
+                        composable("SchermataPagamentiProfilo") {
+                            SchermataPagamentiProfilo(
+                                navController = navController
+                            )
+                        }
                         composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
                         composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
+                        composable("SchermataPaginaAsta") { SchermataPaginaAsta(navController = navController) }
+
                     }
                 }
             }
@@ -451,7 +443,8 @@ class PaginaSchermataHome : ComponentActivity() {
                                                 .height(200.dp)
                                                 .padding(8.dp)
                                                 .background(Color.White)
-                                                .border(1.dp, Color.Black),
+                                                .border(1.dp, Color.Black)
+                                                .clickable { navController.navigate("SchermataPaginaAsta")},
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Column(
@@ -499,7 +492,8 @@ class PaginaSchermataHome : ComponentActivity() {
                                                 .height(200.dp)
                                                 .padding(8.dp)
                                                 .background(Color.White)
-                                                .border(1.dp, Color.Black),
+                                                .border(1.dp, Color.Black)
+                                                .clickable { navController.navigate("SchermataPaginaAsta") },
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Column(

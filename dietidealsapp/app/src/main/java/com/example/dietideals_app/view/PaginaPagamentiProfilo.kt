@@ -90,26 +90,6 @@ class PaginaPagamentiProfilo : ComponentActivity() {
                             )
                         }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataImmagineProfilo") {
-                            SchermataImmagineProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataDiventaVenditore") {
-                            SchermataDiventaVenditore(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazioneSuccesso") {
-                            SchermataRegistrazioneSuccesso(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazioneDatiVenditore") {
-                            SchermataRegistrazioneDatiVenditore(
-                                navController = navController
-                            )
-                        }
                         composable("SchermataHome") { SchermataHome(navController = navController) }
                         composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
                         composable("SchermataModificaProfilo") {
@@ -122,6 +102,10 @@ class PaginaPagamentiProfilo : ComponentActivity() {
                                 navController = navController
                             )
                         }
+                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
+                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
+                        composable("SchermataPaginaAsta") { SchermataPaginaAsta(navController = navController) }
+
                     }
                 }
             }
