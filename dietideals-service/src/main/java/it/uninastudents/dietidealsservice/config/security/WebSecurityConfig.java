@@ -1,6 +1,7 @@
 package it.uninastudents.dietidealsservice.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,11 +23,13 @@ import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .authorizeHttpRequests(it -> it.requestMatchers("/registrazione").permitAll())
                 .authorizeHttpRequests(it -> it.requestMatchers("*/**").authenticated())
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(it->it.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -35,14 +38,11 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable).build();
     }
 
-    @Autowired
-    ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    SecurityProperties restSecProps;
+    private final SecurityProperties restSecProps;
 
-    @Autowired
-    public SecurityFilter tokenAuthenticationFilter;
+    public final SecurityFilter tokenAuthenticationFilter;
 
     @Bean
     public AuthenticationEntryPoint restAuthenticationEntryPoint() {

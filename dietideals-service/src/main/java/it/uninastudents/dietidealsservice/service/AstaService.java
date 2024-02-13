@@ -1,7 +1,7 @@
 package it.uninastudents.dietidealsservice.service;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
-import it.uninastudents.dietidealsservice.model.entity.Userio;
+import it.uninastudents.dietidealsservice.model.User;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
@@ -25,7 +25,7 @@ public class AstaService {
 
     public Asta salvaAsta(Asta asta) {
         asta.setStato(StatoAsta.ATTIVA);
-        Userio userio = (Userio) SecurityContextHolder.getContext().getAuthentication().getPrincipal(); //modificare nell'utente proprio (security filter)
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(); //modificare nell'utente proprio (security filter)
         //asta.setProprietario(utente);
         return repository.save(asta);
     }

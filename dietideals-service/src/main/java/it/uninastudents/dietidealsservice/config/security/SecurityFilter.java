@@ -3,8 +3,10 @@ package it.uninastudents.dietidealsservice.config.security;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
-import it.uninastudents.dietidealsservice.model.entity.Userio;
+import it.uninastudents.dietidealsservice.model.User;
+import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.service.SecurityService;
+import it.uninastudents.dietidealsservice.service.UtenteService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,12 +15,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -28,6 +32,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private final CookieUtils cookieUtils;
     private final SecurityService securityService;
+    private final UtenteService utenteService;
     private final SecurityProperties securityProps;
 
     @Override
@@ -56,31 +61,37 @@ public class SecurityFilter extends OncePerRequestFilter {
         } catch (FirebaseAuthException e) {
             log.error("Something went wrong while authenticating through Firebase...", e);
         }
-
         var user = mapFirebaseTokenToInternalUser(decodedToken);
         if (user != null) {
             // Al posto di "null" in authorities, mettere il ruolo "UtenteRuolo" come SimpleGrantedAuthority, per poter usare i preauthorize di spring
-            var authentication = new UsernamePasswordAuthenticationToken(user, new Credentials(type, decodedToken, token, session), null);
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_Compratore");//??
+            var authentication = new UsernamePasswordAuthenticationToken(user, new Credentials(type, decodedToken, token, session), List.of(authority));
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
     }
 
-    private Userio mapFirebaseTokenToInternalUser(FirebaseToken decodedToken) {
+    private User mapFirebaseTokenToInternalUser(FirebaseToken decodedToken) {
         // Verificare che nella propria UtenteRepository esista un utente con la mail presa da decodedToken
         // Se esiste, restituire quell'utente
         // Se non esiste, creare un nuovo utente utilizzando i dati presenti in decoded token, ovvero name (username) e email. Restituire l'utente appena creato
         // Eventuali ruoli / scope, li prendi da getClaims
         // Quindi in getClaims (e' una mappa) avrai "rol" con valore uno degli enum che hai in UtenteRuolo
+        //Utente utente = utenteService.findUtenteByIdAuth(decodedToken.getUid());
+//        if (utente == null){
+//
+//        } else {
+//
+//        }
 
-        Userio userio = null;
+        User user = null;
         if (decodedToken != null) {
-            userio = new Userio();
-            userio.setUid(decodedToken.getUid());
-            userio.setName(decodedToken.getName());
-            userio.setEmail(decodedToken.getEmail());
-            userio.setEmailVerified(decodedToken.isEmailVerified());
+            user = new User();
+            user.setUid(decodedToken.getUid());
+            user.setName(decodedToken.getName());
+            user.setEmail(decodedToken.getEmail());
+            user.setEmailVerified(decodedToken.isEmailVerified());
         }
-        return userio;
+        return user;
     }
 }

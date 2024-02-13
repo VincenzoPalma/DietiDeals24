@@ -25,8 +25,4 @@ public class ContoCorrente extends BaseEntity {
     @Column(nullable = false)
     private String codiceBicSwift;
 
-    @OneToOne
-    @JoinColumn(nullable = false)
-    private Utente utente;
-
 }

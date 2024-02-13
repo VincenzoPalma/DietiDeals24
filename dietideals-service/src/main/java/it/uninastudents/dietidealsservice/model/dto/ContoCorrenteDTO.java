@@ -14,9 +14,6 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class ContoCorrenteDTO {
 
-    @NotNull
-    private UUID id;
-
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9]{27}$")
     private String iban;

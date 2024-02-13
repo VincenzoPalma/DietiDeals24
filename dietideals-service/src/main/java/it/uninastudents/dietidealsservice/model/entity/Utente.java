@@ -21,7 +21,9 @@ import java.util.Set;
 })
 public class Utente extends BaseEntity {
 
-    //rimuovere password e username
+    @Column(nullable = false)
+    private String idAuth;
+
     @Column(nullable = false)
     private String username;
 
@@ -39,9 +41,6 @@ public class Utente extends BaseEntity {
 
     @Column(nullable = false)
     private String email;
-
-    @Column(nullable = false)
-    private String password;
 
     @Column(length = 300)
     private String descrizione;

@@ -1,6 +1,5 @@
 package it.uninastudents.dietidealsservice.repository.specs;
 
-import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,7 @@ public class UtenteSpecs {
         return Specification.where(null);
     }
 
-    public static Specification<Utente> hasEmail(String target) {
-        return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(criteriaBuilder.upper(root.get("email")), target)) : none();
+    public static Specification<Utente> hasIdAuth(String target) {
+        return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(criteriaBuilder.upper(root.get("idAuth")), target)) : none();
     }
 }
