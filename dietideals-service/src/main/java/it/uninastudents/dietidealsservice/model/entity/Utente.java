@@ -17,11 +17,11 @@ import java.util.Set;
 @Entity
 @Table(name = "utente", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email"),
-        @UniqueConstraint(columnNames = "username")
+        @UniqueConstraint(columnNames = "username"),
+        @UniqueConstraint(columnNames = "idAuth")
 })
 public class Utente extends BaseEntity {
 
-    @Column(nullable = false)
     private String idAuth;
 
     @Column(nullable = false)

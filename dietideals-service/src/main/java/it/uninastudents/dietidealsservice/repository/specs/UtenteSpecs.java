@@ -13,6 +13,6 @@ public class UtenteSpecs {
     }
 
     public static Specification<Utente> hasIdAuth(String target) {
-        return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(criteriaBuilder.upper(root.get("idAuth")), target)) : none();
+        return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("idAuth"), target)) : none();
     }
 }

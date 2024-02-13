@@ -2,6 +2,7 @@ package it.uninastudents.dietidealsservice.service;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.User;
+import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
@@ -22,12 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class AstaService {
 
     private final AstaRepository repository;
+    private final UtenteService utenteService;
 
     public Asta salvaAsta(Asta asta) {
         asta.setStato(StatoAsta.ATTIVA);
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(); //modificare nell'utente proprio (security filter)
-        //asta.setProprietario(utente);
-        return repository.save(asta);
+        Utente utente = utenteService.getUtenteAutenticato();
+        if (utente != null){
+            asta.setProprietario(utente);
+            return repository.save(asta);
+        }
+        return null;
     }
 
     public Page<Asta> getAll(Pageable pageable, String nome, TipoAsta tipo, CategoriaAsta categoria) {
