@@ -1,5 +1,6 @@
 package it.uninastudents.dietidealsservice.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.uninastudents.dietidealsservice.model.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -12,7 +13,10 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "carta")
+@Table(name = "carta", uniqueConstraints ={
+    @UniqueConstraint(columnNames = "numero")
+})
+
 public class Carta extends BaseEntity {
 
     @Column(nullable = false)

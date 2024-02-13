@@ -1,7 +1,9 @@
 package it.uninastudents.dietidealsservice.service;
 
 import it.uninastudents.dietidealsservice.model.entity.ContoCorrente;
+import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.repository.ContoCorrenteRepository;
+import it.uninastudents.dietidealsservice.repository.UtenteRepository;
 import it.uninastudents.dietidealsservice.repository.specs.ContoCorrenteSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,21 +18,30 @@ import java.util.UUID;
 public class ContoCorrenteService {
 
     private final ContoCorrenteRepository repository;
+    private final UtenteRepository utenteRepository;
+    private final UtenteService utenteService;
 
     public ContoCorrente salvaContoCorrente(ContoCorrente contoCorrente) {
-        //recupero utente
-        //set utente
+        Utente utente = utenteService.getUtenteAutenticato();
+        utente.setContoCorrente(contoCorrente);
+        utenteRepository.save(utente);
         return repository.save(contoCorrente);
     }
 
+    //non funziona
     public ContoCorrente modificaContoCorrente(ContoCorrente contoCorrente) {
-        return repository.save(contoCorrente);
+        Utente utente = utenteService.getUtenteAutenticato();
+        Optional<ContoCorrente> nuovoContoCorrente = repository.findById(contoCorrente.getId());
+        if (nuovoContoCorrente.isPresent() && nuovoContoCorrente.get().getUtente().getId().equals(utente.getId())){
+            return repository.save(contoCorrente);
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
-//    public Optional<ContoCorrente> findContoCorrenteByUtente() {
-//        //recupero utente
-//        //set utente
-//        var spec = ContoCorrenteSpecs.hasUtente(idUtente);
-//        return repository.findOne(spec);
-//    }
+    public Optional<ContoCorrente> findContoCorrenteByUtente() {
+        Utente utente = utenteService.getUtenteAutenticato();
+        var spec = ContoCorrenteSpecs.hasUtente(utente.getId());
+        return repository.findOne(spec);
+    }
 }

@@ -50,8 +50,9 @@ public class AstaController {
         return new ResponseEntity<>(astaService.getAsteUtenteByStato(pageable, idUtente, stato), HttpStatus.OK);
     }
 
-    @GetMapping("/utente/{idUtente}/offerte/asta")
-    public ResponseEntity<Page<Asta>> getAstePartecipate(@PathVariable UUID idUtente, @RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam boolean vinta) {
+    //non funziona
+    @GetMapping("/utente/offerte/asta")
+    public ResponseEntity<Page<Asta>> getAstePartecipate(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam(name = "vinta", defaultValue = "false") boolean vinta) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
         return new ResponseEntity<>(astaService.getAsteACuiUtenteHaPartecipato(pageable, idUtente, vinta), HttpStatus.OK);
     }

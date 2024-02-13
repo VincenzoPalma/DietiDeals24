@@ -1,5 +1,7 @@
 package it.uninastudents.dietidealsservice.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.uninastudents.dietidealsservice.model.base.BaseEntity;
 import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
 import jakarta.persistence.*;
@@ -61,18 +63,23 @@ public class Utente extends BaseEntity {
 
     private String urlFotoProfilo;
 
+    @JsonIgnore
     @OneToOne
     private ContoCorrente contoCorrente;
 
+    @JsonIgnore
     @OneToMany
     private Set<Offerta> offerte;
 
+    @JsonIgnore
     @OneToMany
     private Set<Asta> aste;
 
+    @JsonIgnore
     @OneToMany
     private Set<Notifica> notifiche;
 
+    @JsonIgnore
     @OneToMany
     private Set<Carta> carte;
 

@@ -1,5 +1,7 @@
 package it.uninastudents.dietidealsservice.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.uninastudents.dietidealsservice.model.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -24,5 +26,9 @@ public class ContoCorrente extends BaseEntity {
 
     @Column(nullable = false)
     private String codiceBicSwift;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @ManyToOne
+    private Utente utente;
 
 }
