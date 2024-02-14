@@ -19,10 +19,10 @@ public class ContoCorrenteController {
     private final ContoCorrenteService contoCorrenteService;
     private final ContoCorrenteMapper contoCorrenteMapper;
 
-    @PostMapping("/utente/{idUtente}/conto_corrente")
-    public ResponseEntity<ContoCorrente> saveContoCorrente(@PathVariable UUID idUtente, @RequestBody @Valid ContoCorrenteDTO contoCorrenteDTO){
-        ContoCorrente contoCorrente = contoCorrenteService.salvaContoCorrente(idUtente, contoCorrenteMapper.contoCorrenteDTOToContoCorrente(contoCorrenteDTO));
-        return ResponseEntity.created(URI.create("/utente/%s/conto_corrente/%s".formatted(idUtente.toString(), contoCorrente.getId().toString()))).body(contoCorrente);
+    @PostMapping("/utente/conto_corrente")
+    public ResponseEntity<ContoCorrente> saveContoCorrente( @RequestBody @Valid ContoCorrenteDTO contoCorrenteDTO){
+        ContoCorrente contoCorrente = contoCorrenteService.salvaContoCorrente(contoCorrenteMapper.contoCorrenteDTOToContoCorrente(contoCorrenteDTO));
+        return ResponseEntity.created(URI.create("/utente/conto_corrente/%s".formatted(contoCorrente.getId().toString()))).body(contoCorrente);
     }
 
     @PutMapping("/conto_corrente")
@@ -31,9 +31,9 @@ public class ContoCorrenteController {
         return ResponseEntity.ok().location(URI.create("conto_corrente/%s".formatted(contoCorrente.getId().toString()))).body(contoCorrente);
     }
 
-    @GetMapping("/utente/{idUtente}/conto_corrente")
-    public ResponseEntity<ContoCorrente> getContoCorrente(@PathVariable UUID idUtente){
-        Optional<ContoCorrente> risultato = contoCorrenteService.findContoCorrenteByUtente(idUtente);
+    @GetMapping("/utente/conto_corrente")
+    public ResponseEntity<ContoCorrente> getContoCorrente(){
+        Optional<ContoCorrente> risultato = contoCorrenteService.findContoCorrenteByUtente();
         if (risultato.isPresent()){
             ContoCorrente contoCorrente = risultato.get();
             return ResponseEntity.ok(contoCorrente);
