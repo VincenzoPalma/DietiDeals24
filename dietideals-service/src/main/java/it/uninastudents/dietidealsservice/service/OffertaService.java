@@ -67,8 +67,14 @@ public class OffertaService {
     }
 
     public Page<Offerta> findAllByAsta(Pageable pageable, UUID idAsta) {
-        var spec = OffertaSpecs.hasAsta(idAsta).and(OffertaSpecs.hasStato(StatoOfferta.NON_VINCENTE));
-        return repository.findAll(spec, pageable);
+        Utente utente = utenteService.getUtenteAutenticato();
+        Optional<Asta> asta = astaRepository.findById(idAsta);
+        if (asta.isPresent() && utente.getId().equals(asta.get().getProprietario().getId())){
+            var spec = OffertaSpecs.hasAsta(idAsta).and(OffertaSpecs.hasStato(StatoOfferta.NON_VINCENTE));
+            return repository.findAll(spec, pageable);
+        } else {
+            throw new IllegalArgumentException("UTENTE NON PROPRIETARIO");
+        }
     }
 
     public Page<Offerta> findPageOffertaVincenteByAsta(Pageable pageable, UUID idAsta) {
