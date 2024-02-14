@@ -21,10 +21,10 @@ public class CartaController {
     private final CartaService cartaService;
     private final CartaMapper cartaMapper;
 
-    @PostMapping("/utente/{idUtente}/carte")
-    public ResponseEntity<Carta> saveCarta(@PathVariable UUID idUtente, @RequestBody @Valid CartaDTO cartaDTO){
-        Carta carta = cartaService.salvaCarta(cartaMapper.cartaDTOToCarta(cartaDTO), idUtente);
-        return ResponseEntity.created(URI.create("utente/%s/carte/%s".formatted(idUtente.toString(), carta.getId().toString()))).body(carta);
+    @PostMapping("/utente/carte")
+    public ResponseEntity<Carta> saveCarta(@RequestBody @Valid CartaDTO cartaDTO){
+        Carta carta = cartaService.salvaCarta(cartaMapper.cartaDTOToCarta(cartaDTO));
+        return ResponseEntity.created(URI.create("utente/carte/%s".formatted(carta.getId().toString()))).body(carta);
     }
 
     @DeleteMapping("/carte/{idCarta}")
@@ -33,8 +33,9 @@ public class CartaController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/utente/{idUtente}/carte")
-    public ResponseEntity<List<Carta>> getCarteUtente(@PathVariable UUID idUtente){
-        return new ResponseEntity<>(cartaService.getAllByUtente(idUtente), HttpStatus.OK);
+    @GetMapping("/utente/carte")
+    public ResponseEntity<List<Carta>> getCarteUtente(){
+        return new ResponseEntity<>(cartaService.getAllByUtente(), HttpStatus.OK);
     }
 }
+
