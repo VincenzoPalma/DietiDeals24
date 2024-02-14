@@ -10,30 +10,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ContoCorrenteService {
 
-    private final ContoCorrenteRepository repository;
+    private final ContoCorrenteRepository contoCorrenteRepository;
     private final UtenteRepository utenteRepository;
     private final UtenteService utenteService;
 
     public ContoCorrente salvaContoCorrente(ContoCorrente contoCorrente) {
         Utente utente = utenteService.getUtenteAutenticato();
+        contoCorrente.setUtente(utente);
         utente.setContoCorrente(contoCorrente);
         utenteRepository.save(utente);
-        return repository.save(contoCorrente);
+        return contoCorrenteRepository.save(contoCorrente);
     }
 
-    //non funziona
     public ContoCorrente modificaContoCorrente(ContoCorrente contoCorrente) {
         Utente utente = utenteService.getUtenteAutenticato();
-        Optional<ContoCorrente> nuovoContoCorrente = repository.findById(contoCorrente.getId());
+        Optional<ContoCorrente> nuovoContoCorrente = contoCorrenteRepository.findById(contoCorrente.getId());
         if (nuovoContoCorrente.isPresent() && nuovoContoCorrente.get().getUtente().getId().equals(utente.getId())){
-            return repository.save(contoCorrente);
+            return contoCorrenteRepository.save(contoCorrente);
         } else {
             throw new IllegalArgumentException();
         }
@@ -42,6 +41,6 @@ public class ContoCorrenteService {
     public Optional<ContoCorrente> findContoCorrenteByUtente() {
         Utente utente = utenteService.getUtenteAutenticato();
         var spec = ContoCorrenteSpecs.hasUtente(utente.getId());
-        return repository.findOne(spec);
+        return contoCorrenteRepository.findOne(spec);
     }
 }

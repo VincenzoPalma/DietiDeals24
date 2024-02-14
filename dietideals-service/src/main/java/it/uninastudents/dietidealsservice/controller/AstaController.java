@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,7 +49,6 @@ public class AstaController {
         return new ResponseEntity<>(astaService.getAsteUtenteByStato(pageable, idUtente, stato), HttpStatus.OK);
     }
 
-    //non funziona
     @GetMapping("/utente/offerte/asta")
     public ResponseEntity<Page<Asta>> getAstePartecipate(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam(name = "vinta", defaultValue = "false") boolean vinta) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());

@@ -4,7 +4,6 @@ import it.uninastudents.dietidealsservice.model.entity.Carta;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.repository.CartaRepository;
 import it.uninastudents.dietidealsservice.repository.specs.CartaSpecs;
-import it.uninastudents.dietidealsservice.repository.specs.UtenteSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CartaService {
 
-    private final CartaRepository repository;
+    private final CartaRepository cartaRepository;
     private final UtenteService utenteService;
 
     public Carta salvaCarta(Carta carta, UUID idUtente) {
@@ -29,22 +28,15 @@ public class CartaService {
 
     public void cancellaCarta(UUID idCarta) {
         Utente utenteAutenticato = utenteService.getUtenteAutenticato();
-        Carta carta = findCartaById(idCarta);
-        if (carta != null && carta.getUtente().getId().equals(utenteAutenticato.getId())){
-            repository.deleteById(idCarta);
+        Optional<Carta> carta = cartaRepository.findById(idCarta);
+        if (carta.isPresent() && carta.get().getUtente().getId().equals(utenteAutenticato.getId())){
+            cartaRepository.deleteById(idCarta);
         }
-    }
-
-    public Carta findCartaById(UUID id)
-    {
-        var spec = CartaSpecs.hasId(id);
-        Optional<Carta> result = repository.findOne(spec);
-        return result.orElse(null);
     }
 
     public List<Carta> getAllByUtente() {
         Utente utenteAutenticato = utenteService.getUtenteAutenticato();
         var spec = CartaSpecs.hasUtente(utenteAutenticato.getId());
-        return repository.findAll(spec);
+        return cartaRepository.findAll(spec);
     }
 }

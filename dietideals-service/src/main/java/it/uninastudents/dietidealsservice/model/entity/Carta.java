@@ -31,6 +31,7 @@ public class Carta extends BaseEntity {
     @Column(nullable = false)
     private OffsetDateTime dataScadenza;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(nullable = false)
     private Utente utente;
