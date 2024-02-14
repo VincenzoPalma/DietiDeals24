@@ -41,26 +41,29 @@ public class AstaService {
         return repository.findAll(spec, pageable);
     }
 
-    public Page<Asta> getAsteUtenteByStato(Pageable pageable, UUID idProprietario, StatoAsta stato) {
-        var spec = AstaSpecs.hasProprietario(idProprietario).and(AstaSpecs.hasStato(stato));
+    public Page<Asta> getAsteUtenteByStato(Pageable pageable, StatoAsta stato) {
+        Utente utente = utenteService.getUtenteAutenticato();
+        var spec = AstaSpecs.hasProprietario(utente.getId()).and(AstaSpecs.hasStato(stato));
         return repository.findAll(spec, pageable);
     }
 
-    public Page<Asta> getAsteACuiUtenteHaPartecipato(Pageable pageable, UUID idUtente, boolean vinta){
+    public Page<Asta> getAsteACuiUtenteHaPartecipato(Pageable pageable, boolean vinta){
         if (vinta){
-            return getAsteVinteByUtente(pageable, idUtente);
+            return getAsteVinteByUtente(pageable);
         } else {
-            return getAstePartecipateByUtente(pageable, idUtente, StatoAsta.ATTIVA);
+            return getAstePartecipateByUtente(pageable);
         }
     }
 
-    public Page<Asta> getAstePartecipateByUtente(Pageable pageable, UUID idProprietario, StatoAsta stato) {
-        var spec = AstaSpecs.hasStato(stato).and(AstaSpecs.hasOfferta(idProprietario));
+    public Page<Asta> getAstePartecipateByUtente(Pageable pageable) {
+        Utente utente = utenteService.getUtenteAutenticato();
+        var spec = AstaSpecs.hasStato(StatoAsta.ATTIVA).and(AstaSpecs.hasOfferta(utente.getId()));
         return repository.findAll(spec, pageable);
     }
 
-    public Page<Asta> getAsteVinteByUtente(Pageable pageable, UUID idProprietario) {
-        var spec = AstaSpecs.hasStato(StatoAsta.TERMINATA).and(AstaSpecs.hasOffertaVincente(idProprietario));
+    public Page<Asta> getAsteVinteByUtente(Pageable pageable) {
+        Utente utente = utenteService.getUtenteAutenticato();
+        var spec = AstaSpecs.hasStato(StatoAsta.TERMINATA).and(AstaSpecs.hasOffertaVincente(utente.getId()));
         return repository.findAll(spec, pageable);
     }
 }
