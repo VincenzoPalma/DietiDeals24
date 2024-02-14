@@ -25,13 +25,15 @@ public class NotificaService {
         repository.deleteById(idNotifica);
     }
 
-    public void cancellaNotificheUtente(UUID idUtente) {
-        var spec = NotificaSpecs.hasUtente(idUtente);
-        repository.delete(spec);
-    }
-
-    public List<Notifica> findAllNotificheUtente(UUID idUtente) {
-        var spec = NotificaSpecs.hasUtente(idUtente);
-        return repository.findAll(spec);
-    }
+//    public void cancellaNotificheUtente() {
+//        //prendere utente e il suo id
+//        //var spec = NotificaSpecs.hasUtente(idUtente);
+//        repository.delete(spec);
+//    }
+//
+//    public List<Notifica> findAllNotificheUtente() {
+//        //prendere utente e il suo id
+//        //var spec = NotificaSpecs.hasUtente();
+//        return repository.findAll(spec);
+//    }
 }
