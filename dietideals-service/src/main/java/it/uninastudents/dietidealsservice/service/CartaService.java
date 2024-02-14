@@ -20,10 +20,10 @@ public class CartaService {
     private final CartaRepository cartaRepository;
     private final UtenteService utenteService;
 
-    public Carta salvaCarta(Carta carta, UUID idUtente) {
-        //recupero utente
-        //set utente
-        return repository.save(carta);
+    public Carta salvaCarta(Carta carta) {
+        Utente utente = utenteService.getUtenteAutenticato();
+        carta.setUtente(utente);
+        return cartaRepository.save(carta);
     }
 
     public void cancellaCarta(UUID idCarta) {
