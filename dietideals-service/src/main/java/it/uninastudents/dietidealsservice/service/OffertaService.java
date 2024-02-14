@@ -2,6 +2,8 @@ package it.uninastudents.dietidealsservice.service;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
+import it.uninastudents.dietidealsservice.model.entity.Utente;
+import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoOfferta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.repository.AstaRepository;
@@ -24,10 +26,14 @@ public class OffertaService {
 
     private final OffertaRepository repository;
     private final AstaRepository astaRepository;
+    private final UtenteService utenteService;
 
     public Offerta salvaOfferta(UUID idAsta, BigDecimal prezzo) {
-        //prendere l'utente
+        Utente utente = utenteService.getUtenteAutenticato();
         var asta = astaRepository.findById(idAsta).orElseThrow(() -> new IllegalArgumentException("ASTA NON TROVATA")); //gestione errori
+        if (asta.getStato().equals(StatoAsta.TERMINATA)){
+            throw new IllegalArgumentException("ASTA TERMINATA, IMPOSSIBILE CREARE OFFERTA");
+        }
         if (!confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta)) {
             throw new IllegalArgumentException("PREZZO NON VALIDO");
         }
@@ -35,14 +41,18 @@ public class OffertaService {
         nuovaOfferta.setPrezzo(prezzo);
         nuovaOfferta.setStato(StatoOfferta.NON_VINCENTE);
         nuovaOfferta.setAsta(asta);
-        //set user
-        Optional<Offerta> offertaVincente = findOptionalOffertaVincenteByAsta(idAsta);
-        if (offertaVincente.isPresent()) {
-            if (!confrontaPrezzoNuovaOffertaConPrezzoOffertaVincente(nuovaOfferta, offertaVincente.get(), asta)) {
-                throw new IllegalArgumentException("PREZZO NON VALIDO");
+        nuovaOfferta.setUtente(utente);
+        if (!asta.getTipo().equals(TipoAsta.SILENZIOSA)){
+            Optional<Offerta> offertaVincente = findOptionalOffertaVincenteByAsta(idAsta);
+            if (offertaVincente.isPresent()) {
+                if (!confrontaPrezzoNuovaOffertaConPrezzoOffertaVincente(nuovaOfferta, offertaVincente.get(), asta)) {
+                    throw new IllegalArgumentException("PREZZO NON VALIDO");
+                } else {
+                    offertaVincente.get().setStato(StatoOfferta.NON_VINCENTE);
+                    repository.save(offertaVincente.get());
+                }
             }
-            offertaVincente.get().setStato(StatoOfferta.NON_VINCENTE);
-            repository.save(offertaVincente.get());
+            nuovaOfferta.setStato(StatoOfferta.VINCENTE);
         }
         //manda la notifica
         return repository.save(nuovaOfferta);
@@ -83,16 +93,10 @@ public class OffertaService {
 
     private boolean confrontaPrezzoNuovaOffertaConPrezzoOffertaVincente(Offerta nuovaOfferta, Offerta offertaVincente, Asta asta) {
         if (asta.getTipo().equals(TipoAsta.INGLESE)) {
-            if (nuovaOfferta.getPrezzo().compareTo(offertaVincente.getPrezzo()) >= 0) {
-                nuovaOfferta.setStato(StatoOfferta.VINCENTE);
-                return true;
-            } else return false;
+            return nuovaOfferta.getPrezzo().compareTo(offertaVincente.getPrezzo().add(asta.getSogliaRialzo())) >= 0;
         } else if (asta.getTipo().equals(TipoAsta.INVERSA)) {
-            if (nuovaOfferta.getPrezzo().compareTo(offertaVincente.getPrezzo()) <= 0) {
-                nuovaOfferta.setStato(StatoOfferta.VINCENTE);
-                return true;
-            } else return false;
+            return nuovaOfferta.getPrezzo().compareTo(offertaVincente.getPrezzo()) <= 0;
         }
-        return true;
+        return false;
     }
 }

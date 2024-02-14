@@ -32,6 +32,7 @@ public class ContoCorrenteService {
         Utente utente = utenteService.getUtenteAutenticato();
         Optional<ContoCorrente> nuovoContoCorrente = contoCorrenteRepository.findById(contoCorrente.getId());
         if (nuovoContoCorrente.isPresent() && nuovoContoCorrente.get().getUtente().getId().equals(utente.getId())){
+            contoCorrente.setUtente(nuovoContoCorrente.get().getUtente());
             return contoCorrenteRepository.save(contoCorrente);
         } else {
             throw new IllegalArgumentException();

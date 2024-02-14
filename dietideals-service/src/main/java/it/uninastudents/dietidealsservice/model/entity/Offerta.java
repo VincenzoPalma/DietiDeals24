@@ -1,5 +1,6 @@
 package it.uninastudents.dietidealsservice.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.uninastudents.dietidealsservice.model.base.BaseEntity;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoOfferta;
 import jakarta.persistence.*;
@@ -21,6 +22,7 @@ public class Offerta extends BaseEntity {
     @JoinColumn(nullable = false)
     private Utente utente;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(nullable = false)
     private Asta asta;
