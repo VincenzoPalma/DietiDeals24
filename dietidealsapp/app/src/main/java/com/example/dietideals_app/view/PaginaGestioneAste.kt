@@ -87,6 +87,7 @@ class PaginaGestioneAste : ComponentActivity() {
                         }
                         composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
                         composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
+                        composable("SchermataOfferte") { SchermataOfferte(navController = navController) }
 
                     }
                 }

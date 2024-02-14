@@ -105,6 +105,7 @@ class PaginaPagamentiProfilo : ComponentActivity() {
                         composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
                         composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
                         composable("SchermataPaginaAsta") { SchermataPaginaAsta(navController = navController) }
+                        composable("SchermataOfferte") { SchermataOfferte(navController = navController) }
 
                     }
                 }
