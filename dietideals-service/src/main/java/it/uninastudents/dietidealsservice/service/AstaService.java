@@ -1,9 +1,9 @@
 package it.uninastudents.dietidealsservice.service;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
-import it.uninastudents.dietidealsservice.model.User;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
+import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.repository.AstaRepository;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +27,14 @@ public class AstaService {
     public Asta salvaAsta(Asta asta) {
         asta.setStato(StatoAsta.ATTIVA);
         Utente utente = utenteService.getUtenteAutenticato();
-        if (utente != null){
-            asta.setProprietario(utente);
-            return repository.save(asta);
+        if (utente != null) {
+            if (!asta.getTipo().equals(TipoAsta.INVERSA) && utente.getRuolo().equals(RuoloUtente.COMPRATORE)) {
+                throw new IllegalArgumentException("UTENTE COMPRATORE NON PUO' CREARE L'ASTA");
+            } else {
+                asta.setProprietario(utente);
+                utente.getAste().add(asta);
+                return repository.save(asta);
+            }
         }
         return null;
     }
@@ -47,8 +51,8 @@ public class AstaService {
         return repository.findAll(spec, pageable);
     }
 
-    public Page<Asta> getAsteACuiUtenteHaPartecipato(Pageable pageable, boolean vinta){
-        if (vinta){
+    public Page<Asta> getAsteACuiUtenteHaPartecipato(Pageable pageable, boolean vinta) {
+        if (vinta) {
             return getAsteVinteByUtente(pageable);
         } else {
             return getAstePartecipateByUtente(pageable);

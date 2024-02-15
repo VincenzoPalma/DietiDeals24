@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -30,8 +29,7 @@ public class UtenteService {
     private final ContoCorrenteMapper contoCorrenteMapper;
     private final UtenteMapper utenteMapper;
 
-    public Utente findUtenteByIdAuth(String idAuth)
-    {
+    public Utente findUtenteByIdAuth(String idAuth) {
         var spec = UtenteSpecs.hasIdAuth(idAuth);
         Optional<Utente> result = utenteRepository.findOne(spec);
         return result.orElse(null);
@@ -41,28 +39,29 @@ public class UtenteService {
         //inserimento utente nel db
         Utente utente = utenteMapper.utenteDTOToUtente(utenteRegistrazione);
         utente.setContoCorrente(null);
-        Utente nuovoUtente = utenteRepository.save(utente);
+        utente = utenteRepository.save(utente);
         ContoCorrente nuovoContoCorrente = contoCorrenteMapper.contoCorrenteDTOToContoCorrente(utenteRegistrazione.getContoCorrente());
-        if (nuovoContoCorrente != null){
+        if (nuovoContoCorrente != null) {
+            nuovoContoCorrente.setUtente(utente);
             nuovoContoCorrente = contoCorrenteRepository.save(nuovoContoCorrente);
-            nuovoUtente.setContoCorrente(nuovoContoCorrente);
-            nuovoUtente = utenteRepository.save(nuovoUtente);
+            utente.setContoCorrente(nuovoContoCorrente);
+            utente = utenteRepository.save(utente);
         }
         //registrazione utente
         UserRecord.CreateRequest request = new UserRecord.CreateRequest()
                 .setEmail(utenteRegistrazione.getEmail())
                 .setPassword(utenteRegistrazione.getPassword())
                 .setDisplayName(utenteRegistrazione.getUsername());
-        if (utenteRegistrazione.getUrlFotoProfilo() != null){
+        if (utenteRegistrazione.getUrlFotoProfilo() != null) {
             request.setPhotoUrl(utenteRegistrazione.getUrlFotoProfilo());
         }
         UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
-        nuovoUtente.setIdAuth(userRecord.getUid());
-        nuovoUtente = utenteRepository.save(nuovoUtente);
-        return nuovoUtente;
+        utente.setIdAuth(userRecord.getUid());
+        utente = utenteRepository.save(utente);
+        return utente;
     }
 
-    public Utente getUtenteAutenticato(){
+    public Utente getUtenteAutenticato() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return findUtenteByIdAuth(user.getUid());
     }

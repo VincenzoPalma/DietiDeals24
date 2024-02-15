@@ -23,14 +23,18 @@ public class CartaService {
     public Carta salvaCarta(Carta carta) {
         Utente utente = utenteService.getUtenteAutenticato();
         carta.setUtente(utente);
+        utente.getCarte().add(carta);
         return cartaRepository.save(carta);
     }
 
     public void cancellaCarta(UUID idCarta) {
         Utente utenteAutenticato = utenteService.getUtenteAutenticato();
         Optional<Carta> carta = cartaRepository.findById(idCarta);
-        if (carta.isPresent() && carta.get().getUtente().getId().equals(utenteAutenticato.getId())){
+        if (carta.isPresent() && carta.get().getUtente().getId().equals(utenteAutenticato.getId())) {
+            utenteAutenticato.getCarte().remove(carta.get());
             cartaRepository.deleteById(idCarta);
+        } else {
+            throw new IllegalArgumentException("IMPOSSIBILE CANCELLARE LA CARTA");
         }
     }
 

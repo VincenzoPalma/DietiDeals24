@@ -13,8 +13,8 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "carta", uniqueConstraints ={
-    @UniqueConstraint(columnNames = "numero")
+@Table(name = "carta", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "numero")
 })
 
 public class Carta extends BaseEntity {
@@ -31,6 +31,7 @@ public class Carta extends BaseEntity {
     @Column(nullable = false)
     private OffsetDateTime dataScadenza;
 
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
     @ManyToOne
     @JoinColumn(nullable = false)

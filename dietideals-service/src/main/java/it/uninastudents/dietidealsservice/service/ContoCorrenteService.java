@@ -24,18 +24,17 @@ public class ContoCorrenteService {
         Utente utente = utenteService.getUtenteAutenticato();
         contoCorrente.setUtente(utente);
         utente.setContoCorrente(contoCorrente);
-        utenteRepository.save(utente);
         return contoCorrenteRepository.save(contoCorrente);
     }
 
     public ContoCorrente modificaContoCorrente(ContoCorrente contoCorrente) {
         Utente utente = utenteService.getUtenteAutenticato();
         Optional<ContoCorrente> nuovoContoCorrente = contoCorrenteRepository.findById(contoCorrente.getId());
-        if (nuovoContoCorrente.isPresent() && nuovoContoCorrente.get().getUtente().getId().equals(utente.getId())){
+        if (nuovoContoCorrente.isPresent() && nuovoContoCorrente.get().getUtente().getId().equals(utente.getId())) {
             contoCorrente.setUtente(nuovoContoCorrente.get().getUtente());
             return contoCorrenteRepository.save(contoCorrente);
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("UTENTE NON PROPRIETARIO DEL CONTO CORRENTE");
         }
     }
 

@@ -1,5 +1,6 @@
 package it.uninastudents.dietidealsservice.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.uninastudents.dietidealsservice.model.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "notifica")
 public class Notifica extends BaseEntity {
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(nullable = false)
     private Utente utente;

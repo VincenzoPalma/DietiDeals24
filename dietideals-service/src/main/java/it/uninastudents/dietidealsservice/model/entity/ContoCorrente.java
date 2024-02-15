@@ -26,6 +26,7 @@ public class ContoCorrente extends BaseEntity {
     @Column(nullable = false)
     private String codiceBicSwift;
 
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
     @ManyToOne
     private Utente utente;

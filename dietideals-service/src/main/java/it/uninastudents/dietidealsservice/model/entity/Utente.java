@@ -1,7 +1,6 @@
 package it.uninastudents.dietidealsservice.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import it.uninastudents.dietidealsservice.model.base.BaseEntity;
 import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
 import jakarta.persistence.*;
@@ -10,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -63,24 +61,29 @@ public class Utente extends BaseEntity {
 
     private String urlFotoProfilo;
 
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ContoCorrente contoCorrente;
 
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Offerta> offerte;
 
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Asta> aste;
 
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Notifica> notifiche;
 
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Carta> carte;
 
 }

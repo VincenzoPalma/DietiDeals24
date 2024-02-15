@@ -27,7 +27,6 @@ public class OffertaController {
     @PostMapping("/aste/{idAsta}/offerte")
     public ResponseEntity<Offerta> saveOfferta(@PathVariable UUID idAsta, @RequestBody @Positive BigDecimal prezzo) {
         Offerta offerta = offertaService.salvaOfferta(idAsta, prezzo);
-        //se riceve un errore dal service, ritorna qualcosa per indicare l'errore
         return ResponseEntity.created(URI.create("/asta/%s/offerte/%s".formatted(idAsta.toString(), offerta.getId().toString()))).body(offerta);
     }
 

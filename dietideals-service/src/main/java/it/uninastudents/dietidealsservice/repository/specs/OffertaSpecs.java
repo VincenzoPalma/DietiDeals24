@@ -19,6 +19,10 @@ public class OffertaSpecs {
         return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("asta").get("id"), target)) : none();
     }
 
+    public static Specification<Offerta> hasUtente(UUID target) {
+        return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("utente").get("id"), target)) : none();
+    }
+
     public static Specification<Offerta> hasStato(StatoOfferta target) {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("stato"), target));
     }

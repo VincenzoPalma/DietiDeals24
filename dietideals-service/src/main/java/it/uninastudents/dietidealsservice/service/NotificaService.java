@@ -1,13 +1,17 @@
 package it.uninastudents.dietidealsservice.service;
 
 import it.uninastudents.dietidealsservice.model.entity.Notifica;
+import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.repository.NotificaRepository;
+import it.uninastudents.dietidealsservice.repository.UtenteRepository;
 import it.uninastudents.dietidealsservice.repository.specs.NotificaSpecs;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -15,25 +19,28 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificaService {
 
-    private final NotificaRepository repository;
+    private final UtenteService utenteService;
+    private final NotificaRepository notificaRepository;
+    private final UtenteRepository utenteRepository;
 
-    public Notifica salvaNotifica(Notifica notifica) {
-        return repository.save(notifica);
+    public Notifica salvaNotifica(Notifica notifica, UUID idUtente) {
+        Optional<Utente> utente = utenteRepository.findById(idUtente);
+        if (utente.isPresent()) {
+            notifica.setUtente(utente.get());
+            return notificaRepository.save(notifica);
+        }
+        return null;
     }
 
-    public void cancellaNotifica(UUID idNotifica) {
-        repository.deleteById(idNotifica);
+    public void cancellaNotificheUtente() {
+        Utente utente = utenteService.getUtenteAutenticato();
+        var spec = NotificaSpecs.hasUtente(utente.getId());
+        notificaRepository.delete(spec);
     }
 
-//    public void cancellaNotificheUtente() {
-//        //prendere utente e il suo id
-//        //var spec = NotificaSpecs.hasUtente(idUtente);
-//        repository.delete(spec);
-//    }
-//
-//    public List<Notifica> findAllNotificheUtente() {
-//        //prendere utente e il suo id
-//        //var spec = NotificaSpecs.hasUtente();
-//        return repository.findAll(spec);
-//    }
+    public Page<Notifica> findAllNotificheUtente(Pageable pageable) {
+        Utente utente = utenteService.getUtenteAutenticato();
+        var spec = NotificaSpecs.hasUtente(utente.getId());
+        return notificaRepository.findAll(spec, pageable);
+    }
 }

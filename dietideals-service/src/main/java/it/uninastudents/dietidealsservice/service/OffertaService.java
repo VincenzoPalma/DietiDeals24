@@ -1,6 +1,7 @@
 package it.uninastudents.dietidealsservice.service;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
+import it.uninastudents.dietidealsservice.model.entity.Notifica;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
@@ -9,6 +10,7 @@ import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.repository.AstaRepository;
 import it.uninastudents.dietidealsservice.repository.OffertaRepository;
 import it.uninastudents.dietidealsservice.repository.specs.OffertaSpecs;
+import it.uninastudents.dietidealsservice.utils.NotificaUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,14 +26,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OffertaService {
 
-    private final OffertaRepository repository;
+    private final OffertaRepository offertaRepository;
     private final AstaRepository astaRepository;
     private final UtenteService utenteService;
+    private final NotificaService notificaService;
 
     public Offerta salvaOfferta(UUID idAsta, BigDecimal prezzo) {
         Utente utente = utenteService.getUtenteAutenticato();
         var asta = astaRepository.findById(idAsta).orElseThrow(() -> new IllegalArgumentException("ASTA NON TROVATA")); //gestione errori
-        if (asta.getStato().equals(StatoAsta.TERMINATA)){
+        if (utente.equals(asta.getProprietario())) {
+            throw new IllegalArgumentException("IMPOSSIBILE OFFRIRE AD UNA PROPRIA ASTA");
+        }
+        if (asta.getStato().equals(StatoAsta.TERMINATA)) {
             throw new IllegalArgumentException("ASTA TERMINATA, IMPOSSIBILE CREARE OFFERTA");
         }
         if (!confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta)) {
@@ -42,20 +48,50 @@ public class OffertaService {
         nuovaOfferta.setStato(StatoOfferta.NON_VINCENTE);
         nuovaOfferta.setAsta(asta);
         nuovaOfferta.setUtente(utente);
-        if (!asta.getTipo().equals(TipoAsta.SILENZIOSA)){
+        if (!asta.getTipo().equals(TipoAsta.SILENZIOSA)) {
             Optional<Offerta> offertaVincente = findOptionalOffertaVincenteByAsta(idAsta);
-            if (offertaVincente.isPresent()) {
-                if (!confrontaPrezzoNuovaOffertaConPrezzoOffertaVincente(nuovaOfferta, offertaVincente.get(), asta)) {
-                    throw new IllegalArgumentException("PREZZO NON VALIDO");
-                } else {
-                    offertaVincente.get().setStato(StatoOfferta.NON_VINCENTE);
-                    repository.save(offertaVincente.get());
-                }
-            }
+            gestisciOffertaVincente(offertaVincente, utente, nuovaOfferta, asta);
             nuovaOfferta.setStato(StatoOfferta.VINCENTE);
+        } else {
+            if (controlloOfferteUtenteAstaSilenziosa(utente.getId(), asta)) {
+                throw new IllegalArgumentException("IMPOSSIBILE EFFETTUARE PIU' OFFERTE");
+            }
         }
-        //manda la notifica
-        return repository.save(nuovaOfferta);
+        asta.getOfferte().add(nuovaOfferta);
+        utente.getOfferte().add(nuovaOfferta);
+        return offertaRepository.save(nuovaOfferta);
+    }
+
+    private void gestisciOffertaVincente(Optional<Offerta> offertaVincente, Utente utente, Offerta nuovaOfferta, Asta asta) {
+        if (offertaVincente.isPresent()) {
+            if (utente.getId().equals(offertaVincente.get().getUtente().getId())) {
+                throw new IllegalArgumentException("IMPOSSIBILE EFFETTUARE OFFERTE CONSECUTIVE");
+            }
+            if (!confrontaPrezzoNuovaOffertaConPrezzoOffertaVincente(nuovaOfferta, offertaVincente.get(), asta)) {
+                throw new IllegalArgumentException("PREZZO NON VALIDO");
+            } else {
+                offertaVincente.get().setStato(StatoOfferta.NON_VINCENTE);
+                offertaRepository.save(offertaVincente.get());
+                Notifica notifica = new Notifica();
+                utente.getNotifiche().add(notifica);
+                notifica.setAsta(asta);
+                notifica.setUtente(utente);
+                notifica.setContenuto(NotificaUtils.buildMessaggioOffertaSuperata(asta.getNome(), nuovaOfferta.getPrezzo()));
+                notificaService.salvaNotifica(notifica, offertaVincente.get().getUtente().getId());
+            }
+        }
+    }
+
+    private boolean controlloOfferteUtenteAstaSilenziosa(UUID idUtente, Asta asta) {
+        return findOffertaNonRifiutataByUtenteAstaSilenziosa(idUtente, asta).isPresent();
+    }
+
+    private Optional<Offerta> findOffertaNonRifiutataByUtenteAstaSilenziosa(UUID idUtente, Asta asta) {
+        if (!asta.getTipo().equals(TipoAsta.SILENZIOSA)) {
+            return Optional.empty();
+        }
+        var spec = OffertaSpecs.hasAsta(asta.getId()).and(OffertaSpecs.hasUtente(idUtente).and(OffertaSpecs.hasStato(StatoOfferta.NON_VINCENTE)));
+        return offertaRepository.findOne(spec);
     }
 
     public Page<Offerta> findOffertaByStato(Pageable pageable, UUID idAsta, StatoOfferta statoOfferta) {
@@ -69,9 +105,9 @@ public class OffertaService {
     public Page<Offerta> findAllByAsta(Pageable pageable, UUID idAsta) {
         Utente utente = utenteService.getUtenteAutenticato();
         Optional<Asta> asta = astaRepository.findById(idAsta);
-        if (asta.isPresent() && utente.getId().equals(asta.get().getProprietario().getId())){
+        if (asta.isPresent() && utente.getId().equals(asta.get().getProprietario().getId())) {
             var spec = OffertaSpecs.hasAsta(idAsta).and(OffertaSpecs.hasStato(StatoOfferta.NON_VINCENTE));
-            return repository.findAll(spec, pageable);
+            return offertaRepository.findAll(spec, pageable);
         } else {
             throw new IllegalArgumentException("UTENTE NON PROPRIETARIO");
         }
@@ -79,12 +115,12 @@ public class OffertaService {
 
     public Page<Offerta> findPageOffertaVincenteByAsta(Pageable pageable, UUID idAsta) {
         var spec = OffertaSpecs.hasAsta(idAsta).and(OffertaSpecs.hasStato(StatoOfferta.VINCENTE));
-        return repository.findAll(spec, pageable);
+        return offertaRepository.findAll(spec, pageable);
     }
 
     public Optional<Offerta> findOptionalOffertaVincenteByAsta(UUID idAsta) {
         var spec = OffertaSpecs.hasAsta(idAsta).and(OffertaSpecs.hasStato(StatoOfferta.VINCENTE));
-        return repository.findOne(spec);
+        return offertaRepository.findOne(spec);
     }
 
     private boolean confrontaPrezzoOffertaConPrezzoBaseAsta(BigDecimal prezzo, Asta asta) {

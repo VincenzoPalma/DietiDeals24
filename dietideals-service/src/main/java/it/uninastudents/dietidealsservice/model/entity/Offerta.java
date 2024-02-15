@@ -18,10 +18,12 @@ import java.math.BigDecimal;
 @Table(name = "offerta")
 public class Offerta extends BaseEntity {
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(nullable = false)
     private Utente utente;
 
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
     @ManyToOne
     @JoinColumn(nullable = false)

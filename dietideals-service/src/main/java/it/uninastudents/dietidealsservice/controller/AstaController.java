@@ -44,7 +44,7 @@ public class AstaController {
     }
 
     @GetMapping("/utente/aste")
-    public  ResponseEntity<Page<Asta>> getAsteUtente(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam(required = false) StatoAsta stato) {
+    public ResponseEntity<Page<Asta>> getAsteUtente(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam(required = false, defaultValue = "ATTIVA") StatoAsta stato) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
         return new ResponseEntity<>(astaService.getAsteUtenteByStato(pageable, stato), HttpStatus.OK);
     }
