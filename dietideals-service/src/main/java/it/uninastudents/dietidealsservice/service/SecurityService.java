@@ -3,9 +3,7 @@ package it.uninastudents.dietidealsservice.service;
 import it.uninastudents.dietidealsservice.config.security.CookieUtils;
 import it.uninastudents.dietidealsservice.config.security.SecurityProperties;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 

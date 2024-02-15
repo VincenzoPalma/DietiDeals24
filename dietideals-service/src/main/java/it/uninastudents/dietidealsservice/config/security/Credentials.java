@@ -8,13 +8,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class Credentials {
 
-    public enum CredentialType {
-        ID_TOKEN, SESSION
-    }
-
     private CredentialType type;
     private FirebaseToken decodedToken;
     private String idToken;
     private String session;
+    public enum CredentialType {
+        ID_TOKEN, SESSION
+    }
 
 }

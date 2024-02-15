@@ -14,7 +14,7 @@ import java.io.InputStream;
 @Service
 public class FirebaseConfig {
 
-    private static final String PATH_FIREBASE_CONFIG="/firebase_config.json";
+    private static final String PATH_FIREBASE_CONFIG = "/firebase_config.json";
 
     @PostConstruct
     public void onStart() {
@@ -28,7 +28,7 @@ public class FirebaseConfig {
 
     private void initializeFirebaseApp() throws IOException {
         if (FirebaseApp.getApps() == null || FirebaseApp.getApps().isEmpty()) {
-            try(var serviceAccount=FirebaseConfig.class.getResourceAsStream(PATH_FIREBASE_CONFIG)) {
+            try (var serviceAccount = FirebaseConfig.class.getResourceAsStream(PATH_FIREBASE_CONFIG)) {
                 if (serviceAccount != null) {
                     GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
                     FirebaseOptions options = new FirebaseOptions.Builder()

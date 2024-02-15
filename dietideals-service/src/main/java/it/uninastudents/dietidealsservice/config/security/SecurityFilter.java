@@ -4,7 +4,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import it.uninastudents.dietidealsservice.model.User;
-import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.service.SecurityService;
 import it.uninastudents.dietidealsservice.service.UtenteService;
 import jakarta.servlet.FilterChain;
@@ -52,7 +51,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         try {
             if (sessionCookie != null) {
                 session = sessionCookie.getValue();
-                decodedToken = FirebaseAuth.getInstance().verifySessionCookie(session,securityProps.getFirebaseProps().isEnableCheckSessionRevoked());
+                decodedToken = FirebaseAuth.getInstance().verifySessionCookie(session, securityProps.getFirebaseProps().isEnableCheckSessionRevoked());
                 type = Credentials.CredentialType.SESSION;
             } else if (!strictServerSessionEnabled && (token != null && !token.equalsIgnoreCase("undefined"))) {
                 decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);

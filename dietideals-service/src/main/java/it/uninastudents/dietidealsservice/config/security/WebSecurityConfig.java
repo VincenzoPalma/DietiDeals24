@@ -2,7 +2,6 @@ package it.uninastudents.dietidealsservice.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -26,23 +25,22 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+    public final SecurityFilter tokenAuthenticationFilter;
+    private final ObjectMapper objectMapper;
+
+    private final SecurityProperties restSecProps;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(it -> it.requestMatchers("/registrazione").permitAll())
                 .authorizeHttpRequests(it -> it.requestMatchers("*/**").permitAll()) //cambiare in auth
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(it->it.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(it->it.authenticationEntryPoint(restAuthenticationEntryPoint()))
+                .sessionManagement(it -> it.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(it -> it.authenticationEntryPoint(restAuthenticationEntryPoint()))
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable).build();
     }
-
-    private final ObjectMapper objectMapper;
-
-    private final SecurityProperties restSecProps;
-
-    public final SecurityFilter tokenAuthenticationFilter;
 
     @Bean
     public AuthenticationEntryPoint restAuthenticationEntryPoint() {

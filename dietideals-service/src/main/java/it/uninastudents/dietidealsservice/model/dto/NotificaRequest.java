@@ -1,7 +1,6 @@
 package it.uninastudents.dietidealsservice.model.dto;
 
 import it.uninastudents.dietidealsservice.model.entity.Asta;
-import it.uninastudents.dietidealsservice.model.entity.Utente;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

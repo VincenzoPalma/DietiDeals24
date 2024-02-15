@@ -1,15 +1,9 @@
 package it.uninastudents.dietidealsservice.repository.specs;
 
-import it.uninastudents.dietidealsservice.model.entity.Asta;
-import it.uninastudents.dietidealsservice.model.entity.Carta;
-import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
-import jakarta.persistence.criteria.Join;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
-
-import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UtenteSpecs {

@@ -4,7 +4,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
 
@@ -15,7 +14,7 @@ public class CookieUtils {
 
     private final HttpServletRequest httpServletRequest;
     private final HttpServletResponse httpServletResponse;
-    private final  SecurityProperties restSecProps;
+    private final SecurityProperties restSecProps;
 
     public Cookie getCookie(String name) {
         return WebUtils.getCookie(httpServletRequest, name);

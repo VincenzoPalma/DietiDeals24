@@ -22,19 +22,19 @@ public class CartaController {
     private final CartaMapper cartaMapper;
 
     @PostMapping("/utente/carte")
-    public ResponseEntity<Carta> saveCarta(@RequestBody @Valid CartaDTO cartaDTO){
+    public ResponseEntity<Carta> saveCarta(@RequestBody @Valid CartaDTO cartaDTO) {
         Carta carta = cartaService.salvaCarta(cartaMapper.cartaDTOToCarta(cartaDTO));
         return ResponseEntity.created(URI.create("utente/carte/%s".formatted(carta.getId().toString()))).body(carta);
     }
 
     @DeleteMapping("/carte/{idCarta}")
-    public ResponseEntity<Void> deleteCarta(@PathVariable UUID idCarta){
+    public ResponseEntity<Void> deleteCarta(@PathVariable UUID idCarta) {
         cartaService.cancellaCarta(idCarta);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/utente/carte")
-    public ResponseEntity<List<Carta>> getCarteUtente(){
+    public ResponseEntity<List<Carta>> getCarteUtente() {
         return new ResponseEntity<>(cartaService.getAllByUtente(), HttpStatus.OK);
     }
 }
