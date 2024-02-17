@@ -4,6 +4,7 @@ package com.example.dietideals_app.view
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,7 +23,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Card
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -340,7 +346,7 @@ class PaginaSchermataHome : ComponentActivity() {
                                             value = query,
                                             onValueChange = { nuovaQuery -> query = nuovaQuery },
                                             placeholder = { Text("Cerca Asta...") },
-                                            modifier = Modifier.height(50.dp)
+                                            modifier = Modifier.height(60.dp)
                                         )
                                     }
                                 }
@@ -365,7 +371,11 @@ class PaginaSchermataHome : ComponentActivity() {
                                 )
                             },
                             navigationIcon = {
-                                Icon(
+                                BadgedBox(badge = { if(notifications.isNotEmpty()){Badge {
+
+                                    Text(notifications.size.toString())}
+                                }
+                                   }){Icon(
                                     painter = painterResource(id = R.drawable.baseline_notifications_24),
                                     contentDescription = null,
                                     modifier = Modifier
@@ -379,6 +389,7 @@ class PaginaSchermataHome : ComponentActivity() {
                                         }
                                         .size(35.dp)
                                 )
+                                   }
                             }
                         )
                         Row(
@@ -410,133 +421,173 @@ class PaginaSchermataHome : ComponentActivity() {
                         LazyColumn(
                             modifier = Modifier
                                 .offset(y = 80.dp)
-
                                 .fillMaxSize()
                                 .padding(16.dp)
-                                .let {
-                                    if (isSearchVisible || isNotificationVisible) {
-                                        it.clickable {
-                                            isSearchVisible = false
-                                            isNotificationVisible = false
-                                            searchText = "" // Resetta il testo di ricerca
-                                        }
-                                    } else {
-                                        it
-                                    }
-                                }
-
                         ) {
                             items(6) { index ->
-                                // Colonna per ogni elemento della lista
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp)
-                                ) {
+
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                     ) {
                                         // Riquadro per ogni elemento della lista
-                                        Box(
+                                        OutlinedCard(
                                             modifier = Modifier
-                                                .weight(1f) // Assegna un peso uguale alle Box
+                                                .weight(1f)
                                                 .height(200.dp)
                                                 .padding(8.dp)
-                                                .background(Color.White)
-                                                .border(1.dp, Color.Black)
-                                                .clickable { navController.navigate("SchermataPaginaAsta")},
-                                            contentAlignment = Alignment.Center
-                                        ) {
+                                                .clickable { navController.navigate("SchermataPaginaAsta") },
+                                            border = BorderStroke(1.dp, Color.Black),
+
+                                            ) {
                                             Column(
-                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                modifier = Modifier.padding(16.dp),
 
                                                 ) {
-                                                // Immagine
-                                                Image(
-                                                    painter = painterResource(id = R.drawable.defaultimage),
-                                                    contentDescription = "Image",
-                                                    modifier = Modifier
-                                                        .size(100.dp)
-                                                )
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.Center
+                                                ) {
+                                                    // Immagine
+                                                    Image(
+                                                        painter = painterResource(id = R.drawable.defaultimage),
+                                                        contentDescription = "Image",
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .height(80.dp),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+                                                }
 
                                                 // Titolo
-                                                Text(
-                                                    text = "Asta $index-A",
-                                                    color = Color.Black,
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 20.sp,
-                                                    modifier = Modifier
-                                                        .padding(4.dp)
-                                                )
-
-                                                // Bottone
-                                                ElevatedButton(
-                                                    onClick = { /* Azione del bottone */ },
-                                                    modifier = Modifier.padding(4.dp)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.Center
                                                 ) {
                                                     Text(
-                                                        String.format(
-                                                            "€%.2f",
-                                                            80.0 + Random.nextDouble() * 9.0
-                                                        ),
-                                                        fontSize = 10.sp
+                                                        text = "Asta $index ",
+                                                        color = Color.Black,
+                                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                                        fontSize = 20.sp,
+                                                        modifier = Modifier.padding(top = 8.dp)
                                                     )
                                                 }
                                             }
-                                        }
 
-                                        // Riquadro per ogni elemento della lista
-                                        Box(
-                                            modifier = Modifier
-                                                .weight(1f) // Assegna un peso uguale alle Box
-                                                .height(200.dp)
-                                                .padding(8.dp)
-                                                .background(Color.White)
-                                                .border(1.dp, Color.Black)
-                                                .clickable { navController.navigate("SchermataPaginaAsta") },
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Column(
-                                                horizontalAlignment = Alignment.CenterHorizontally
+                                            // Bottone
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.Center
                                             ) {
-                                                // Immagine
-                                                Image(
-                                                    painter = painterResource(id = R.drawable.defaultimage),
-                                                    contentDescription = "Image",
-                                                    modifier = Modifier
-                                                        .size(100.dp)
-                                                )
-
-                                                // Titolo
-                                                Text(
-                                                    text = "Asta $index-B",
-                                                    color = Color.Black,
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 20.sp,
-                                                    modifier = Modifier
-                                                        .padding(4.dp)
-                                                )
-
-                                                // Bottone
                                                 ElevatedButton(
                                                     onClick = { /* Azione del bottone */ },
-                                                    modifier = Modifier,
-
-                                                    ) {
+                                                    modifier = Modifier.padding(bottom = 8.dp),
+                                                    colors = ButtonColors(
+                                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                        contentColor = MaterialTheme.colorScheme.primary,
+                                                        disabledContentColor = Color.Gray,
+                                                        disabledContainerColor = Color.Gray
+                                                    )
+                                                ) {
                                                     Text(
                                                         text = String.format(
                                                             "€%.2f",
                                                             80.0 + Random.nextDouble() * 9.0
                                                         ),
-                                                        fontSize = 10.sp
+                                                        fontSize = 12.sp
                                                     )
                                                 }
                                             }
+
+                                        }
+
+
+                                        // Riquadro per ogni elemento della lista
+                                        OutlinedCard(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(200.dp)
+                                                .padding(8.dp)
+                                                .clickable { navController.navigate("SchermataPaginaAsta") },
+                                            border = BorderStroke(1.dp, Color.Black),
+
+                                            ) {
+                                            Column(
+                                                modifier = Modifier.padding(16.dp),
+
+                                                ) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.Center
+                                                ) {
+                                                    // Immagine
+                                                    Image(
+                                                        painter = painterResource(id = R.drawable.defaultimage),
+                                                        contentDescription = "Image",
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .height(80.dp),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+                                                }
+
+                                                // Titolo
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.Center
+                                                ) {
+                                                    Text(
+                                                        text = "Asta $index ",
+                                                        color = Color.Black,
+                                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                                        fontSize = 20.sp,
+                                                        modifier = Modifier.padding(top = 8.dp)
+                                                    )
+                                                }
+                                            }
+
+                                            // Bottone
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.Center
+                                            ) {
+                                                ElevatedButton(
+                                                    onClick = { /* Azione del bottone */ },
+                                                    modifier = Modifier.padding(bottom = 8.dp),
+                                                    colors = ButtonColors(
+                                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                        contentColor = MaterialTheme.colorScheme.primary,
+                                                        disabledContentColor = Color.Gray,
+                                                        disabledContainerColor = Color.Gray
+                                                    )
+                                                ) {
+                                                    Text(
+                                                        text = String.format(
+                                                            "€%.2f",
+                                                            80.0 + Random.nextDouble() * 9.0
+                                                        ),
+                                                        fontSize = 12.sp
+                                                    )
+                                                }
+                                            }
+
                                         }
                                     }
 
                                 }
+
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(150.dp) // Altezza dello Spacer uguale all'altezza della BottomAppBar
+                                )
                             }
                         }
 

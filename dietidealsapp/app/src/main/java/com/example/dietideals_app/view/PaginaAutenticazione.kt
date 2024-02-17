@@ -6,12 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -29,12 +31,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -108,9 +112,9 @@ fun SchermataAutenticazione(navController: NavController) {
         remember { FocusRequester() } // Richiede il focus per l'input della password
     // Valori per le immagini della schermata
     val background = painterResource(id = R.drawable.sfondo1)
-    val logoFacebook = painterResource(id = R.drawable.facebookicon)
-    val logoGoogle = painterResource(id = R.drawable.googleicon)
-    val logoGitHub = painterResource(id = R.drawable.githubicon)
+    val logoFacebook =  R.drawable.facebookicon
+    val logoGoogle = R.drawable.googleicon
+    val logoGitHub = R.drawable.githubicon
     val logoApp = painterResource(id = R.drawable.iconaapp)
 
     var passwordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della password
@@ -272,6 +276,31 @@ fun SchermataAutenticazione(navController: NavController) {
         }
 
         // Icone social
+
+        @Composable
+        fun IconWithText(iconId: Int, text: String, route: String) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(2.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = iconId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable { navController.navigate(route) },
+
+
+                )
+
+                Text(
+                    text = text,
+                    fontSize = 15.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )//
+            }
+        }
         Row(
             modifier = Modifier
                 .constrainAs(socialIcons) {
@@ -283,36 +312,11 @@ fun SchermataAutenticazione(navController: NavController) {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            Image(
-                painter = logoGoogle,
-                contentDescription = null,
-                modifier = Modifier
-                    .width(70.dp)
-                    .height(70.dp)
-                    .clickable { /*login google*/ },
-                contentScale = ContentScale.Crop
-            )
+            IconWithText(logoGoogle,"GOOGLE","")
             Spacer(modifier = Modifier.width(65.dp))
-            Image(
-                painter = logoFacebook,
-                contentDescription = null,
-
-                modifier = Modifier
-                    .width(70.dp)
-                    .height(70.dp)
-                    .clickable { /*login facebook*/ },
-                contentScale = ContentScale.Crop
-            )
+            IconWithText(logoFacebook,"FACEBOOK","")
             Spacer(modifier = Modifier.width(65.dp))
-            Image(
-                painter = logoGitHub,
-                contentDescription = null,
-                modifier = Modifier
-                    .width(70.dp)
-                    .height(70.dp)
-                    .clickable { /*login github*/ },
-                contentScale = ContentScale.Crop
-            )
+            IconWithText(logoGitHub,"GITHUB","")
         }
 
         // Testo registrazione
