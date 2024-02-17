@@ -70,27 +70,13 @@ public class UtenteService {
 
     public Utente modificaDatiUtente(DatiProfiloUtente datiProfiloUtente){
         Utente utente = getUtenteAutenticato();
-        if (datiProfiloUtente.getDescrizione() != null){
-            utente.setDescrizione(datiProfiloUtente.getDescrizione());
-        }
-        if (datiProfiloUtente.getFacebook() != null){
-            utente.setFacebook(datiProfiloUtente.getFacebook());
-        }
-        if (datiProfiloUtente.getTwitter() != null){
-            utente.setTwitter(datiProfiloUtente.getTwitter());
-        }
-        if (datiProfiloUtente.getInstagram() != null){
-            utente.setInstagram(datiProfiloUtente.getInstagram());
-        }
-        if (datiProfiloUtente.getIndirizzo() != null){
-            utente.setIndirizzo(datiProfiloUtente.getIndirizzo());
-        }
-        if (datiProfiloUtente.getSitoWeb() != null){
-            utente.setSitoWeb(datiProfiloUtente.getSitoWeb());
-        }
-        if (datiProfiloUtente.getUrlFotoProfilo() != null){
-            utente.setUrlFotoProfilo(datiProfiloUtente.getUrlFotoProfilo());
-        }
+        utente.setDescrizione(Objects.requireNonNullElse(datiProfiloUtente.getDescrizione(), utente.getDescrizione()));
+        utente.setFacebook(Objects.requireNonNullElse(datiProfiloUtente.getFacebook(), utente.getFacebook()));
+        utente.setTwitter(Objects.requireNonNullElse(datiProfiloUtente.getTwitter(), utente.getTwitter()));
+        utente.setInstagram(Objects.requireNonNullElse(datiProfiloUtente.getInstagram(), utente.getInstagram()));
+        utente.setIndirizzo(Objects.requireNonNullElse(datiProfiloUtente.getIndirizzo(), utente.getIndirizzo()));
+        utente.setSitoWeb(Objects.requireNonNullElse(datiProfiloUtente.getSitoWeb(), utente.getSitoWeb()));
+        utente.setUrlFotoProfilo(Objects.requireNonNullElse(datiProfiloUtente.getUrlFotoProfilo(), utente.getUrlFotoProfilo()));
         return utenteRepository.save(utente);
     }
 
