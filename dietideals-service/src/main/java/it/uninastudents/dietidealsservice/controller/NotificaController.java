@@ -28,7 +28,7 @@ public class NotificaController {
     }
 
     @DeleteMapping("/utente/notifiche")
-    public ResponseEntity<Void> deleteNotifiche(){
+    public ResponseEntity<Void> deleteNotifiche() {
         notificaService.cancellaNotificheUtente();
         return ResponseEntity.noContent().build();
     }

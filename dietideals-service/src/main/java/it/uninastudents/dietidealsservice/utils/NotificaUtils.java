@@ -1,10 +1,11 @@
 package it.uninastudents.dietidealsservice.utils;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NotificaUtils {
 
     public static String buildMessaggioOffertaSuperata(String nomeAsta, BigDecimal prezzo) {
@@ -16,10 +17,14 @@ public class NotificaUtils {
     }
 
     public static String buildMessaggioAstaTerminataUtenteVincitore(String nomeAsta, BigDecimal prezzo) {
-        return "Congratulazioni! Ti sei aggiudicato l'asta " + nomeAsta + "per " + prezzo.toString() + "€.";
+        return "Congratulazioni! Ti sei aggiudicato l'asta " + nomeAsta + " per " + prezzo.toString() + "€.";
     }
 
     public static String buildMessaggioAstaTerminataUtenteNonVincitore(String nomeAsta) {
-        return "L'asta " + nomeAsta + "a cui hai partecipato è terminata.";
+        return "L'asta " + nomeAsta + " a cui hai partecipato è terminata.";
+    }
+
+    public static String buildMessaggioAstaTerminataProprietario(String nomeAsta) {
+        return "La tua asta " + nomeAsta + " è terminata.";
     }
 }

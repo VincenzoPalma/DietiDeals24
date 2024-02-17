@@ -28,6 +28,7 @@ public class AstaController {
 
     private final AstaService astaService;
     private final AstaMapper mapper;
+    private static final String CRITERIO_SORT = "creationDate";
 
     @PostMapping("/utente/aste")
     public ResponseEntity<Asta> saveAsta(@Valid @RequestBody AstaDTO astaDTO) throws SchedulerException, JsonProcessingException {
@@ -41,19 +42,19 @@ public class AstaController {
                                               @RequestParam(name = "nome", required = false) String nome,
                                               @RequestParam(name = "tipo", required = false) TipoAsta tipo,
                                               @RequestParam(name = "categoria", required = false) CategoriaAsta categoria) {
-        Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
+        Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by(CRITERIO_SORT).ascending());
         return ResponseEntity.ok(astaService.getAll(pageable, nome, tipo, categoria));
     }
 
     @GetMapping("/utente/aste")
     public ResponseEntity<Page<Asta>> getAsteUtente(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam(required = false, defaultValue = "ATTIVA") StatoAsta stato) {
-        Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
+        Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by(CRITERIO_SORT).ascending());
         return new ResponseEntity<>(astaService.getAsteUtenteByStato(pageable, stato), HttpStatus.OK);
     }
 
     @GetMapping("/utente/offerte/asta")
     public ResponseEntity<Page<Asta>> getAstePartecipate(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam(name = "vinta", defaultValue = "false") boolean vinta) {
-        Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
+        Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by(CRITERIO_SORT).ascending());
         return new ResponseEntity<>(astaService.getAsteACuiUtenteHaPartecipato(pageable, vinta), HttpStatus.OK);
     }
 }

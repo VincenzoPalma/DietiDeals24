@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +35,6 @@ public class NotificaService {
     public void cancellaNotificheUtente() {
         Utente utente = utenteService.getUtenteAutenticato();
         var spec = NotificaSpecs.hasUtente(utente.getId());
-        //utente.setNotifiche(Collections.emptySet());
         notificaRepository.delete(spec);
     }
 

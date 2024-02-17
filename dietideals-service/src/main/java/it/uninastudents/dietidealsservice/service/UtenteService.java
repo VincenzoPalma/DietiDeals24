@@ -4,9 +4,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import it.uninastudents.dietidealsservice.model.User;
+import it.uninastudents.dietidealsservice.model.dto.DatiProfiloUtente;
 import it.uninastudents.dietidealsservice.model.dto.UtenteRegistrazione;
 import it.uninastudents.dietidealsservice.model.entity.ContoCorrente;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
+import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
 import it.uninastudents.dietidealsservice.model.mapper.ContoCorrenteMapper;
 import it.uninastudents.dietidealsservice.model.mapper.UtenteMapper;
 import it.uninastudents.dietidealsservice.repository.ContoCorrenteRepository;
@@ -41,7 +43,7 @@ public class UtenteService {
         utente.setContoCorrente(null);
         utente = utenteRepository.save(utente);
         ContoCorrente nuovoContoCorrente = contoCorrenteMapper.contoCorrenteDTOToContoCorrente(utenteRegistrazione.getContoCorrente());
-        if (nuovoContoCorrente != null) {
+        if (nuovoContoCorrente != null && utente.getRuolo().equals(RuoloUtente.VENDITORE)) {
             nuovoContoCorrente.setUtente(utente);
             nuovoContoCorrente = contoCorrenteRepository.save(nuovoContoCorrente);
             utente.setContoCorrente(nuovoContoCorrente);
@@ -65,4 +67,31 @@ public class UtenteService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return findUtenteByIdAuth(user.getUid());
     }
+
+    public Utente modificaDatiUtente(DatiProfiloUtente datiProfiloUtente){
+        Utente utente = getUtenteAutenticato();
+        if (datiProfiloUtente.getDescrizione() != null){
+            utente.setDescrizione(datiProfiloUtente.getDescrizione());
+        }
+        if (datiProfiloUtente.getFacebook() != null){
+            utente.setFacebook(datiProfiloUtente.getFacebook());
+        }
+        if (datiProfiloUtente.getTwitter() != null){
+            utente.setTwitter(datiProfiloUtente.getTwitter());
+        }
+        if (datiProfiloUtente.getInstagram() != null){
+            utente.setInstagram(datiProfiloUtente.getInstagram());
+        }
+        if (datiProfiloUtente.getIndirizzo() != null){
+            utente.setIndirizzo(datiProfiloUtente.getIndirizzo());
+        }
+        if (datiProfiloUtente.getSitoWeb() != null){
+            utente.setSitoWeb(datiProfiloUtente.getSitoWeb());
+        }
+        if (datiProfiloUtente.getUrlFotoProfilo() != null){
+            utente.setUrlFotoProfilo(datiProfiloUtente.getUrlFotoProfilo());
+        }
+        return utenteRepository.save(utente);
+    }
+
 }

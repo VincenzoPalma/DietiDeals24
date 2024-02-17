@@ -7,6 +7,7 @@ import it.uninastudents.dietidealsservice.utils.ControllerUtils;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.quartz.SchedulerException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,7 +26,7 @@ public class OffertaController {
     private final OffertaService offertaService;
 
     @PostMapping("/aste/{idAsta}/offerte")
-    public ResponseEntity<Offerta> saveOfferta(@PathVariable UUID idAsta, @RequestBody @Positive BigDecimal prezzo) {
+    public ResponseEntity<Offerta> saveOfferta(@PathVariable UUID idAsta, @RequestBody @Positive BigDecimal prezzo) throws SchedulerException {
         Offerta offerta = offertaService.salvaOfferta(idAsta, prezzo);
         return ResponseEntity.created(URI.create("/asta/%s/offerte/%s".formatted(idAsta.toString(), offerta.getId().toString()))).body(offerta);
     }

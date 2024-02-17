@@ -19,11 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -39,20 +36,20 @@ public class AstaService {
     public void scheduleScadenzaAsta(Asta asta) throws SchedulerException, JsonProcessingException {
         String astaJson = objectMapper.writeValueAsString(asta);
         JobDetail jobDetail = JobBuilder.newJob(TermineAstaJob.class)
-                .withIdentity("termineAstaJob_" + asta.getId().toString())
+                .withIdentity("termineAstaJob_" + asta.getId().toString(), "termineAsta")
                 .usingJobData("asta", astaJson)
                 .build();
 
-        if (asta.getTipo().equals(TipoAsta.INVERSA) || asta.getTipo().equals(TipoAsta.SILENZIOSA)){
+        if (asta.getTipo().equals(TipoAsta.INVERSA) || asta.getTipo().equals(TipoAsta.SILENZIOSA)) {
             Trigger triggerAsteInversaSilenziosa = TriggerBuilder.newTrigger()
-                    .withIdentity("termineAstaTrigger_"+ asta.getId().toString())
-                    .startAt(Date.from(asta.getDataScadenza().toInstant()))
+                    .withIdentity("termineAstaTrigger_" + asta.getId().toString())
+                    .startAt(java.util.Date.from(asta.getDataScadenza().toInstant()))
                     .build();
             scheduler.scheduleJob(jobDetail, triggerAsteInversaSilenziosa);
         } else {
             Trigger triggerAsteInglese = TriggerBuilder.newTrigger()
-                    .withIdentity("termineAstaTrigger_"+ asta.getId().toString())
-                    .startAt(Date.from(Instant.now().plus(asta.getIntervalloTempoOfferta(), ChronoUnit.MINUTES)))
+                    .withIdentity("termineAstaTrigger_" + asta.getId().toString())
+                    .startAt(java.util.Date.from(Instant.now().plus(asta.getIntervalloTempoOfferta(), ChronoUnit.MINUTES)))
                     .build();
             scheduler.scheduleJob(jobDetail, triggerAsteInglese);
         }

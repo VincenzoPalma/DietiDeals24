@@ -33,38 +33,40 @@ public class TermineAstaJob implements Job {
         String astaJson = context.getJobDetail().getJobDataMap().getString("asta");
         Asta asta = null;
         try {
-            asta = objectMapper.readValue(astaJson,Asta.class);
+            asta = objectMapper.readValue(astaJson, Asta.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("ERRORE CONVERSIONE JSON ASTA");
         }
-
         asta.setStato(StatoAsta.TERMINATA);
         astaRepository.save(asta);
         var spec = OffertaSpecs.hasAsta(asta.getId());
         List<Offerta> offerte = offertaRepository.findAll(spec);
-        System.out.println(offerte.isEmpty());
-        if (offerte.isEmpty()){
-            Notifica notifica = new Notifica();
+        Notifica notifica = null;
+        if (offerte.isEmpty()) {
+            notifica = new Notifica();
             notifica.setUtente(asta.getProprietario());
             notifica.setAsta(asta);
             notifica.setContenuto(NotificaUtils.buildMessaggioAstaTerminataSenzaOfferte(asta.getNome()));
             notificaService.salvaNotifica(notifica, asta.getProprietario().getId());
         } else {
-            for(Offerta offerta : offerte){
-                Notifica notifica = new Notifica();
-                notifica.setUtente(offerta.getUtente());
+            for (Offerta offerta : offerte) {
+                notifica = new Notifica();
                 notifica.setAsta(asta);
-                if (offerta.getStato().equals(StatoOfferta.VINCENTE)){
+                if (offerta.getStato().equals(StatoOfferta.VINCENTE)) {
                     notifica.setContenuto(NotificaUtils.buildMessaggioAstaTerminataUtenteVincitore(asta.getNome(), offerta.getPrezzo()));
                 } else {
                     notifica.setContenuto(NotificaUtils.buildMessaggioAstaTerminataUtenteNonVincitore(asta.getNome()));
-                    if (asta.getTipo().equals(TipoAsta.SILENZIOSA)){
+                    if (asta.getTipo().equals(TipoAsta.SILENZIOSA)) {
                         offerta.setStato(StatoOfferta.RIFIUTATA);
                         offertaRepository.save(offerta);
                     }
                 }
-                notifica = notificaService.salvaNotifica(notifica, asta.getProprietario().getId());
+                notificaService.salvaNotifica(notifica, offerta.getUtente().getId());
             }
+            notifica = new Notifica();
+            notifica.setAsta(asta);
+            notifica.setContenuto(NotificaUtils.buildMessaggioAstaTerminataProprietario(asta.getNome()));
+            notificaService.salvaNotifica(notifica, asta.getProprietario().getId());
         }
     }
 }

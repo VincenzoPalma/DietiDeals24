@@ -12,12 +12,15 @@ import it.uninastudents.dietidealsservice.repository.OffertaRepository;
 import it.uninastudents.dietidealsservice.repository.specs.OffertaSpecs;
 import it.uninastudents.dietidealsservice.utils.NotificaUtils;
 import lombok.RequiredArgsConstructor;
+import org.quartz.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,8 +33,21 @@ public class OffertaService {
     private final AstaRepository astaRepository;
     private final UtenteService utenteService;
     private final NotificaService notificaService;
+    private final Scheduler scheduler;
 
-    public Offerta salvaOfferta(UUID idAsta, BigDecimal prezzo) {
+    public void modificaTriggerJobTermineAsta(String nomeJob, String gruppoJob, Trigger nuovoTrigger) throws SchedulerException {
+        JobKey jobKey = new JobKey(nomeJob, gruppoJob);
+        JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+
+        if (jobDetail != null) {
+            scheduler.deleteJob(jobKey);
+            scheduler.scheduleJob(jobDetail, nuovoTrigger);
+        } else {
+            throw new SchedulerException("Job non trovato: " + nomeJob);
+        }
+    }
+
+    public Offerta salvaOfferta(UUID idAsta, BigDecimal prezzo) throws SchedulerException {
         Utente utente = utenteService.getUtenteAutenticato();
         var asta = astaRepository.findById(idAsta).orElseThrow(() -> new IllegalArgumentException("ASTA NON TROVATA")); //gestione errori
         if (utente.equals(asta.getProprietario())) {
@@ -52,6 +68,13 @@ public class OffertaService {
             Optional<Offerta> offertaVincente = findOptionalOffertaVincenteByAsta(idAsta);
             gestisciOffertaVincente(offertaVincente, utente, nuovaOfferta, asta);
             nuovaOfferta.setStato(StatoOfferta.VINCENTE);
+            if (asta.getTipo().equals(TipoAsta.INGLESE)) {
+                modificaTriggerJobTermineAsta("termineAstaJob_" + asta.getId().toString(), "termineAsta",
+                        TriggerBuilder.newTrigger()
+                                .withIdentity("termineAstaTrigger_" + asta.getId().toString())
+                                .startAt(java.util.Date.from(Instant.now().plus(asta.getIntervalloTempoOfferta(), ChronoUnit.MINUTES)))
+                                .build());
+            }
         } else {
             if (controlloOfferteUtenteAstaSilenziosa(utente.getId(), asta)) {
                 throw new IllegalArgumentException("IMPOSSIBILE EFFETTUARE PIU' OFFERTE");

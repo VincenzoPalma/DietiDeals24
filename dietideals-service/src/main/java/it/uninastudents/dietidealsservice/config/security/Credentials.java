@@ -12,6 +12,7 @@ public class Credentials {
     private FirebaseToken decodedToken;
     private String idToken;
     private String session;
+
     public enum CredentialType {
         ID_TOKEN, SESSION
     }

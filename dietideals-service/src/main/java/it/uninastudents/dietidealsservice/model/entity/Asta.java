@@ -49,7 +49,6 @@ public class Asta extends BaseEntity implements Serializable {
     private StatoAsta stato;
 
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(nullable = false)
     private Utente proprietario;

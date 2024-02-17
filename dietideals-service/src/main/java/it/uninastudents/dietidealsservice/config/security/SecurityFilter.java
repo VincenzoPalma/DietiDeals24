@@ -71,18 +71,6 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     private User mapFirebaseTokenToInternalUser(FirebaseToken decodedToken) {
-        // Verificare che nella propria UtenteRepository esista un utente con la mail presa da decodedToken
-        // Se esiste, restituire quell'utente
-        // Se non esiste, creare un nuovo utente utilizzando i dati presenti in decoded token, ovvero name (username) e email. Restituire l'utente appena creato
-        // Eventuali ruoli / scope, li prendi da getClaims
-        // Quindi in getClaims (e' una mappa) avrai "rol" con valore uno degli enum che hai in UtenteRuolo
-        //Utente utente = utenteService.findUtenteByIdAuth(decodedToken.getUid());
-//        if (utente == null){
-//
-//        } else {
-//
-//        }
-
         User user = null;
         if (decodedToken != null) {
             user = new User();
