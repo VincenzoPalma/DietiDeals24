@@ -13,7 +13,4 @@ public interface NotificaMapper {
 
     NotificaRequest notificaToNotificaDTO(Notifica notifica);
 
-    List<Notifica> listNotificaDTOToListNotifica(List<NotificaRequest> listNotificaRequest);
-
-    List<NotificaRequest> listNotificaToListNotificaDTO(List<Notifica> listNotifica);
 }

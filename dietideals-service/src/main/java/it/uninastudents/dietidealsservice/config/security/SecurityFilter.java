@@ -31,7 +31,6 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private final CookieUtils cookieUtils;
     private final SecurityService securityService;
-    private final UtenteService utenteService;
     private final SecurityProperties securityProps;
 
     @Override

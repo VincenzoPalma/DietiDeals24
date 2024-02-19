@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor
-public class AstaDTO {
+public class CreaAsta {
 
     @NotBlank
     private String nome;

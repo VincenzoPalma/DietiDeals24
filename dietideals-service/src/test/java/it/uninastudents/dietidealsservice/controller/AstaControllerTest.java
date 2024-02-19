@@ -1,12 +1,33 @@
 package it.uninastudents.dietidealsservice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.benas.randombeans.EnhancedRandomBuilder;
+import it.uninastudents.dietidealsservice.model.dto.CreaAsta;
+import it.uninastudents.dietidealsservice.model.entity.Asta;
+import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
+import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
+import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
+import it.uninastudents.dietidealsservice.model.mapper.AstaMapper;
 import it.uninastudents.dietidealsservice.service.AstaService;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -20,7 +41,41 @@ class AstaControllerTest {
     private AstaService astaServiceMock;
 
     @Autowired
+    private AstaMapper astaMapper;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
     private AstaController astaController;
+
+    @Test
+    void testSaveAsta() throws Exception { //verificare perché asta è null
+        // Given
+        CreaAsta nuovaAsta = new CreaAsta(); // Inizializza un oggetto AstaDTO con i dati desiderati
+        nuovaAsta.setCategoria(CategoriaAsta.ABBIGLIAMENTO);
+        nuovaAsta.setNome("cia");
+        nuovaAsta.setTipo(TipoAsta.INGLESE);
+        nuovaAsta.setDescrizione("scsd");
+        nuovaAsta.setPrezzoBase(BigDecimal.valueOf(110));
+        nuovaAsta.setSogliaRialzo(BigDecimal.valueOf(30));
+        nuovaAsta.setIntervalloTempoOfferta(50);
+        Asta astaRisultatoParziale = astaMapper.creaAstaToAsta(nuovaAsta); // Inizializza un oggetto Asta simulato restituito dal service
+        Asta astaRisultato = astaMapper.creaAstaToAsta(nuovaAsta);
+        UUID idAstaRisultato = UUID.randomUUID();
+        astaRisultato.setId(idAstaRisultato); // Imposta un ID simulato per l'oggetto Asta
+        astaRisultato.setStato(StatoAsta.ATTIVA);
+        when(astaServiceMock.salvaAsta(astaRisultatoParziale)).thenReturn(astaRisultato); // Configura il comportamento del service mock
+
+        // When/Then
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/utente/aste")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(nuovaAsta))).andReturn();
+
+        assertEquals(201, mvcResult.getResponse().getStatus());
+        assertEquals(objectMapper.writeValueAsString(astaRisultato), mvcResult.getResponse().getContentAsString());
+    }
 
 //    @Test
 //    void getAstePerNomeTipoCategoriaTest() throws Exception {

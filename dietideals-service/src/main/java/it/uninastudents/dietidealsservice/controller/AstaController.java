@@ -1,7 +1,7 @@
 package it.uninastudents.dietidealsservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import it.uninastudents.dietidealsservice.model.dto.AstaDTO;
+import it.uninastudents.dietidealsservice.model.dto.CreaAsta;
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
@@ -31,9 +31,11 @@ public class AstaController {
     private static final String CRITERIO_SORT = "creationDate";
 
     @PostMapping("/utente/aste")
-    public ResponseEntity<Asta> saveAsta(@Valid @RequestBody AstaDTO astaDTO) throws SchedulerException, JsonProcessingException {
-        Asta asta = astaService.salvaAsta(mapper.astaDTOToAsta(astaDTO));
-        return ResponseEntity.created(URI.create("/utente/aste/%s".formatted(asta.getId().toString()))).body(asta);
+    public ResponseEntity<Asta> saveAsta(@Valid @RequestBody CreaAsta creaAsta) throws SchedulerException, JsonProcessingException {
+        Asta asta = astaService.salvaAsta(mapper.creaAstaToAsta(creaAsta));
+        //return ResponseEntity.created(URI.create("/utente/aste/%s".formatted(asta.getId().toString()))).body(asta);
+        return ResponseEntity.created(URI.create("/prova")).body(asta);
+
     }
 
     @GetMapping("/aste")

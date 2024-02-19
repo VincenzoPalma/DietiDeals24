@@ -7,8 +7,4 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface OffertaMapper {
 
-    Offerta offertaDTOToOfferta(OffertaDTO offertaDTO);
-
-    OffertaDTO offertaToOffertaDTO(Offerta offerta);
-
 }

@@ -8,6 +8,4 @@ import org.mapstruct.Mapper;
 public interface ContoCorrenteMapper {
 
     ContoCorrente contoCorrenteDTOToContoCorrente(ContoCorrenteDTO contoCorrenteDTO);
-
-    ContoCorrenteDTO contoCorrenteToContoCorrenteDTO(ContoCorrente contoCorrente);
 }

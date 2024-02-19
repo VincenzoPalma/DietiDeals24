@@ -12,8 +12,4 @@ public interface CartaMapper {
     Carta cartaDTOToCarta(CartaDTO creaCartaDTO);
 
     CartaDTO cartaToCartaDTO(Carta carta);
-
-    List<Carta> listCartaDTOToListCarta(List<CartaDTO> listCartaDTO);
-
-    List<CartaDTO> listCartaToListCartaDTO(List<Carta> listCarta);
 }
