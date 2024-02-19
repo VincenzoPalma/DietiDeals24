@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class DatiProfiloUtente {
 
-    @Length(min = 0, max = 300)
+    @Length(max = 300)
     private String descrizione;
 
     private String facebook;
@@ -25,4 +25,9 @@ public class DatiProfiloUtente {
 
     private String urlFotoProfilo;
 
+    private String username;
+
+    private String nome;
+
+    private String cognome;
 }

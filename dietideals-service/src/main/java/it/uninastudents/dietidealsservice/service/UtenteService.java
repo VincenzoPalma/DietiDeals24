@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -40,7 +41,7 @@ public class UtenteService {
 
     public Utente registraUtente(UtenteRegistrazione utenteRegistrazione) throws FirebaseAuthException {
         //inserimento utente nel db
-        Utente utente = utenteMapper.utenteDTOToUtente(utenteRegistrazione);
+        Utente utente = utenteMapper.utenteRegistrazioneToUtente(utenteRegistrazione);
         utente.setContoCorrente(null);
         utente = utenteRepository.save(utente);
         ContoCorrente nuovoContoCorrente = contoCorrenteMapper.contoCorrenteDTOToContoCorrente(utenteRegistrazione.getContoCorrente());
@@ -67,6 +68,19 @@ public class UtenteService {
     public Utente getUtenteAutenticato() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return findUtenteByIdAuth(user.getUid());
+    }
+
+    public DatiProfiloUtente getDatiUtente(UUID idUtente){
+        if (idUtente == null){
+            return utenteMapper.utenteToDatiProfiloUtente(getUtenteAutenticato());
+        } else {
+            Optional<Utente> utente = utenteRepository.findById(idUtente);
+            if (utente.isPresent()){
+                return utenteMapper.utenteToDatiProfiloUtente(utente.get());
+            } else {
+                throw new IllegalArgumentException("UTENTE NON TROVATO");
+            }
+        }
     }
 
     public Utente modificaDatiUtente(DatiProfiloUtente datiProfiloUtente){
