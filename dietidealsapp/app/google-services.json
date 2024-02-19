@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "80319647136",
+    "project_id": "dietideals24-de67d",
+    "storage_bucket": "dietideals24-de67d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80319647136:android:978bf3579a6defb4f9a8c5",
+        "android_client_info": {
+          "package_name": "com.example.dietideals_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "80319647136-m6c5aqga238mhoglsb3jcnm244mdj0je.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dietideals_app",
+            "certificate_hash": "4050c6b8e24213782c234ced4c33102373414f98"
+          }
+        },
+        {
+          "client_id": "80319647136-dvskq948n8rgrfnvs8qll24pgl71hk40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDariZBUQxEUEYVt2C0d2vIfgo34jOWtKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "80319647136-dvskq948n8rgrfnvs8qll24pgl71hk40.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
