@@ -402,9 +402,11 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 return formatter.format(Date(millis))
                             }
 
-                            Row(modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            ) {
                                 TextButton(
                                     onClick = { openDialog.value = true },
                                 ) {

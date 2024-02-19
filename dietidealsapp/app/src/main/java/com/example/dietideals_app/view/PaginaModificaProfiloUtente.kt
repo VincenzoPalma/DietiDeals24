@@ -133,7 +133,7 @@ fun SchermataModificaProfilo(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (background) = createRefs()
+        val (background, topBar, immagineProfilo, nomeUtente, usernameUtente, shortBioLabel, shortBioUtente, sitoWebUtente, social, bottoneModifica, indirizzoUtente, bottoneConferma) = createRefs()
         Box(
             modifier = Modifier
                 .constrainAs(background) {
@@ -145,403 +145,437 @@ fun SchermataModificaProfilo(navController: NavController) {
                     height = Dimension.fillToConstraints
                 }
                 .background(Color.White)
-        ) {
-            TopAppBar(modifier = Modifier.align(Alignment.TopCenter), title = {
-                Text(
-                    text = "PROFILO",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    fontWeight = FontWeight.Bold, // Imposta il grassetto
-                    fontSize = 40.sp
-                ) // Imposta la dimensione del testo)
-            },
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clickable {
-                                navController.navigate("SchermataProfiloUtente")
+        ) {}
+        TopAppBar(modifier = Modifier.constrainAs(topBar)
+        {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
 
-
-                            }
-                            .size(35.dp)
-                    )
-                }, colors = TopAppBarColors(
-                    containerColor = (MaterialTheme.colorScheme.primary),
-                    navigationIconContentColor = Color.White,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White,
-                    scrolledContainerColor = Color.White
-                ),
-                actions = {
-
-                }
-            )
-            val screenWidth = LocalDensity.current.run {
-                LocalConfiguration.current.screenWidthDp.dp
-            }
-            Box(
+        }, title = {
+            Text(
+                text = "PROFILO",
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .offset(x = (screenWidth / 2) - 40.dp, y = 70.dp)
-                    .size(80.dp)
-                    .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
-            ) {
-                // Immagine all'interno della Box circolare
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground), // Rimpiazza con la tua immagine
+                    .fillMaxWidth(),
+                fontWeight = FontWeight.Bold, // Imposta il grassetto
+                fontSize = 40.sp
+            ) // Imposta la dimensione del testo)
+        },
+            navigationIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back_24),
                     contentDescription = null,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
+                        .clickable {
+                            navController.navigate("SchermataProfiloUtente")
+
+
+                        }
+                        .size(35.dp)
                 )
+            }, colors = TopAppBarColors(
+                containerColor = (MaterialTheme.colorScheme.primary),
+                navigationIconContentColor = Color.White,
+                titleContentColor = Color.White,
+                actionIconContentColor = Color.White,
+                scrolledContainerColor = Color.White
+            ),
+            actions = {
 
             }
-            Text(
-                text = "MARIO ROSSI",
+        )
+        val screenWidth = LocalDensity.current.run {
+            LocalConfiguration.current.screenWidthDp.dp
+        }
+        Box(
+            modifier = Modifier
+                .offset(x = (screenWidth / 2) - 40.dp)
+                .constrainAs(immagineProfilo)
+                {
+                    top.linkTo(parent.top, margin = 70.dp)
+                }
+                .size(80.dp)
+                .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
+        ) {
+            // Immagine all'interno della Box circolare
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_foreground), // Rimpiazza con la tua immagine
+                contentDescription = null,
                 modifier = Modifier
-                    .offset(y = 150.dp)
-
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold, // Imposta il grassetto
+                    .fillMaxSize()
+                    .clip(CircleShape)
             )
-            Text(
-                text = "@mariorossi",
-                modifier = Modifier
-                    .offset(y = 180.dp)
 
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-                color = Color.Gray// Imposta il grassetto
-            )
-            Text(
-                text = "Short Bio:",
-                modifier = Modifier
-                    .offset(y = 200.dp)
+        }
+        Text(
+            text = "MARIO ROSSI",
+            modifier = Modifier
+                .constrainAs(nomeUtente)
+                {
+                    top.linkTo(immagineProfilo.bottom)
+                }
 
-                    .padding(8.dp)
-                    .fillMaxWidth(),
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold, // Imposta il grassetto
+        )
+        Text(
+            text = "@mariorossi",
+            modifier = Modifier
+                .constrainAs(usernameUtente) {
+                    top.linkTo(nomeUtente.bottom)
+                }
+
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp,
+            color = Color.Gray// Imposta il grassetto
+        )
+        Text(
+            text = "Short Bio:",
+            modifier = Modifier
+                .constrainAs(shortBioLabel)
+                {
+                    top.linkTo(usernameUtente.bottom)
+                }
+
+                .padding(8.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Left,
+            fontSize = 20.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold
+
+        )
+
+        //.offset(y = 235.dp)
+        OutlinedTextField(value = shortBio, onValueChange = { shortBio = it },
+            shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { sitoWebFocusRequester.requestFocus() }
+            ),
+            modifier = Modifier
+                .height(150.dp)
+                .constrainAs(shortBioUtente)
+                {
+                    top.linkTo(shortBioLabel.bottom)
+                }
+                .fillMaxWidth()
+                .padding(8.dp))
+
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(sitoWebUtente)
+                {
+                    top.linkTo(shortBioUtente.bottom)
+                }
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Sito Web:",
                 textAlign = TextAlign.Left,
                 fontSize = 20.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold
-
             )
+            LocalContext.current
 
-            //.offset(y = 235.dp)
-            OutlinedTextField(value = shortBio, onValueChange = { shortBio = it },
+            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
+                // Handle the result if needed
+            }
+
+            buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 20.sp
+                    )
+                ) {
+                    append("www.mariorossi.com")
+                    addStringAnnotation("URL", "https://www.example.com", 0, length)
+                }
+            }
+            Spacer(modifier = Modifier.width(7.dp))
+
+            OutlinedTextField(value = sitoWeb, onValueChange = { sitoWeb = it },
                 shape = RoundedCornerShape(15.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next
                 ),
+                modifier = Modifier
+                    .focusRequester(sitoWebFocusRequester)
+                    .height(50.dp),
                 keyboardActions = KeyboardActions(
-                    onNext = { sitoWebFocusRequester.requestFocus() }
-                ),
-                modifier = Modifier
-                    .height(150.dp)
-                    .offset(y = 235.dp)
-                    .fillMaxWidth()
-                    .padding(8.dp))
+                    onNext = { addressFocusRequester.requestFocus() }
+                ))
 
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = 400.dp)
-
-
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Sito Web:",
-                    textAlign = TextAlign.Left,
-                    fontSize = 20.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold
-                )
-                LocalContext.current
-
-                rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
-                    // Handle the result if needed
-                }
-
-                buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary,
-                            fontSize = 20.sp
-                        )
-                    ) {
-                        append("www.mariorossi.com")
-                        addStringAnnotation("URL", "https://www.example.com", 0, length)
-                    }
-                }
-                Spacer(modifier = Modifier.width(7.dp))
-
-                OutlinedTextField(value = sitoWeb, onValueChange = { sitoWeb = it },
-                    shape = RoundedCornerShape(15.dp),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = Modifier
-                        .focusRequester(sitoWebFocusRequester)
-                        .height(50.dp),
-                    keyboardActions = KeyboardActions(
-                        onNext = { addressFocusRequester.requestFocus() }
-                    ))
-
-
-            }
-
-
-
-            @Composable
-            fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(2.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = iconId),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clickable { navController.navigate(route) },
-                        tint = color
-
-                    )
-
-                    Text(
-                        text = text,
-                        fontSize = 15.sp,
-                        color = color
-                    )//
-                }
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = 480.dp)
-
-
-            ) {
-                Spacer(
-                    modifier = Modifier
-                        .width(20.dp)
-
-                )
-                IconWithText(
-                    iconId = R.drawable.instagramicon,
-                    text = "Instagram",
-                    "",
-                    Color.Black
-                )
-                Spacer(
-                    modifier = Modifier
-                        .width(0.dp)
-                        .weight(1f)
-                )
-                IconWithText(
-                    iconId = R.drawable.facebookicon,
-                    text = "Facebook",
-                    "", Color.Black
-                )
-                Spacer(
-                    modifier = Modifier
-                        .width(0.dp)
-                        .weight(1f)
-                )
-                IconWithText(
-                    iconId = R.drawable.twittericon,
-                    text = "Twitter",
-                    "", Color.Black
-                )
-                Spacer(
-                    modifier = Modifier
-                        .width(0.dp)
-                        .weight(1f)
-                )
-            }
-            var isDialogVisible by remember { mutableStateOf(false) }
-            ElevatedButton(
-                onClick = { isDialogVisible = true }, modifier = Modifier
-                    .offset(x = 10.dp, y = 550.dp)
-            ) {
-                Text(text = "Modifica Account Social")
-
-
-            }
-            if (isDialogVisible) {
-                Dialog(onDismissRequest = { isDialogVisible = false }) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .padding(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(16.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Instagram",
-
-                                    )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(
-                                    painter = painterResource(id = R.drawable.instagramicon),
-                                    contentDescription = "iconaInstagram"
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                OutlinedTextField(value = instagramLink,
-                                    onValueChange = { instagramLink = it },
-                                    shape = RoundedCornerShape(15.dp),
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        imeAction = ImeAction.Next
-                                    ),
-                                    modifier = Modifier
-                                        .height(20.dp),
-                                    keyboardActions = KeyboardActions(
-                                        onNext = { facebookLinkFocusRequester.requestFocus() }
-                                    ))
-                            }
-                            Spacer(modifier = Modifier.height(15.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Facebook",
-
-                                    )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(
-                                    painter = painterResource(id = R.drawable.facebookicon),
-                                    contentDescription = "iconaFacebook"
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                OutlinedTextField(value = facebookLink,
-                                    onValueChange = { facebookLink = it },
-                                    shape = RoundedCornerShape(15.dp),
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        imeAction = ImeAction.Next
-                                    ),
-                                    modifier = Modifier
-                                        .height(20.dp)
-                                        .focusRequester(facebookLinkFocusRequester),
-                                    keyboardActions = KeyboardActions(
-                                        onNext = { twitterLinkFocusRequester.requestFocus() }
-                                    ))
-                            }
-                            Spacer(modifier = Modifier.height(15.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Twitter",
-
-                                    )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(
-                                    painter = painterResource(id = R.drawable.twittericon),
-                                    contentDescription = "iconaInstagram"
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                OutlinedTextField(
-                                    value = twitterLink, onValueChange = { twitterLink = it },
-                                    shape = RoundedCornerShape(15.dp),
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    modifier = Modifier
-                                        .height(20.dp)
-                                        .focusRequester(twitterLinkFocusRequester),
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(15.dp))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-
-
-                                TextButton(onClick = { isDialogVisible = false }) {
-                                    Text("OK")
-                                }
-                            }
-                        }
-
-                    }
-
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = 600.dp)
-
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Indirizzo:",
-                    textAlign = TextAlign.Left,
-                    fontSize = 20.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.width(10.dp))
-                OutlinedTextField(
-                    value = address, onValueChange = { address = it },
-                    shape = RoundedCornerShape(15.dp),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done
-                    ), modifier = Modifier
-                        .focusRequester(addressFocusRequester)
-                        .height(50.dp)
-                )
-
-
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = 660.dp)
-
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-
-                horizontalArrangement = Arrangement.End
-
-            ) {
-                ElevatedButton(
-                    onClick = { navController.navigate("SchermataProfiloUtente") },
-                    modifier = Modifier
-
-                ) {
-                    Text(text = "Conferma")
-
-                }
-            }
         }
 
+
+
+        @Composable
+        fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(2.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = iconId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable { navController.navigate(route) },
+                    tint = color
+
+                )
+
+                Text(
+                    text = text,
+                    fontSize = 15.sp,
+                    color = color
+                )//
+            }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(social)
+                {
+                    top.linkTo(sitoWebUtente.bottom)
+                }
+                .padding(8.dp)
+
+
+        ) {
+            Spacer(
+                modifier = Modifier
+                    .width(20.dp)
+
+            )
+            IconWithText(
+                iconId = R.drawable.instagramicon,
+                text = "Instagram",
+                "",
+                Color.Black
+            )
+            Spacer(
+                modifier = Modifier
+                    .width(0.dp)
+                    .weight(1f)
+            )
+            IconWithText(
+                iconId = R.drawable.facebookicon,
+                text = "Facebook",
+                "", Color.Black
+            )
+            Spacer(
+                modifier = Modifier
+                    .width(0.dp)
+                    .weight(1f)
+            )
+            IconWithText(
+                iconId = R.drawable.twittericon,
+                text = "Twitter",
+                "", Color.Black
+            )
+            Spacer(
+                modifier = Modifier
+                    .width(0.dp)
+                    .weight(1f)
+            )
+        }
+        var isDialogVisible by remember { mutableStateOf(false) }
+        ElevatedButton(
+            onClick = { isDialogVisible = true }, modifier = Modifier
+                .constrainAs(bottoneModifica)
+                {
+                    top.linkTo(social.bottom)
+                }
+                .padding(8.dp)
+        ) {
+            Text(text = "Modifica Account Social")
+
+
+        }
+        if (isDialogVisible) {
+            Dialog(onDismissRequest = { isDialogVisible = false }) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .padding(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Instagram",
+
+                                )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                painter = painterResource(id = R.drawable.instagramicon),
+                                contentDescription = "iconaInstagram"
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            OutlinedTextField(value = instagramLink,
+                                onValueChange = { instagramLink = it },
+                                shape = RoundedCornerShape(15.dp),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    imeAction = ImeAction.Next
+                                ),
+                                modifier = Modifier
+                                    .height(20.dp),
+                                keyboardActions = KeyboardActions(
+                                    onNext = { facebookLinkFocusRequester.requestFocus() }
+                                ))
+                        }
+                        Spacer(modifier = Modifier.height(15.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Facebook",
+
+                                )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                painter = painterResource(id = R.drawable.facebookicon),
+                                contentDescription = "iconaFacebook"
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            OutlinedTextField(value = facebookLink,
+                                onValueChange = { facebookLink = it },
+                                shape = RoundedCornerShape(15.dp),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    imeAction = ImeAction.Next
+                                ),
+                                modifier = Modifier
+                                    .height(20.dp)
+                                    .focusRequester(facebookLinkFocusRequester),
+                                keyboardActions = KeyboardActions(
+                                    onNext = { twitterLinkFocusRequester.requestFocus() }
+                                ))
+                        }
+                        Spacer(modifier = Modifier.height(15.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Twitter",
+
+                                )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                painter = painterResource(id = R.drawable.twittericon),
+                                contentDescription = "iconaInstagram"
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            OutlinedTextField(
+                                value = twitterLink, onValueChange = { twitterLink = it },
+                                shape = RoundedCornerShape(15.dp),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    imeAction = ImeAction.Done
+                                ),
+                                modifier = Modifier
+                                    .height(20.dp)
+                                    .focusRequester(twitterLinkFocusRequester),
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(15.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+
+
+                            TextButton(onClick = { isDialogVisible = false }) {
+                                Text("OK")
+                            }
+                        }
+                    }
+
+                }
+
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(indirizzoUtente)
+                {
+                    top.linkTo(bottoneModifica.bottom)
+                }
+
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Indirizzo:",
+                textAlign = TextAlign.Left,
+                fontSize = 20.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.width(10.dp))
+            OutlinedTextField(
+                value = address, onValueChange = { address = it },
+                shape = RoundedCornerShape(15.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ), modifier = Modifier
+                    .focusRequester(addressFocusRequester)
+                    .height(50.dp)
+            )
+
+
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(bottoneConferma) {
+                    top.linkTo(indirizzoUtente.bottom)
+                    end.linkTo(parent.end)
+                }
+
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+
+            horizontalArrangement = Arrangement.End
+
+        ) {
+            ElevatedButton(
+                onClick = { navController.navigate("SchermataProfiloUtente") }
+            ) {
+                Text(text = "Conferma")
+
+            }
+        }
     }
+
+
 }
 
 

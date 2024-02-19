@@ -159,7 +159,7 @@ fun SchermataRegistrazione(navController: NavController) {
         remember { FocusRequester() } // Richiede il focus per l'input del cognome.
 
     val presenter = AutenticazionePresenter()
-    val isDialogVisible = remember { mutableStateOf(false)}
+    val isDialogVisible = remember { mutableStateOf(false) }
 
     val state = rememberDatePickerState()
     val openDialog = remember { mutableStateOf(false) }
@@ -763,7 +763,7 @@ fun SchermataRegistrazione(navController: NavController) {
                         modifier = Modifier
                             .size(35.dp)
                             .clickable {
-                                       currentPage.value = 0
+                                currentPage.value = 0
                             },
                         tint = Color.White
                     )
@@ -962,7 +962,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     // Bottone "DIVENTA UN VENDITORE"
                     ElevatedButton(
                         onClick = {
-                           currentPage.value = 3
+                            currentPage.value = 3
                         },
 
                         modifier = Modifier
@@ -1006,7 +1006,8 @@ fun SchermataRegistrazione(navController: NavController) {
 
             }
         }
-        3->{
+
+        3 -> {
 
 
             var partitaIva by remember { mutableStateOf("") } //11 caratteri numerici
@@ -1412,7 +1413,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     ElevatedButton(
                         enabled = checkFields(),
                         onClick = {
-                                  isDialogVisible.value = true
+                            isDialogVisible.value = true
 
                         },
 
@@ -1446,8 +1447,10 @@ fun SchermataRegistrazione(navController: NavController) {
                                 "TORNA ALLA SCHERMATA DI LOGIN PER EFFETTUARE L'ACCESSO",
                         textAlign = TextAlign.Center
                     )
-                    TextButton(onClick = { isDialogVisible.value = false
-                        navController.navigate("SchermataAutenticazione")}) {
+                    TextButton(onClick = {
+                        isDialogVisible.value = false
+                        navController.navigate("SchermataAutenticazione")
+                    }) {
                         Text(text = "ACCEDI", fontSize = 20.sp)
 
                     }
@@ -1458,8 +1461,6 @@ fun SchermataRegistrazione(navController: NavController) {
         }
     }
 }
-
-
 
 
 @Preview(showBackground = true)

@@ -56,6 +56,7 @@ import com.example.dietideals_app.R
 import com.example.dietideals_app.presenter.AutenticazionePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
+import java.util.regex.Pattern
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,13 +107,23 @@ class MainActivity : ComponentActivity() {
 fun SchermataAutenticazione(navController: NavController) {
     val presenter =
         AutenticazionePresenter() // Istanza del presenter per la gestione dell'autenticazione
-    var username by remember { mutableStateOf("") } // Variabile per memorizzare l'username
+    var email by remember { mutableStateOf("") } // Variabile per memorizzare l'email
+
+
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = "^[A-Za-z](.*)(@)(.+)(\\.)(.{1,})"
+        val pattern = Pattern.compile(emailRegex)
+        val matcher = pattern.matcher(email)
+        return matcher.matches()
+    }
+
+
     var password by remember { mutableStateOf("") } // Variabile per memorizzare la password
     val passwordFocusRequester =
         remember { FocusRequester() } // Richiede il focus per l'input della password
     // Valori per le immagini della schermata
     val background = painterResource(id = R.drawable.sfondo1)
-    val logoFacebook =  R.drawable.facebookicon
+    val logoFacebook = R.drawable.facebookicon
     val logoGoogle = R.drawable.googleicon
     val logoGitHub = R.drawable.githubicon
     val logoApp = painterResource(id = R.drawable.iconaapp)
@@ -175,7 +186,13 @@ fun SchermataAutenticazione(navController: NavController) {
 
         // Text field email
         OutlinedTextField(
+            value = email,
+            onValueChange = {
+                email = it
+                isLoginEnabled = it.isNotBlank() && password.isNotBlank()
+            },
             label = { Text("E-mail") },
+            placeholder = { Text("Inserisci il tuo indirizzo email") }, // Suggerimento personalizzato
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
@@ -184,11 +201,6 @@ fun SchermataAutenticazione(navController: NavController) {
                 )
             },
             shape = RoundedCornerShape(15.dp),
-            value = username,
-            onValueChange = {
-                username = it
-                isLoginEnabled = it.isNotBlank() && password.isNotBlank()
-            },
             modifier = Modifier
                 .constrainAs(emailTextField) {
                     top.linkTo(appIcon.bottom, margin = 35.dp)
@@ -202,7 +214,9 @@ fun SchermataAutenticazione(navController: NavController) {
             ),
             keyboardActions = KeyboardActions(
                 onNext = { passwordFocusRequester.requestFocus() }
-            )
+            ), // Aggiungi una logica per la validazione dell'email
+            singleLine = true, // Assicurati che il campo sia a una sola riga
+
         )
 
         // Text field password
@@ -229,9 +243,10 @@ fun SchermataAutenticazione(navController: NavController) {
             },
             onValueChange = {
                 password = it
-                isLoginEnabled = it.length >= 5 && username.isNotBlank()
+                isLoginEnabled = it.length >= 5 && email.isNotBlank()
             },
             label = { Text("Password") },
+            placeholder = { Text("Inserisci la tua password") },
             modifier = Modifier
                 .constrainAs(passwordTextField) {
                     top.linkTo(emailTextField.bottom, margin = 16.dp)
@@ -248,7 +263,7 @@ fun SchermataAutenticazione(navController: NavController) {
                 onDone = {
                     if (isLoginEnabled) {
                         // Perform login action
-                        presenter.effettuaLogin(username, password)
+                        presenter.effettuaLogin(email, password)
                     }
                 }
             )
@@ -258,7 +273,7 @@ fun SchermataAutenticazione(navController: NavController) {
         ElevatedButton(
             onClick = {
                 if (isLoginEnabled) {
-                    presenter.effettuaLogin(username, password)
+                    presenter.effettuaLogin(email, password)
                 }
                 navController.navigate("SchermataHome")
             },
@@ -291,7 +306,7 @@ fun SchermataAutenticazione(navController: NavController) {
                         .clickable { navController.navigate(route) },
 
 
-                )
+                    )
 
                 Text(
                     text = text,
@@ -312,11 +327,11 @@ fun SchermataAutenticazione(navController: NavController) {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            IconWithText(logoGoogle,"GOOGLE","")
+            IconWithText(logoGoogle, "GOOGLE", "")
             Spacer(modifier = Modifier.width(65.dp))
-            IconWithText(logoFacebook,"FACEBOOK","")
+            IconWithText(logoFacebook, "FACEBOOK", "")
             Spacer(modifier = Modifier.width(65.dp))
-            IconWithText(logoGitHub,"GITHUB","")
+            IconWithText(logoGitHub, "GITHUB", "")
         }
 
         // Testo registrazione

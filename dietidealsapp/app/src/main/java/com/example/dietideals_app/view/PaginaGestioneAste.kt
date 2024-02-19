@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,12 +27,14 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -111,7 +114,7 @@ fun SchermataGestioneAste(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (background) = createRefs()
+        val (background, topbar, bottomBar) = createRefs()
         Box(
             modifier = Modifier
                 .constrainAs(background) {
@@ -123,357 +126,371 @@ fun SchermataGestioneAste(navController: NavController) {
                     height = Dimension.fillToConstraints
                 }
                 .background(Color.White)
-        ) {
-            TopAppBar(modifier = Modifier.align(Alignment.TopCenter), title = {
-                Text(
-                    text = "LE MIE ASTE",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    fontWeight = FontWeight.Bold, // Imposta il grassetto
-                    fontSize = 40.sp
-                ) // Imposta la dimensione del testo)
-            },
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clickable {
-                                navController.navigate("SchermataHome")
-
-
-                            }
-                            .size(35.dp)
-                    )
-                }, colors = TopAppBarColors(
-                    containerColor = (MaterialTheme.colorScheme.primary),
-                    navigationIconContentColor = Color.White,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White,
-                    scrolledContainerColor = Color.White
-                ),
-                actions = {
-
-                }
-            )
-
-
-            Column(
+        ) {}
+        TopAppBar(modifier = Modifier.constrainAs(topbar)
+        {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }, title = {
+            Text(
+                text = "LE MIE ASTE",
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .offset(y = 60.dp)
-            ) {
-                // TabRow per contenere le schede
-                TabRow(selectedTabIndex.intValue) {
-                    // Itera attraverso le schede e le aggiunge a TabRow
-                    for (index in tabNames.indices) {
-                        Tab(
-                            selected = selectedTabIndex.intValue == index,
-                            onClick = { selectedTabIndex.intValue = index },
-                            // Puoi personalizzare l'aspetto delle schede qui, ad esempio aggiungendo icone, testo, etc.
-                            text = {
-                                Text(text = tabNames[index], fontSize = 10.sp)
-                            }
-                        )
-                    }
+                    .fillMaxWidth(),
+                fontWeight = FontWeight.Bold, // Imposta il grassetto
+                fontSize = 40.sp
+            ) // Imposta la dimensione del testo)
+        },
+            navigationIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .clickable {
+                            navController.navigate("SchermataHome")
+
+
+                        }
+                        .size(35.dp)
+                )
+            }, colors = TopAppBarColors(
+                containerColor = (MaterialTheme.colorScheme.primary),
+                navigationIconContentColor = Color.White,
+                titleContentColor = Color.White,
+                actionIconContentColor = Color.White,
+                scrolledContainerColor = Color.White
+            ),
+            actions = {
+
+            }
+        )
+
+
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .offset(y = 60.dp)
+        ) {
+            // TabRow per contenere le schede
+            TabRow(selectedTabIndex.intValue) {
+                // Itera attraverso le schede e le aggiunge a TabRow
+                for (index in tabNames.indices) {
+                    Tab(
+                        selected = selectedTabIndex.intValue == index,
+                        onClick = { selectedTabIndex.intValue = index },
+                        // Puoi personalizzare l'aspetto delle schede qui, ad esempio aggiungendo icone, testo, etc.
+                        text = {
+                            Text(text = tabNames[index], fontSize = 10.sp)
+                        }
+                    )
                 }
-                @Composable
-                fun ProductDetails() {
-                    LazyColumn(
-                        modifier = Modifier
+            }
+            @Composable
+            fun ProductDetails(size: Int) {
+                LazyColumn(
+                    modifier = Modifier
 
 
-                            .fillMaxSize()
-                            .padding(16.dp)
+                        .fillMaxSize()
+                        .padding(16.dp)
 
 
-                    ) {
-                        items(6) { index ->
-                            Column(
+                ) {
+                    items(size) { index ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        ) {
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp)
                             ) {
-                                Row(
+                                // Riquadro per ogni elemento della lista
+                                OutlinedCard(
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .weight(1f)
+                                        .height(150.dp)
+                                        .padding(2.dp),
+                                    border = BorderStroke(1.dp, Color.Black)
+
                                 ) {
-                                    // Riquadro per ogni elemento della lista
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .height(150.dp)
-                                            .padding(2.dp)
-                                            .background(Color.White)
-                                            .border(1.dp, Color.Black),
-                                        contentAlignment = Alignment.Center
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
                                     ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                        ) {
-                                            Column {
-                                                // Immagine
-                                                Image(
-                                                    painter = painterResource(id = R.drawable.defaultimage),
-                                                    contentDescription = "Image",
-                                                    modifier = Modifier
-                                                        .size(150.dp)
-                                                        .padding(8.dp)
+                                        Column {
+                                            // Immagine
+                                            Image(
+                                                painter = painterResource(id = R.drawable.defaultimage),
+                                                contentDescription = "Image",
+                                                modifier = Modifier
+                                                    .size(150.dp)
+                                                    .padding(8.dp)
+                                            )
+                                        }
+                                        VerticalDivider()
+                                        Spacer(modifier = Modifier.width(20.dp))
+                                        Column {
+                                            // Titolo in grassetto
+                                            Text(
+                                                text = "SCARPE NIKE",
+                                                color = Color.Black,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 10.sp,
+
+                                                )
+
+                                            //TAB ASTE ATTIVE
+                                            if (selectedTabIndex.intValue == 0) {
+                                                Text(
+                                                    text = "Offerta Iniziale",
+                                                    color = Color.Black,
+                                                    fontSize = 10.sp,
+
+                                                    )
+                                            }
+
+
+                                            ///TAB ASTE CONCLUSE
+                                            if (selectedTabIndex.intValue == 1) {
+                                                Text(
+                                                    text = "Venduto per",
+                                                    color = Color.Black,
+                                                    fontSize = 10.sp,
+
+                                                    )
+
+                                            }
+                                            //TAB ASTE SEGUITE
+                                            /*
+                                            if(offerta NON rifiutata){
+                                            Text(
+                                                    text = "Offerta Attuale",
+                                                    color = Color.Black,
+                                                    fontSize = 10.sp,
+
+                                                    )
+
+                                            }
+                                            else{
+                                            Text(
+                                                    text = "La Tua Offerta",
+                                                    color = Color.Black,
+                                                    fontSize = 10.sp,
+
+                                                    )
+                                            }
+                                            *
+                                            *
+                                            *
+                                            *
+                                            *
+                                            * */
+
+                                            //TAB ASTE VINTE
+                                            if (selectedTabIndex.intValue == 3) {
+                                                Text(
+                                                    text = "Acquistato per",
+                                                    color = Color.Black,
+                                                    fontSize = 10.sp,
+
+                                                    )
+
+                                            }
+                                            //TAB ASTE SEGUITE
+                                            /*
+                                            if(offerta NON rifiutata){
+                                            Text(
+                                                text = "€100,00",
+                                                color = Color(colorGreen),
+                                                fontSize = 10.sp,
+
+                                                )
+
+                                            }
+                                            else{
+                                            Text(
+                                                text = "€100,00 RIFIUTATA",
+                                                color = Color(colorRed),
+                                                fontSize = 10.sp,
+
                                                 )
                                             }
-                                            Spacer(modifier = Modifier.width(20.dp))
-                                            Column {
-                                                // Titolo in grassetto
+                                            *
+                                            *
+                                            *
+                                            *
+                                            *
+                                            * */
+
+
+                                            // Prezzo in verde
+                                            Text(
+                                                text = "€100,00",
+                                                color = Color(colorGreen),
+                                                fontSize = 10.sp,
+
+                                                )
+                                            Text(
+                                                text = "Categoria: Abbigliamento",
+                                                color = Color.Black,
+                                                fontSize = 10.sp,
+
+                                                )
+
+                                            // Altre informazioni
+
+                                            if ((selectedTabIndex.intValue % 2) != 0) {
                                                 Text(
-                                                    text = "SCARPE NIKE",
-                                                    color = Color.Black,
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 10.sp,
-
-                                                    )
-
-                                                //TAB ASTE ATTIVE
-                                                if (selectedTabIndex.intValue == 0) {
-                                                    Text(
-                                                        text = "Offerta Iniziale",
-                                                        color = Color.Black,
-                                                        fontSize = 10.sp,
-
-                                                        )
-                                                }
-
-
-                                                ///TAB ASTE CONCLUSE
-                                                if (selectedTabIndex.intValue == 1) {
-                                                    Text(
-                                                        text = "Venduto per",
-                                                        color = Color.Black,
-                                                        fontSize = 10.sp,
-
-                                                        )
-
-                                                }
-                                                //TAB ASTE SEGUITE
-                                                /*
-                                                if(offerta NON rifiutata){
-                                                Text(
-                                                        text = "Offerta Attuale",
-                                                        color = Color.Black,
-                                                        fontSize = 10.sp,
-
-                                                        )
-
-                                                }
-                                                else{
-                                                Text(
-                                                        text = "La Tua Offerta",
-                                                        color = Color.Black,
-                                                        fontSize = 10.sp,
-
-                                                        )
-                                                }
-                                                *
-                                                *
-                                                *
-                                                *
-                                                *
-                                                * */
-
-                                                //TAB ASTE VINTE
-                                                if (selectedTabIndex.intValue == 3) {
-                                                    Text(
-                                                        text = "Acquistato per",
-                                                        color = Color.Black,
-                                                        fontSize = 10.sp,
-
-                                                        )
-
-                                                }
-                                                //TAB ASTE SEGUITE
-                                                /*
-                                                if(offerta NON rifiutata){
-                                                Text(
-                                                    text = "€100,00",
-                                                    color = Color(colorGreen),
-                                                    fontSize = 10.sp,
-
-                                                    )
-
-                                                }
-                                                else{
-                                                Text(
-                                                    text = "€100,00 RIFIUTATA",
+                                                    text = "Conclusa il 08/11/23",
                                                     color = Color(colorRed),
                                                     fontSize = 10.sp,
 
                                                     )
-                                                }
-                                                *
-                                                *
-                                                *
-                                                *
-                                                *
-                                                * */
-
-
-                                                // Prezzo in verde
+                                            } else {
                                                 Text(
-                                                    text = "€100,00",
-                                                    color = Color(colorGreen),
-                                                    fontSize = 10.sp,
-
-                                                    )
-                                                Text(
-                                                    text = "Categoria: Abbigliamento",
+                                                    text = "Tempo rimanente : 2 Giorni",
                                                     color = Color.Black,
                                                     fontSize = 10.sp,
 
                                                     )
 
-                                                // Altre informazioni
-
-                                                if ((selectedTabIndex.intValue % 2) != 0) {
-                                                    Text(
-                                                        text = "Conclusa il 08/11/23",
-                                                        color = Color(colorRed),
-                                                        fontSize = 10.sp,
-
-                                                        )
-                                                } else {
-                                                    Text(
-                                                        text = "Tempo rimanente : 2 Giorni",
-                                                        color = Color.Black,
-                                                        fontSize = 10.sp,
-
-                                                        )
-
-                                                }
                                             }
-
-
                                         }
+
+
                                     }
                                 }
                             }
                         }
                     }
-
-                }
-
-                // Contenuto della scheda selezionata
-                when (selectedTabIndex.intValue) {
-                    0 -> {
-                        ProductDetails()
-
-                    }
-
-
-                    1 -> {
-                        ProductDetails()
-
-                    }
-
-                    2 -> {
-                        ProductDetails()
-                    }
-
-                    3 -> {
-                        ProductDetails()
+                    item {
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp) // Altezza dello Spacer uguale all'altezza della BottomAppBar
+                        )
                     }
                 }
-            }
-            @Composable
-            fun IconWithText(iconId: Int, text: String, route: String) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(2.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = iconId),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clickable { navController.navigate(route) },
-                        tint = Color(0xFF0EA639)
 
-                    )
-
-                    Text(
-                        text = text,
-                        fontSize = 14.sp,
-                        color = Color(0xFF0EA639)
-                    )//
-                }
             }
 
-            BottomAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
+            // Contenuto della scheda selezionata
+            when (selectedTabIndex.intValue) {
+                0 -> {
+                    ProductDetails(4)
 
-                    .background(color = Color.White) // Set the background color to white
-                    .border(1.dp, color = Color.Black)
-                    .height(60.dp)// Add a black border
-                    .align(Alignment.BottomCenter)
+                }
+
+
+                1 -> {
+                    ProductDetails(2)
+
+                }
+
+                2 -> {
+                    ProductDetails(3)
+                }
+
+                3 -> {
+                    ProductDetails(1)
+                }
+            }
+        }
+        @Composable
+        fun IconWithText(iconId: Int, text: String, route: String) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(2.dp)
             ) {
-                Spacer(
+                Icon(
+                    painter = painterResource(id = iconId),
+                    contentDescription = null,
                     modifier = Modifier
-                        .width(0.dp)
-                        .weight(1f)
-                )
-                IconWithText(
-                    iconId = R.drawable.baseline_home_24,
-                    text = "Home",
-                    "SchermataHome"
+                        .size(30.dp)
+                        .clickable { navController.navigate(route) },
+                    tint = Color(0xFF0EA639)
+
                 )
 
-
-                Spacer(
-                    modifier = Modifier
-                        .width(0.dp)
-                        .weight(1f)
-                )
-                IconWithText(
-                    iconId = R.drawable.line_chart_svgrepo_com,
-                    text = "Gestisci Aste",
-                    ""
-                )
-
-
-
-                Spacer(
-                    modifier = Modifier
-                        .width(0.dp)
-                        .weight(1f)
-                )
-                IconWithText(
-                    iconId = R.drawable.hand_money_cash_hold_svgrepo_com,
-                    text = "Crea Asta",
-                    ""
-                )
-
-
-                Spacer(
-                    modifier = Modifier
-                        .width(0.dp)
-                        .weight(1f)
-                )
-                IconWithText(
-                    iconId = R.drawable.baseline_manage_accounts_24,
-                    text = "Profilo",
-                    "SchermataProfiloUtente"
-                )
-
-
-                Spacer(
-                    modifier = Modifier
-                        .width(0.dp)
-                        .weight(1f)
-                )
+                Text(
+                    text = text,
+                    fontSize = 14.sp,
+                    color = Color(0xFF0EA639)
+                )//
             }
+        }
+
+        BottomAppBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color.White) // Set the background color to white
+                .border(1.dp, color = Color.Black)
+                .height(60.dp)// Add a black border
+                .constrainAs(bottomBar)
+                {
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
+            Spacer(
+                modifier = Modifier
+                    .width(0.dp)
+                    .weight(1f)
+            )
+            IconWithText(
+                iconId = R.drawable.baseline_home_24,
+                text = "Home",
+                "SchermataHome"
+            )
+
+
+            Spacer(
+                modifier = Modifier
+                    .width(0.dp)
+                    .weight(1f)
+            )
+            IconWithText(
+                iconId = R.drawable.line_chart_svgrepo_com,
+                text = "Gestisci Aste",
+                ""
+            )
+
+
+
+            Spacer(
+                modifier = Modifier
+                    .width(0.dp)
+                    .weight(1f)
+            )
+            IconWithText(
+                iconId = R.drawable.hand_money_cash_hold_svgrepo_com,
+                text = "Crea Asta",
+                ""
+            )
+
+
+            Spacer(
+                modifier = Modifier
+                    .width(0.dp)
+                    .weight(1f)
+            )
+            IconWithText(
+                iconId = R.drawable.baseline_manage_accounts_24,
+                text = "Profilo",
+                "SchermataProfiloUtente"
+            )
+
+
+            Spacer(
+                modifier = Modifier
+                    .width(0.dp)
+                    .weight(1f)
+            )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

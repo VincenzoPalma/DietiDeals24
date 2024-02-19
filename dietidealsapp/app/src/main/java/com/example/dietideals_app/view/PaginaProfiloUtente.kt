@@ -156,7 +156,7 @@ fun SchermataProfiloUtente(navController: NavController) {
         RuoloUtente.COMPRATORE,
         "Sono Mario Rossi, un appassionato venditore di aste con una vasta esperienza nel settore." +
                 " Offro una selezione di oggetti unici e preziosi, curando ogni dettaglio delle mie aste per garantire esperienze indimenticabili ai miei acquirenti." +
-            "Conosco il valore degli oggetti che metto all'asta e mi impegno a offrire un servizio clienti impeccabile." + "Sono qui per fornire autenticità, qualità e emozioni nel mondo delle aste.",
+                "Conosco il valore degli oggetti che metto all'asta e mi impegno a offrire un servizio clienti impeccabile." + "Sono qui per fornire autenticità, qualità e emozioni nel mondo delle aste.",
         "www.marione.com",
         "Via Roma, 123, 00100, Roma, Italia",
         "instagram",
@@ -259,7 +259,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                val (background) = createRefs()
+                val (bottomBar, background, topBar, immagineProfilo, nomeUtente, usernameUtente, shortBioLabel, shortBioUtente, sitoWebUtente, social, indirizzoUtente) = createRefs()
                 Box(
                     modifier = Modifier
                         .constrainAs(background) {
@@ -271,329 +271,362 @@ fun SchermataProfiloUtente(navController: NavController) {
                             height = Dimension.fillToConstraints
                         }
                         .background(Color.White)
-                ) {
-                    TopAppBar(modifier = Modifier.align(Alignment.TopCenter), title = {
-                        Text(
-                            text = "PROFILO",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            fontWeight = FontWeight.Bold, // Imposta il grassetto
-                            fontSize = 40.sp
-                        ) // Imposta la dimensione del testo)
-                    },
-                        navigationIcon = {
-                            Icon(
-                                painter = menuIcon,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clickable {
-                                        scope.launch {
-                                            drawerState.apply {
-                                                if (isClosed) open() else close()
-                                            }
-                                        }
-                                        // Azione da eseguire quando si clicca sull'icona di navigazione
-                                    }
-                                    .size(35.dp)
-                            )
-                        }, colors = TopAppBarColors(
-                            containerColor = (MaterialTheme.colorScheme.primary),
-                            navigationIconContentColor = Color.White,
-                            titleContentColor = Color.White,
-                            actionIconContentColor = Color.White,
-                            scrolledContainerColor = Color.White
-                        ),
-                        actions = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_brush_24),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clickable {
-                                        navController.navigate("SchermataModificaProfilo")
+                ) {}
+                TopAppBar(modifier = Modifier.constrainAs(topBar)
+                {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
 
-                                    }
-                                    .size(40.dp)
-
-                            )
-                        }
-                    )
-                    val screenWidth = LocalDensity.current.run {
-                        LocalConfiguration.current.screenWidthDp.dp
-                    }
-                    Box(
+                }, title = {
+                    Text(
+                        text = "PROFILO",
+                        textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .offset(x = (screenWidth / 2) - 40.dp, y = 70.dp)
-                            .size(80.dp)
-                            .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
-                    ) {
-                        // Immagine all'interno della Box circolare
-                        Image(
-                            painter = profilePicture, // Rimpiazza con la tua immagine
+                            .fillMaxWidth(),
+                        fontWeight = FontWeight.Bold, // Imposta il grassetto
+                        fontSize = 40.sp
+                    ) // Imposta la dimensione del testo)
+                },
+                    navigationIcon = {
+                        Icon(
+                            painter = menuIcon,
                             contentDescription = null,
                             modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
+                                .clickable {
+                                    scope.launch {
+                                        drawerState.apply {
+                                            if (isClosed) open() else close()
+                                        }
+                                    }
+                                    // Azione da eseguire quando si clicca sull'icona di navigazione
+                                }
+                                .size(35.dp)
                         )
+                    }, colors = TopAppBarColors(
+                        containerColor = (MaterialTheme.colorScheme.primary),
+                        navigationIconContentColor = Color.White,
+                        titleContentColor = Color.White,
+                        actionIconContentColor = Color.White,
+                        scrolledContainerColor = Color.White
+                    ),
+                    actions = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_brush_24),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clickable {
+                                    navController.navigate("SchermataModificaProfilo")
 
+                                }
+                                .size(40.dp)
+
+                        )
                     }
-                    Text(
-                        text = utente.nome + " " + utente.cognome,
+                )
+                val screenWidth = LocalDensity.current.run {
+                    LocalConfiguration.current.screenWidthDp.dp
+                }
+                Box(
+                    modifier = Modifier
+                        .offset(x = (screenWidth / 2) - 40.dp)
+                        .constrainAs(immagineProfilo)
+                        {
+                            top.linkTo(parent.top, margin = 70.dp)
+                        }
+                        .size(80.dp)
+                        .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
+                ) {
+                    // Immagine all'interno della Box circolare
+                    Image(
+                        painter = profilePicture, // Rimpiazza con la tua immagine
+                        contentDescription = null,
                         modifier = Modifier
-                            .offset(y = 150.dp)
-
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold, // Imposta il grassetto
+                            .fillMaxSize()
+                            .clip(CircleShape)
                     )
-                    Text(
-                        text = "@" + utente.username,
-                        modifier = Modifier
-                            .offset(y = 180.dp)
 
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        fontSize = 20.sp,
-                        color = Color.Gray// Imposta il grassetto
-                    )
-                    Text(
-                        text = "Short Bio:",
-                        modifier = Modifier
-                            .offset(y = 200.dp)
+                }
+                Text(
+                    text = "MARIO ROSSI",
+                    modifier = Modifier
+                        .constrainAs(nomeUtente)
+                        {
+                            top.linkTo(immagineProfilo.bottom)
+                        }
 
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold, // Imposta il grassetto
+                )
+                Text(
+                    text = "@" + utente.username,
+                    modifier = Modifier
+                        .constrainAs(usernameUtente) {
+                            top.linkTo(nomeUtente.bottom)
+                        }
+
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp,
+                    color = Color.Gray// Imposta il grassetto
+                )
+                Text(
+                    text = "Short Bio:",
+                    modifier = Modifier
+                        .constrainAs(shortBioLabel)
+                        {
+                            top.linkTo(usernameUtente.bottom)
+                        }
+
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Left,
+                    fontSize = 20.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
+                utente.descrizione?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier
+                            .constrainAs(shortBioUtente)
+                            {
+                                top.linkTo(shortBioLabel.bottom)
+                            }
                             .padding(8.dp)
                             .fillMaxWidth(),
+                        textAlign = TextAlign.Left,
+                        fontSize = 20.sp,
+                        color = Color.Black,// Imposta il grassetto
+                        maxLines = 6, // Imposta il numero massimo di righe
+                        overflow = TextOverflow.Ellipsis// Aggiunge tre puntini alla fine del testo se viene troncato
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(sitoWebUtente) {
+                            top.linkTo(shortBioUtente.bottom)
+                        }
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Sito Web:",
                         textAlign = TextAlign.Left,
                         fontSize = 20.sp,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
                     )
-                    utente.descrizione?.let {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .offset(y = 235.dp)
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            textAlign = TextAlign.Left,
-                            fontSize = 20.sp,
-                            color = Color.Black,// Imposta il grassetto
-                            maxLines = 6, // Imposta il numero massimo di righe
-                            overflow = TextOverflow.Ellipsis// Aggiunge tre puntini alla fine del testo se viene troncato
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .offset(y = 400.dp)
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Sito Web:",
-                            textAlign = TextAlign.Left,
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
-                        )
-                        val context = LocalContext.current
+                    val context = LocalContext.current
 
-                        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                            // Handle the result if needed
-                        }
-
-                        val text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontSize = 20.sp
-                                )
-                            ) {
-                                append(utente.sitoWeb)
-                                addStringAnnotation("URL", "https://www.example.com", 0, length)
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(7.dp))
-
-                        ClickableText(
-                            text = text,
-                            modifier = Modifier.padding(8.dp),
-                            onClick = { offset ->
-                                text.getStringAnnotations("URL", offset, offset)
-                                    .firstOrNull()?.let { annotation ->
-                                        annotation.item
-                                        val intent = Intent(Intent.ACTION_VIEW, null)
-                                        ContextCompat.startActivity(context, intent, null)
-                                    }
-                            },
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                        // Handle the result if needed
                     }
 
-
-
-                    @Composable
-                    fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(2.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = iconId),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .clickable { navController.navigate(route) },
-                                tint = color
-
+                    val text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontSize = 20.sp
                             )
-
-                            Text(
-                                text = text,
-                                fontSize = 15.sp,
-                                color = color
-                            )//
+                        ) {
+                            append(utente.sitoWeb)
+                            addStringAnnotation("URL", "https://www.example.com", 0, length)
                         }
                     }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .offset(y = 480.dp)
+                    Spacer(modifier = Modifier.width(7.dp))
+
+                    ClickableText(
+                        text = text,
+                        modifier = Modifier.padding(8.dp),
+                        onClick = { offset ->
+                            text.getStringAnnotations("URL", offset, offset)
+                                .firstOrNull()?.let { annotation ->
+                                    annotation.item
+                                    val intent = Intent(Intent.ACTION_VIEW, null)
+                                    ContextCompat.startActivity(context, intent, null)
+                                }
+                        },
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
 
 
+
+                @Composable
+                fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(2.dp)
                     ) {
-                        Spacer(
+                        Icon(
+                            painter = painterResource(id = iconId),
+                            contentDescription = null,
                             modifier = Modifier
-                                .width(20.dp)
+                                .size(30.dp)
+                                .clickable { navController.navigate(route) },
+                            tint = color
 
                         )
-                        IconWithText(
-                            iconId = R.drawable.instagramicon,
-                            text = "Instagram",
-                            "",
-                            Color.Black
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.facebookicon,
-                            text = "Facebook",
-                            "", Color.Black
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.twittericon,
-                            text = "Twitter",
-                            "", Color.Black
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .offset(y = 550.dp)
 
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
                         Text(
-                            text = "Indirizzo:",
-                            textAlign = TextAlign.Left,
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Spacer(modifier = Modifier.width(10.dp))
-                        utente.indirizzo?.let {
-                            Text(
-                                text = it,
-                                modifier = Modifier.weight(1f),
-                                fontSize = 15.sp,
-                                color = Color.Black,
-
-                                )
-                        }
-
-
-                    }
-                    BottomAppBar(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter)
-                            .background(color = Color.White) // Set the background color to white
-                            .border(1.dp, color = Color.Black)
-                            .height(60.dp)// Add a black border
-                    ) {
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-
-                        IconWithText(
-                            iconId = homeIcon,
-                            text = "Home",
-                            "SchermataHome",
-                            Color(colorGreen)
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-
-                        IconWithText(
-                            iconId = gestisciAste,
-                            text = "Gestisci Aste",
-                            "",
-                            Color(colorGreen)
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-
-                        IconWithText(
-                            iconId = creaAsta,
-                            text = "Crea Asta",
-                            "",
-                            Color(colorGreen)
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-
-                        IconWithText(
-                            iconId = account,
-                            text = "Profilo",
-                            "SchermataProfiloUtente",
-                            Color(colorGreen)
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
+                            text = text,
+                            fontSize = 15.sp,
+                            color = color
+                        )//
                     }
                 }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(social)
+                        {
+                            top.linkTo(sitoWebUtente.bottom)
+                        }
+
+
+                ) {
+                    Spacer(
+                        modifier = Modifier
+                            .width(20.dp)
+
+                    )
+                    IconWithText(
+                        iconId = R.drawable.instagramicon,
+                        text = "Instagram",
+                        "",
+                        Color.Black
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .width(0.dp)
+                            .weight(1f)
+                    )
+                    IconWithText(
+                        iconId = R.drawable.facebookicon,
+                        text = "Facebook",
+                        "", Color.Black
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .width(0.dp)
+                            .weight(1f)
+                    )
+                    IconWithText(
+                        iconId = R.drawable.twittericon,
+                        text = "Twitter",
+                        "", Color.Black
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .width(0.dp)
+                            .weight(1f)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(indirizzoUtente)
+                        {
+                            top.linkTo(social.bottom)
+                        }
+
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Indirizzo:",
+                        textAlign = TextAlign.Left,
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.width(10.dp))
+                    utente.indirizzo?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier.weight(1f),
+                            fontSize = 15.sp,
+                            color = Color.Black,
+
+                            )
+                    }
+
+
+                }
+                BottomAppBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(bottomBar)
+                        {
+                            bottom.linkTo(parent.bottom)
+                        }
+
+                        .background(color = Color.White) // Set the background color to white
+                        .border(1.dp, color = Color.Black)
+                        .height(60.dp)// Add a black border
+                ) {
+                    Spacer(
+                        modifier = Modifier
+                            .width(0.dp)
+                            .weight(1f)
+                    )
+
+                    IconWithText(
+                        iconId = homeIcon,
+                        text = "Home",
+                        "SchermataHome",
+                        Color(colorGreen)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .width(0.dp)
+                            .weight(1f)
+                    )
+
+                    IconWithText(
+                        iconId = gestisciAste,
+                        text = "Gestisci Aste",
+                        "",
+                        Color(colorGreen)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .width(0.dp)
+                            .weight(1f)
+                    )
+
+                    IconWithText(
+                        iconId = creaAsta,
+                        text = "Crea Asta",
+                        "",
+                        Color(colorGreen)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .width(0.dp)
+                            .weight(1f)
+                    )
+
+                    IconWithText(
+                        iconId = account,
+                        text = "Profilo",
+                        "SchermataProfiloUtente",
+                        Color(colorGreen)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .width(0.dp)
+                            .weight(1f)
+                    )
+                }
             }
+
         }
     )
 }
