@@ -28,7 +28,7 @@ public class ContoCorrenteController {
     @PutMapping("/contoCorrente")
     public ResponseEntity<ContoCorrente> modifyContoCorrente(@RequestBody @Valid ContoCorrente newContoCorrente) {
         ContoCorrente contoCorrente = contoCorrenteService.modificaContoCorrente(newContoCorrente);
-        return ResponseEntity.ok().location(URI.create("contoCorrente/%s".formatted(contoCorrente.getId().toString()))).body(contoCorrente);
+        return ResponseEntity.ok().location(URI.create("/contoCorrente/%s".formatted(contoCorrente.getId().toString()))).body(contoCorrente);
     }
 
     @GetMapping("/utente/contoCorrente")

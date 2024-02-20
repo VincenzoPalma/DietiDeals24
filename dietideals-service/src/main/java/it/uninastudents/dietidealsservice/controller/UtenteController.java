@@ -20,19 +20,23 @@ public class UtenteController {
     private final UtenteService utenteService;
 
     @PostMapping("/registrazione")
-    public ResponseEntity<Utente> inserisciUtente(@RequestBody @Valid UtenteRegistrazione datiRegistrazione) throws FirebaseAuthException {
+    public ResponseEntity<Utente> saveUtente(@RequestBody @Valid UtenteRegistrazione datiRegistrazione) throws FirebaseAuthException {
         Utente utente = utenteService.registraUtente(datiRegistrazione);
         return ResponseEntity.created(URI.create("/registrazione/%s".formatted(utente.getId()))).body(utente);
     }
 
     @PutMapping("/utente/modificaDatiUtente")
-    public ResponseEntity<Utente> modificaDatiUtente(@RequestBody @Valid DatiProfiloUtente datiProfiloUtente) {
+    public ResponseEntity<Utente> modifyDatiUtente(@RequestBody @Valid DatiProfiloUtente datiProfiloUtente) {
         Utente utente = utenteService.modificaDatiUtente(datiProfiloUtente);
-        return ResponseEntity.ok().location(URI.create("utente/%s/modificaDatiUtente".formatted(utente.getId()))).body(utente);
+        return ResponseEntity.ok().location(URI.create("/utente/%s/datiUtente".formatted(utente.getId()))).body(utente);
     }
 
     @GetMapping("/utente/datiUtente")
-    public ResponseEntity<DatiProfiloUtente> visualizzaDatiUtente(@RequestParam (name = "idUtente", required = false) UUID idUtente){
-        return ResponseEntity.ok(utenteService.getDatiUtente(idUtente));
+    public ResponseEntity<DatiProfiloUtente> getDatiUtente(@RequestParam(name = "idUtente", required = false) UUID idUtente) {
+        try {
+            return ResponseEntity.ok(utenteService.getDatiUtente(idUtente));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

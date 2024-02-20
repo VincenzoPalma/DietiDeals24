@@ -69,8 +69,8 @@ class AstaControllerTest {
         when(astaServiceMock.salvaAsta(any(Asta.class))).thenReturn(astaRisultato); // Configura il comportamento del service mock
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/utente/aste")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
                 .content(objectMapper.writeValueAsString(nuovaAsta))).andReturn();
 
         verify(astaServiceMock, times(1)).salvaAsta(any(Asta.class));
@@ -207,16 +207,16 @@ class AstaControllerTest {
         assertTrue(bodyRisposta.get("content").isArray());
         assertEquals(sizeRisultato, sizeRisposta);
 
-        for (JsonNode astaRisultato : bodyRisposta.get("content")){
-            if (stringaRicerca != null && sizeRisposta > 0){
+        for (JsonNode astaRisultato : bodyRisposta.get("content")) {
+            if (stringaRicerca != null && sizeRisposta > 0) {
                 assertTrue(astaRisultato.get("nome").asText().contains(stringaRicerca));
             }
 
-            if (tipoAsta != null && sizeRisposta > 0){
+            if (tipoAsta != null && sizeRisposta > 0) {
                 assertEquals(tipoAsta.toString(), astaRisultato.get("tipo").asText());
             }
 
-            if (categoriaAsta != null && sizeRisposta > 0){
+            if (categoriaAsta != null && sizeRisposta > 0) {
                 assertEquals(categoriaAsta.toString(), astaRisultato.get("categoria").asText());
             }
         }
@@ -252,7 +252,7 @@ class AstaControllerTest {
         assertEquals(0, bodyRisposta.get("pageable").get("pageNumber").asInt());
         assertEquals(12, bodyRisposta.get("pageable").get("pageSize").asInt());
         assertTrue(bodyRisposta.get("pageable").get("sort").get("sorted").asBoolean());
-        for (JsonNode astaRisultato : bodyRisposta.get("content")){
+        for (JsonNode astaRisultato : bodyRisposta.get("content")) {
             assertEquals(statoAsta.toString(), astaRisultato.get("stato").asText());
         }
     }

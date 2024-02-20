@@ -99,9 +99,9 @@ class CartaControllerTest {
         doNothing().when(cartaServiceMock).cancellaCarta(idCarta);
 
         MvcResult mvcResult = mockMvc.perform(delete("/carte/{idCarta}", idCarta)
-                        .contentType(MediaType.APPLICATION_JSON)).andReturn();
+                .contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        assertEquals(204,  mvcResult.getResponse().getStatus());
+        assertEquals(204, mvcResult.getResponse().getStatus());
         verify(cartaServiceMock, times(1)).cancellaCarta(idCarta);
     }
 
@@ -109,7 +109,7 @@ class CartaControllerTest {
     void getCarteUtenteTest() throws Exception {
         int sizeRisultato = 3;
         List<Carta> risultati = new ArrayList<>();
-        for (int i = 0; i < sizeRisultato; i ++){
+        for (int i = 0; i < sizeRisultato; i++) {
             Carta nuovaCarta = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Carta.class);
             risultati.add(nuovaCarta);
         }

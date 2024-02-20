@@ -70,20 +70,20 @@ public class UtenteService {
         return findUtenteByIdAuth(user.getUid());
     }
 
-    public DatiProfiloUtente getDatiUtente(UUID idUtente){
-        if (idUtente == null){
+    public DatiProfiloUtente getDatiUtente(UUID idUtente) {
+        if (idUtente == null) {
             return utenteMapper.utenteToDatiProfiloUtente(getUtenteAutenticato());
         } else {
-            Optional<Utente> utente = utenteRepository.findById(idUtente);
-            if (utente.isPresent()){
-                return utenteMapper.utenteToDatiProfiloUtente(utente.get());
+            Optional<Utente> risultato = utenteRepository.findById(idUtente);
+            if (risultato.isPresent()) {
+                return utenteMapper.utenteToDatiProfiloUtente(risultato.get());
             } else {
-                throw new IllegalArgumentException("UTENTE NON TROVATO");
+                throw new IllegalArgumentException("Utente non trovato.");
             }
         }
     }
 
-    public Utente modificaDatiUtente(DatiProfiloUtente datiProfiloUtente){
+    public Utente modificaDatiUtente(DatiProfiloUtente datiProfiloUtente) {
         Utente utente = getUtenteAutenticato();
         utente.setDescrizione(Objects.requireNonNullElse(datiProfiloUtente.getDescrizione(), utente.getDescrizione()));
         utente.setFacebook(Objects.requireNonNullElse(datiProfiloUtente.getFacebook(), utente.getFacebook()));

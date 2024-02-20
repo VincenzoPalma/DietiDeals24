@@ -27,16 +27,16 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class AstaController {
 
+    private static final String CRITERIO_SORT = "creationDate";
     private final AstaService astaService;
     private final AstaMapper mapper;
-    private static final String CRITERIO_SORT = "creationDate";
 
     @PostMapping("/utente/aste")
     public ResponseEntity<Asta> saveAsta(@RequestBody @Valid CreaAsta creaAsta) throws SchedulerException, JsonProcessingException {
         Asta asta;
         try {
             asta = astaService.salvaAsta(mapper.creaAstaToAsta(creaAsta));
-        } catch (UnauthorizedException exception){
+        } catch (UnauthorizedException exception) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
         return ResponseEntity.created(URI.create("/utente/aste/%s".formatted(asta.getId().toString()))).body(asta);
@@ -53,7 +53,7 @@ public class AstaController {
     }
 
     @GetMapping("/utente/aste")
-    public ResponseEntity<Page<Asta>> getAsteUtente(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam( name = "stato",required = false, defaultValue = "ATTIVA") StatoAsta stato) {
+    public ResponseEntity<Page<Asta>> getAsteUtente(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam(name = "stato", required = false, defaultValue = "ATTIVA") StatoAsta stato) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by(CRITERIO_SORT).ascending());
         return new ResponseEntity<>(astaService.getAsteUtenteByStato(pageable, stato), HttpStatus.OK);
     }

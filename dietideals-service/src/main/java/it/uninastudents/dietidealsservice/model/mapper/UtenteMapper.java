@@ -11,4 +11,6 @@ public interface UtenteMapper {
     Utente utenteRegistrazioneToUtente(UtenteRegistrazione utenteRegistrazione);
 
     DatiProfiloUtente utenteToDatiProfiloUtente(Utente utente);
+
+    Utente datiProfiloUtenteToUtente(DatiProfiloUtente datiProfiloUtente);
 }

@@ -1,5 +1,6 @@
 package it.uninastudents.dietidealsservice.service;
 
+import it.uninastudents.dietidealsservice.exceptions.UnauthorizedException;
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.Notifica;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
@@ -132,7 +133,7 @@ public class OffertaService {
             var spec = OffertaSpecs.hasAsta(idAsta).and(OffertaSpecs.hasStato(StatoOfferta.NON_VINCENTE));
             return offertaRepository.findAll(spec, pageable);
         } else {
-            throw new IllegalArgumentException("UTENTE NON PROPRIETARIO");
+            throw new UnauthorizedException("Utente non proprietario dell'asta.");
         }
     }
 

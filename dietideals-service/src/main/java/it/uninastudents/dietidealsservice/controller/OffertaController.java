@@ -1,5 +1,6 @@
 package it.uninastudents.dietidealsservice.controller;
 
+import it.uninastudents.dietidealsservice.exceptions.UnauthorizedException;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoOfferta;
 import it.uninastudents.dietidealsservice.service.OffertaService;
@@ -34,6 +35,10 @@ public class OffertaController {
     @GetMapping("/aste/{idAsta}/offerte")
     public ResponseEntity<Page<Offerta>> getOfferte(@PathVariable UUID idAsta, @RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam StatoOfferta statoOfferta) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").descending());
-        return new ResponseEntity<>(offertaService.findOffertaByStato(pageable, idAsta, statoOfferta), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(offertaService.findOffertaByStato(pageable, idAsta, statoOfferta), HttpStatus.OK);
+        } catch (UnauthorizedException exception) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
     }
 }

@@ -31,7 +31,7 @@ public class TermineAstaJob implements Job {
     @Override
     public void execute(JobExecutionContext context) {
         String astaJson = context.getJobDetail().getJobDataMap().getString("asta");
-        Asta asta = null;
+        Asta asta;
         try {
             asta = objectMapper.readValue(astaJson, Asta.class);
         } catch (JsonProcessingException e) {
@@ -41,7 +41,7 @@ public class TermineAstaJob implements Job {
         astaRepository.save(asta);
         var spec = OffertaSpecs.hasAsta(asta.getId());
         List<Offerta> offerte = offertaRepository.findAll(spec);
-        Notifica notifica = null;
+        Notifica notifica;
         if (offerte.isEmpty()) {
             notifica = new Notifica();
             notifica.setUtente(asta.getProprietario());

@@ -1,5 +1,6 @@
 package it.uninastudents.dietidealsservice.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import it.uninastudents.dietidealsservice.model.dto.CreaContoCorrente;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,5 +85,86 @@ class ContoCorrenteControllerTest {
         verify(contoCorrenteServiceMock, times(0)).salvaContoCorrente(any(ContoCorrente.class));
         assertEquals(400, mvcResult.getResponse().getStatus());
         assertEquals("", mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    void modificaContoCorrenteDatiCorretti() throws Exception {
+        ContoCorrente nuovoContoCorrente = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(ContoCorrente.class);
+        nuovoContoCorrente.setIban("abc123XYZ4567890abcdefghijk");
+        nuovoContoCorrente.setCodiceBicSwift("123asda1");
+
+        ContoCorrente contoCorrenteRisultato = new ContoCorrente();
+        contoCorrenteRisultato.setId(nuovoContoCorrente.getId());
+        contoCorrenteRisultato.setIban(nuovoContoCorrente.getIban());
+        contoCorrenteRisultato.setUtente(nuovoContoCorrente.getUtente());
+        contoCorrenteRisultato.setCodiceBicSwift(nuovoContoCorrente.getCodiceBicSwift());
+        contoCorrenteRisultato.setNomeTitolare(nuovoContoCorrente.getNomeTitolare());
+
+        when(contoCorrenteServiceMock.modificaContoCorrente(any(ContoCorrente.class))).thenReturn(contoCorrenteRisultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/contoCorrente")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(nuovoContoCorrente))).andReturn();
+
+        verify(contoCorrenteServiceMock, times(1)).modificaContoCorrente(any(ContoCorrente.class));
+        assertEquals(200, mvcResult.getResponse().getStatus());
+        assertEquals(objectMapper.writeValueAsString(contoCorrenteRisultato), mvcResult.getResponse().getContentAsString());
+        assertEquals("/contoCorrente/" + contoCorrenteRisultato.getId(), mvcResult.getResponse().getHeader("Location"));
+    }
+
+    @Test
+    void modificaContoCorrenteDatiNonCorretti() throws Exception {
+        ContoCorrente nuovoContoCorrente = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(ContoCorrente.class);
+        nuovoContoCorrente.setIban("abc123XYZ4567890abcdefghijkd");//dato non corretto
+        nuovoContoCorrente.setCodiceBicSwift("123asda1");
+
+        ContoCorrente contoCorrenteRisultato = new ContoCorrente();
+        contoCorrenteRisultato.setId(nuovoContoCorrente.getId());
+        contoCorrenteRisultato.setIban(nuovoContoCorrente.getIban());
+        contoCorrenteRisultato.setUtente(nuovoContoCorrente.getUtente());
+        contoCorrenteRisultato.setCodiceBicSwift(nuovoContoCorrente.getCodiceBicSwift());
+        contoCorrenteRisultato.setNomeTitolare(nuovoContoCorrente.getNomeTitolare());
+
+        when(contoCorrenteServiceMock.modificaContoCorrente(any(ContoCorrente.class))).thenReturn(contoCorrenteRisultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/contoCorrente")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(nuovoContoCorrente))).andReturn();
+
+        verify(contoCorrenteServiceMock, times(0)).modificaContoCorrente(any(ContoCorrente.class));
+        assertEquals(400, mvcResult.getResponse().getStatus());
+        assertEquals("", mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    void getContoCorrenteQuandoTrovatoTest() throws Exception {
+        Optional<ContoCorrente> risultato = Optional.of(EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(ContoCorrente.class));
+        risultato.get().setIban("abc123XYZ4567890abcdefghijk");
+        risultato.get().setCodiceBicSwift("123asda1");
+        when(contoCorrenteServiceMock.findContoCorrenteByUtente()).thenReturn(risultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/utente/contoCorrente")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")).andReturn();
+
+        JsonNode bodyRisposta = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
+        assertEquals(objectMapper.writeValueAsString(risultato.get()), bodyRisposta.toString());
+        verify(contoCorrenteServiceMock, times(1)).findContoCorrenteByUtente();
+        assertEquals(200, mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    void getContoCorrenteQuandoNonTrovatoTest() throws Exception {
+        Optional<ContoCorrente> risultato = Optional.empty();
+        when(contoCorrenteServiceMock.findContoCorrenteByUtente()).thenReturn(risultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/utente/contoCorrente")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")).andReturn();
+
+        verify(contoCorrenteServiceMock, times(1)).findContoCorrenteByUtente();
+        assertEquals(404, mvcResult.getResponse().getStatus());
     }
 }

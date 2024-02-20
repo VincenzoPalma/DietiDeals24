@@ -3,7 +3,6 @@ package it.uninastudents.dietidealsservice.service;
 import it.uninastudents.dietidealsservice.model.entity.ContoCorrente;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.repository.ContoCorrenteRepository;
-import it.uninastudents.dietidealsservice.repository.UtenteRepository;
 import it.uninastudents.dietidealsservice.repository.specs.ContoCorrenteSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import java.util.Optional;
 public class ContoCorrenteService {
 
     private final ContoCorrenteRepository contoCorrenteRepository;
-    private final UtenteRepository utenteRepository;
     private final UtenteService utenteService;
 
     public ContoCorrente salvaContoCorrente(ContoCorrente contoCorrente) {

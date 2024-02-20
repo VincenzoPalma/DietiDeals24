@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import it.uninastudents.dietidealsservice.model.User;
 import it.uninastudents.dietidealsservice.service.SecurityService;
-import it.uninastudents.dietidealsservice.service.UtenteService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +33,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     private final SecurityProperties securityProps;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, @NonNull FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         verifyToken(request);
         filterChain.doFilter(request, response);
