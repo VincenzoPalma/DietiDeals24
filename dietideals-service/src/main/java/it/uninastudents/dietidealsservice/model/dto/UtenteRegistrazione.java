@@ -46,6 +46,6 @@ public class UtenteRegistrazione {
 
     private String urlFotoProfilo;
 
-    private ContoCorrenteDTO contoCorrente;
+    private CreaContoCorrente contoCorrente;
 
 }

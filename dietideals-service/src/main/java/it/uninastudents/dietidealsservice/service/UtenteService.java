@@ -44,7 +44,7 @@ public class UtenteService {
         Utente utente = utenteMapper.utenteRegistrazioneToUtente(utenteRegistrazione);
         utente.setContoCorrente(null);
         utente = utenteRepository.save(utente);
-        ContoCorrente nuovoContoCorrente = contoCorrenteMapper.contoCorrenteDTOToContoCorrente(utenteRegistrazione.getContoCorrente());
+        ContoCorrente nuovoContoCorrente = contoCorrenteMapper.creaContoCorrenteToContoCorrente(utenteRegistrazione.getContoCorrente());
         if (nuovoContoCorrente != null && utente.getRuolo().equals(RuoloUtente.VENDITORE)) {
             nuovoContoCorrente.setUtente(utente);
             nuovoContoCorrente = contoCorrenteRepository.save(nuovoContoCorrente);

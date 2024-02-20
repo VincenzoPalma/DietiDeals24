@@ -1,6 +1,6 @@
 package it.uninastudents.dietidealsservice.controller;
 
-import it.uninastudents.dietidealsservice.model.dto.ContoCorrenteDTO;
+import it.uninastudents.dietidealsservice.model.dto.CreaContoCorrente;
 import it.uninastudents.dietidealsservice.model.entity.ContoCorrente;
 import it.uninastudents.dietidealsservice.model.mapper.ContoCorrenteMapper;
 import it.uninastudents.dietidealsservice.service.ContoCorrenteService;
@@ -19,19 +19,19 @@ public class ContoCorrenteController {
     private final ContoCorrenteService contoCorrenteService;
     private final ContoCorrenteMapper contoCorrenteMapper;
 
-    @PostMapping("/utente/conto_corrente")
-    public ResponseEntity<ContoCorrente> saveContoCorrente(@RequestBody @Valid ContoCorrenteDTO contoCorrenteDTO) {
-        ContoCorrente contoCorrente = contoCorrenteService.salvaContoCorrente(contoCorrenteMapper.contoCorrenteDTOToContoCorrente(contoCorrenteDTO));
-        return ResponseEntity.created(URI.create("/utente/conto_corrente/%s".formatted(contoCorrente.getId().toString()))).body(contoCorrente);
+    @PostMapping("/utente/contoCorrente")
+    public ResponseEntity<ContoCorrente> saveContoCorrente(@RequestBody @Valid CreaContoCorrente creaContoCorrente) {
+        ContoCorrente contoCorrente = contoCorrenteService.salvaContoCorrente(contoCorrenteMapper.creaContoCorrenteToContoCorrente(creaContoCorrente));
+        return ResponseEntity.created(URI.create("/utente/contoCorrente/%s".formatted(contoCorrente.getId().toString()))).body(contoCorrente);
     }
 
-    @PutMapping("/conto_corrente")
+    @PutMapping("/contoCorrente")
     public ResponseEntity<ContoCorrente> modifyContoCorrente(@RequestBody @Valid ContoCorrente newContoCorrente) {
         ContoCorrente contoCorrente = contoCorrenteService.modificaContoCorrente(newContoCorrente);
-        return ResponseEntity.ok().location(URI.create("conto_corrente/%s".formatted(contoCorrente.getId().toString()))).body(contoCorrente);
+        return ResponseEntity.ok().location(URI.create("contoCorrente/%s".formatted(contoCorrente.getId().toString()))).body(contoCorrente);
     }
 
-    @GetMapping("/utente/conto_corrente")
+    @GetMapping("/utente/contoCorrente")
     public ResponseEntity<ContoCorrente> getContoCorrente() {
         Optional<ContoCorrente> risultato = contoCorrenteService.findContoCorrenteByUtente();
         if (risultato.isPresent()) {

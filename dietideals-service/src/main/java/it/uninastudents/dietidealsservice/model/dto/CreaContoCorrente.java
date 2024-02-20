@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode
-public class ContoCorrenteDTO {
+public class CreaContoCorrente {
 
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9]{27}$")

@@ -47,7 +47,7 @@ class CartaControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void saveCartaTest() throws Exception {
+    void saveCartaDatiCorrettiTest() throws Exception {
         CreaCarta nuovaCarta = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(CreaCarta.class);
         nuovaCarta.setNumero("1234567890123456");
         nuovaCarta.setDataScadenza(OffsetDateTime.now().plusDays(1));
@@ -68,6 +68,29 @@ class CartaControllerTest {
         assertEquals(201, mvcResult.getResponse().getStatus());
         assertEquals(objectMapper.writeValueAsString(cartaRisultato), mvcResult.getResponse().getContentAsString());
         assertEquals("/utente/carte/" + idCartaRisultato, mvcResult.getResponse().getHeader("Location"));
+    }
+
+    @Test
+    void saveCartaDatiNonCorrettiTest() throws Exception {
+        CreaCarta nuovaCarta = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(CreaCarta.class);
+        nuovaCarta.setNumero("12345678901234561"); //dato non corretto
+        nuovaCarta.setDataScadenza(OffsetDateTime.now().plusDays(1));
+        nuovaCarta.setCodiceCvvCvc("123");
+
+        Carta cartaRisultato = cartaMapper.creaCartaToCarta(nuovaCarta);
+        UUID idCartaRisultato = UUID.randomUUID();
+        cartaRisultato.setId(idCartaRisultato);
+
+        when(cartaServiceMock.salvaCarta(any(Carta.class))).thenReturn(cartaRisultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/utente/carte")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(nuovaCarta))).andReturn();
+
+        verify(cartaServiceMock, times(0)).salvaCarta(any(Carta.class));
+        assertEquals(400, mvcResult.getResponse().getStatus());
+        assertEquals("", mvcResult.getResponse().getContentAsString());
     }
 
     @Test
