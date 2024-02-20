@@ -2,6 +2,7 @@ package it.uninastudents.dietidealsservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.uninastudents.dietidealsservice.exceptions.UnauthorizedException;
 import it.uninastudents.dietidealsservice.job.TermineAstaJob;
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
@@ -61,7 +62,7 @@ public class AstaService {
         Utente utente = utenteService.getUtenteAutenticato();
         if (utente != null) {
             if (!asta.getTipo().equals(TipoAsta.INVERSA) && utente.getRuolo().equals(RuoloUtente.COMPRATORE)) {
-                throw new IllegalArgumentException("UTENTE COMPRATORE NON PUO' CREARE L'ASTA");
+                throw new UnauthorizedException("Un utente compratore non può creare un'asta inglese o silenziosa.");
             } else {
                 asta.setProprietario(utente);
                 utente.getAste().add(asta);

@@ -1,6 +1,6 @@
 package it.uninastudents.dietidealsservice.controller;
 
-import it.uninastudents.dietidealsservice.model.dto.CartaDTO;
+import it.uninastudents.dietidealsservice.model.dto.CreaCarta;
 import it.uninastudents.dietidealsservice.model.entity.Carta;
 import it.uninastudents.dietidealsservice.model.mapper.CartaMapper;
 import it.uninastudents.dietidealsservice.service.CartaService;
@@ -22,9 +22,9 @@ public class CartaController {
     private final CartaMapper cartaMapper;
 
     @PostMapping("/utente/carte")
-    public ResponseEntity<Carta> saveCarta(@RequestBody @Valid CartaDTO cartaDTO) {
-        Carta carta = cartaService.salvaCarta(cartaMapper.cartaDTOToCarta(cartaDTO));
-        return ResponseEntity.created(URI.create("utente/carte/%s".formatted(carta.getId().toString()))).body(carta);
+    public ResponseEntity<Carta> saveCarta(@RequestBody @Valid CreaCarta creaCarta) {
+        Carta carta = cartaService.salvaCarta(cartaMapper.creaCartaToCarta(creaCarta));
+        return ResponseEntity.created(URI.create("/utente/carte/%s".formatted(carta.getId().toString()))).body(carta);
     }
 
     @DeleteMapping("/carte/{idCarta}")

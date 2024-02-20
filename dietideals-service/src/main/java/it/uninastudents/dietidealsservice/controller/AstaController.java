@@ -1,6 +1,7 @@
 package it.uninastudents.dietidealsservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import it.uninastudents.dietidealsservice.exceptions.UnauthorizedException;
 import it.uninastudents.dietidealsservice.model.dto.CreaAsta;
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.enums.CategoriaAsta;
@@ -31,11 +32,14 @@ public class AstaController {
     private static final String CRITERIO_SORT = "creationDate";
 
     @PostMapping("/utente/aste")
-    public ResponseEntity<Asta> saveAsta(@Valid @RequestBody CreaAsta creaAsta) throws SchedulerException, JsonProcessingException {
-        Asta asta = astaService.salvaAsta(mapper.creaAstaToAsta(creaAsta));
-        //return ResponseEntity.created(URI.create("/utente/aste/%s".formatted(asta.getId().toString()))).body(asta);
-        return ResponseEntity.created(URI.create("/prova")).body(asta);
-
+    public ResponseEntity<Asta> saveAsta(@RequestBody @Valid CreaAsta creaAsta) throws SchedulerException, JsonProcessingException {
+        Asta asta;
+        try {
+            asta = astaService.salvaAsta(mapper.creaAstaToAsta(creaAsta));
+        } catch (UnauthorizedException exception){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+        return ResponseEntity.created(URI.create("/utente/aste/%s".formatted(asta.getId().toString()))).body(asta);
     }
 
     @GetMapping("/aste")
@@ -49,7 +53,7 @@ public class AstaController {
     }
 
     @GetMapping("/utente/aste")
-    public ResponseEntity<Page<Asta>> getAsteUtente(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam(required = false, defaultValue = "ATTIVA") StatoAsta stato) {
+    public ResponseEntity<Page<Asta>> getAsteUtente(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam( name = "stato",required = false, defaultValue = "ATTIVA") StatoAsta stato) {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by(CRITERIO_SORT).ascending());
         return new ResponseEntity<>(astaService.getAsteUtenteByStato(pageable, stato), HttpStatus.OK);
     }
