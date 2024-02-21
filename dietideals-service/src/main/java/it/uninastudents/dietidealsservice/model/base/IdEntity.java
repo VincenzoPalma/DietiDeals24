@@ -12,6 +12,7 @@ import java.sql.Types;
 import java.util.UUID;
 
 @Getter
+@Setter
 @MappedSuperclass
 public abstract class IdEntity {
 
