@@ -36,7 +36,7 @@ public class UtenteController {
         try {
             return ResponseEntity.ok(utenteService.getDatiUtente(idUtente));
         } catch (IllegalArgumentException exception) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().build();
         }
     }
 }

@@ -61,12 +61,12 @@ class AstaControllerTest {
         nuovaAsta.setIntervalloTempoOfferta(50);
         nuovaAsta.setDataScadenza(OffsetDateTime.now().plusDays(1));
 
-        Asta astaRisultato = astaMapper.creaAstaToAsta(nuovaAsta); // Inizializza un oggetto Asta simulato restituito dal service
+        Asta astaRisultato = astaMapper.creaAstaToAsta(nuovaAsta);
         UUID idAstaRisultato = UUID.randomUUID();
-        astaRisultato.setId(idAstaRisultato); // Imposta un ID simulato per l'oggetto Asta
+        astaRisultato.setId(idAstaRisultato);
         astaRisultato.setStato(StatoAsta.ATTIVA);
 
-        when(astaServiceMock.salvaAsta(any(Asta.class))).thenReturn(astaRisultato); // Configura il comportamento del service mock
+        when(astaServiceMock.salvaAsta(any(Asta.class))).thenReturn(astaRisultato);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/utente/aste")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -127,41 +127,61 @@ class AstaControllerTest {
     }
 
     @Test
-    void getAstePerNomeTipoCategoriaTest() throws Exception {
+    void getAsteVuotoPerNomeTipoCategoriaTest() throws Exception {
         //Caso in cui la lista dei risultati è vuota e sono presenti tutti i parametri
         getAllAsteTest(0, "stringa test non trovata", TipoAsta.INGLESE, CategoriaAsta.ALIMENTARI);
+    }
+
+    @Test
+    void getAsteNonVuotoPerNomeTipoCategoriaTest() throws Exception {
         //Caso in cui la lista dei risultati non è vuota e sono presenti tutti i parametri
         getAllAsteTest(3, "stringa test", TipoAsta.INVERSA, CategoriaAsta.ATTREZZI_E_UTENSILI);
     }
 
     @Test
-    void getAstePerNomeTest() throws Exception {
+    void getAsteVuotoPerNomeTest() throws Exception {
         //Caso in cui la lista dei risultati è vuota ed è presente solo il parametro stringaRicerca
         getAllAsteTest(0, "stringa test", null, null);
+    }
+
+    @Test
+    void getAsteNonVuotoPerNomeTest() throws Exception {
         //Caso in cui la lista dei risultati non è vuota ed è presente solo il parametro stringaRicerca
         getAllAsteTest(5, "stringa test", null, null);
     }
 
     @Test
-    void getAstePerTipoTest() throws Exception {
+    void getAsteVuotoPerTipoTest() throws Exception {
         //Caso in cui la lista dei risultati è vuota ed è presente solo il parametro tipoAsta
         getAllAsteTest(0, null, TipoAsta.INGLESE, null);
+    }
+
+    @Test
+    void getAsteNonVuotoPerTipoTest() throws Exception {
         //Caso in cui la lista dei risultati non è vuota ed è presente solo il parametro tipoAsta
         getAllAsteTest(8, null, TipoAsta.INGLESE, null);
     }
 
     @Test
-    void getAstePerCategoriaTest() throws Exception {
+    void getAsteVuotoPerCategoriaTest() throws Exception {
         //Caso in cui la lista dei risultati è vuota ed è presente solo il parametro categoriaAsta
         getAllAsteTest(0, null, null, CategoriaAsta.ARREDAMENTO);
+    }
+
+    @Test
+    void getAsteNonVuotoPerCategoriaTest() throws Exception {
         //Caso in cui la lista dei risultati non è vuota ed è presente solo il parametro categoriaAsta
         getAllAsteTest(2, null, null, CategoriaAsta.ARREDAMENTO);
     }
 
     @Test
-    void getAsteSenzaParametriTest() throws Exception {
+    void getAsteVuotoSenzaParametriTest() throws Exception {
         //Caso in cui la lista dei risultati è vuota e non è presente alcun parametro
         getAllAsteTest(0, null, null, null);
+    }
+
+    @Test
+    void getAsteNonVuotoSenzaParametriTest() throws Exception {
         //Caso in cui la lista dei risultati non è vuota e non è presente alcun parametro
         getAllAsteTest(11, null, null, null);
     }
@@ -200,9 +220,11 @@ class AstaControllerTest {
                         .characterEncoding("utf-8"))
                 .andReturn();
         JsonNode bodyRisposta = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
+        verify(astaServiceMock, times(1)).getAll(pageable, stringaRicerca, tipoAsta, categoriaAsta);
         int sizeRisposta = bodyRisposta.get("content").size();
         assertEquals(0, bodyRisposta.get("pageable").get("pageNumber").asInt());
         assertEquals(12, bodyRisposta.get("pageable").get("pageSize").asInt());
+        assertTrue(bodyRisposta.get("pageable").get("sort").get("sorted").asBoolean());
         assertEquals(200, mvcResult.getResponse().getStatus());
         assertTrue(bodyRisposta.get("content").isArray());
         assertEquals(sizeRisultato, sizeRisposta);

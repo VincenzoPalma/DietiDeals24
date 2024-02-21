@@ -45,11 +45,10 @@ class UtenteControllerTest {
     @Test
     void saveUtenteDatiCorrettiTest() throws Exception {
         UtenteRegistrazione datiNuovoUtente = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(UtenteRegistrazione.class);
-        datiNuovoUtente.setPartitaIva("12345678901");
+        datiNuovoUtente.setPartitaIva(null);
         datiNuovoUtente.setDataNascita(LocalDate.now().minusYears(1));
         datiNuovoUtente.setContoCorrente(null);
         datiNuovoUtente.setEmail("test.test@test.com");
-        System.out.println(objectMapper.writeValueAsString(datiNuovoUtente));
 
         Utente utenteRisultato = utenteMapper.utenteRegistrazioneToUtente(datiNuovoUtente);
         UUID idUtenteRisultato = UUID.randomUUID();
@@ -162,7 +161,8 @@ class UtenteControllerTest {
         UUID idUtente = UUID.randomUUID();
         when(utenteServiceMock.getDatiUtente(idUtente)).thenReturn(risultato);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/utente/datiUtente?idUtente=" + idUtente)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .get("/utente/datiUtente?idUtente=" + idUtente)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8")).andReturn();
 

@@ -139,7 +139,7 @@ class ContoCorrenteControllerTest {
     }
 
     @Test
-    void getContoCorrenteQuandoTrovatoTest() throws Exception {
+    void getContoCorrenteTest() throws Exception {
         Optional<ContoCorrente> risultato = Optional.of(EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(ContoCorrente.class));
         risultato.get().setIban("abc123XYZ4567890abcdefghijk");
         risultato.get().setCodiceBicSwift("123asda1");
@@ -153,18 +153,5 @@ class ContoCorrenteControllerTest {
         assertEquals(objectMapper.writeValueAsString(risultato.get()), bodyRisposta.toString());
         verify(contoCorrenteServiceMock, times(1)).findContoCorrenteByUtente();
         assertEquals(200, mvcResult.getResponse().getStatus());
-    }
-
-    @Test
-    void getContoCorrenteQuandoNonTrovatoTest() throws Exception {
-        Optional<ContoCorrente> risultato = Optional.empty();
-        when(contoCorrenteServiceMock.findContoCorrenteByUtente()).thenReturn(risultato);
-
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/utente/contoCorrente")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")).andReturn();
-
-        verify(contoCorrenteServiceMock, times(1)).findContoCorrenteByUtente();
-        assertEquals(404, mvcResult.getResponse().getStatus());
     }
 }

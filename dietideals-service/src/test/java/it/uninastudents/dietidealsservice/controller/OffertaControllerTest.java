@@ -68,7 +68,7 @@ class OffertaControllerTest {
 
     @Test
     void saveOffertaDatiNonCorrettiTest() throws Exception {
-        BigDecimal prezzoNuovaOfferta = BigDecimal.valueOf(-50.00);
+        BigDecimal prezzoNuovaOfferta = BigDecimal.valueOf(-50.00); //dato non corretto
         Offerta offertaRisultato = new Offerta();
         offertaRisultato.setPrezzo(prezzoNuovaOfferta);
         UUID idOffertaRisultato = UUID.randomUUID();
@@ -101,7 +101,7 @@ class OffertaControllerTest {
         Pageable pageable = ControllerUtils.pageableBuilder(0, 12, Sort.by("creationDate").descending());
         int sizeRisultato;
         if (statoOfferta.equals(StatoOfferta.VINCENTE)) {
-            sizeRisultato = 0;
+            sizeRisultato = 1;
         } else {
             sizeRisultato = 15;
         }
@@ -121,6 +121,7 @@ class OffertaControllerTest {
         JsonNode bodyRisposta = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
         assertEquals(0, bodyRisposta.get("pageable").get("pageNumber").asInt());
         assertEquals(12, bodyRisposta.get("pageable").get("pageSize").asInt());
+        assertTrue(bodyRisposta.get("pageable").get("sort").get("sorted").asBoolean());
         verify(offertaServiceMock, times(1)).findOffertaByStato(pageable, idAsta, statoOfferta);
         assertEquals(200, mvcResult.getResponse().getStatus());
         assertTrue(bodyRisposta.get("content").isArray());

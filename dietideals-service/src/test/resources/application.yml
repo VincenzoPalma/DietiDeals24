@@ -1,6 +1,11 @@
 spring:
-    datasource:
-      driverClassName: org.h2.Driver
-      url: jdbc:h2:mem:test;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;NON_KEYWORDS=key,value,type
-      username:
-      password:
+  datasource:
+    url: jdbc:h2:file:/data/demo
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+  h2:
+    console.enabled: true

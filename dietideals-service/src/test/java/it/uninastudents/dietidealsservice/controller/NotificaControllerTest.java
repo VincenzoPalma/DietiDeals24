@@ -59,6 +59,9 @@ class NotificaControllerTest {
 
         JsonNode bodyRisposta = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
         verify(notificaServiceMock, times(1)).findAllNotificheUtente(pageable);
+        assertEquals(0, bodyRisposta.get("pageable").get("pageNumber").asInt());
+        assertEquals(12, bodyRisposta.get("pageable").get("pageSize").asInt());
+        assertTrue(bodyRisposta.get("pageable").get("sort").get("sorted").asBoolean());
         assertEquals(200, mvcResult.getResponse().getStatus());
         assertTrue(bodyRisposta.get("content").isArray());
     }

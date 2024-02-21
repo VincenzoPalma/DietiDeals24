@@ -38,7 +38,7 @@ public class ContoCorrenteController {
             ContoCorrente contoCorrente = risultato.get();
             return ResponseEntity.ok(contoCorrente);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().build();
         }
     }
 }
