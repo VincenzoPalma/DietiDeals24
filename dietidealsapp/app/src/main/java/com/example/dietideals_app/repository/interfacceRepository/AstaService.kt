@@ -3,10 +3,12 @@ package com.example.dietideals_app.repository.interfacceRepository
 import com.example.dietideals_app.model.Asta
 import com.example.dietideals_app.model.enum.CategoriaAsta
 import com.example.dietideals_app.model.enum.TipoAsta
+import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface ApiService {
+interface AstaService {
+
     @GET("aste")
-    suspend fun getAste(@Query("page") page : Int, @Query("size") size : Int = 12, @Query("nome") nomeRicerca: String? = null, @Query("categoria") categoria: CategoriaAsta? = null, @Query("tipo") tipo: TipoAsta? = null) : List<Asta>
+    fun getAste(@Query("page") page: Int, @Query("size") size: Int, @Query("nome") nome: String?, @Query("tipo") tipo: TipoAsta?, @Query("categoria") categoria: CategoriaAsta?): Call<List<Asta>>
 }

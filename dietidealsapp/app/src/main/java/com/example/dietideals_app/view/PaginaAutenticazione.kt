@@ -56,9 +56,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.enum.TipoAsta
 import com.example.dietideals_app.presenter.AutenticazionePresenter
+import com.example.dietideals_app.repository.ApiAsta
+import com.example.dietideals_app.repository.ApiUtente
+import com.example.dietideals_app.repository.AstaRepository
+import com.example.dietideals_app.repository.UtenteRepository
+import com.example.dietideals_app.repository.interfacceRepository.AstaService
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.UUID
 import java.util.regex.Pattern
 
 class MainActivity : ComponentActivity() {
@@ -368,7 +378,7 @@ fun SchermataAutenticazione(navController: NavController) {
         // Bottone registrazione
         ElevatedButton(
             onClick = {
-                presenter.effettuaRegistrazione()
+
                 navController.navigate("SchermataRegistrazione")
             },
             modifier = Modifier
