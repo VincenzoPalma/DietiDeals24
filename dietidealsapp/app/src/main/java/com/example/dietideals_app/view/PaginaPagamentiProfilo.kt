@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,13 +20,16 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -61,8 +63,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Carta
@@ -80,34 +80,8 @@ class PaginaPagamentiProfilo : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = "SchermataAutenticazione"
-                    ) {
-                        composable("SchermataAutenticazione") {
-                            SchermataAutenticazione(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataHome") { SchermataHome(navController = navController) }
-                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
-                        composable("SchermataModificaProfilo") {
-                            SchermataModificaProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataPagamentiProfilo") {
-                            SchermataPagamentiProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
-                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
-                        composable("SchermataPaginaAsta") { SchermataPaginaAsta(navController = navController) }
-                        composable("SchermataOfferte") { SchermataOfferte(navController = navController) }
+                    SchermataPagamentiProfilo(navController)
 
-                    }
                 }
             }
         }
@@ -127,9 +101,11 @@ fun SchermataPagamentiProfilo(navController: NavController) {
     val cvcFocusRequested = remember { FocusRequester() }
 
     var isDialogVisible by remember { mutableStateOf(false) }
+    var deleteAlertDialog by remember { mutableStateOf(false) }
     val state = rememberDatePickerState()
     val openDialog = remember { mutableStateOf(false) }
     val listaCarte = mutableListOf<Carta>()
+    var size = 4
 
     fun pulisciCampi() {
         nomeTitolare = ""
@@ -184,7 +160,11 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                         contentDescription = null,
                         modifier = Modifier
                             .clickable {
-                                navController.navigate("SchermataProfiloUtente")
+                                navController.navigate("SchermataProfiloUtente") {
+                                    popUpTo("SchermataPagamentiProfilo") {
+                                        inclusive = true
+                                    }
+                                }
 
 
                             }
@@ -201,107 +181,100 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                 }
             )
+            var cardList by remember { mutableStateOf(List(size) { it }) }
+            var selectedIndex by remember { mutableStateOf(-1) }
 
-            LazyColumn(
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2), // Imposta due colonne
                 modifier = Modifier
                     .offset(y = 80.dp)
-
                     .fillMaxSize()
                     .padding(16.dp)
-
             ) {
-                items(listaCarte.size) { index ->
-                    // Colonna per ogni elemento della lista
-                    Column(
+                // Visualizza tutte le Box esistenti
+                items(cardList.size) { index ->
+                    ElevatedCard(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(8.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
+
+                            .height(200.dp)
+                            .background(Color.White),
+
+
                         ) {
-                            // Riquadro per ogni elemento della lista
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f) // Assegna un peso uguale alle Box
-                                    .height(200.dp)
-                                    .padding(8.dp)
-                                    .background(Color.White)
-                                    .border(1.dp, Color.Black),
-                                contentAlignment = Alignment.Center
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-
-                                    ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-
-                                        horizontalArrangement = Arrangement.End
-
-                                    ) {
-                                        Icon(painter = painterResource(id = R.drawable.trash_svgrepo_com),
-                                            contentDescription = "deleteCard",
-                                            modifier = Modifier.clickable {
-                                                listaCarte.removeAt(index)
-                                            })
-
-                                    }
-
-                                    // Immagine
-                                    Image(
-                                        painter = painterResource(id = R.drawable.baseline_credit_card_24),
-                                        contentDescription = "Image",
-                                        modifier = Modifier
-                                            .size(80.dp)
-                                    )
-
-                                    // Titolo
-                                    Text(
-                                        text = "Carta Mastercard\nMario Rossi\n **** 4902",
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 15.sp,
-                                        modifier = Modifier
-                                            .padding(4.dp)
-                                    )
-
-
-                                }
-                            }
-
-                            // Riquadro per ogni elemento della lista
-                            Box(
+                            Row(
                                 modifier = Modifier
-                                    .weight(1f) // Assegna un peso uguale alle Box
-                                    .height(200.dp)
-                                    .padding(8.dp)
-                                    .background(Color.White)
-                                    .border(1.dp, Color.Black),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+
+                                horizontalArrangement = Arrangement.End
+
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-
-                                }
-
-                                Icon(painter = painterResource(id = R.drawable.baseline_add_card_24),
+                                Icon(painter = painterResource(id = R.drawable.trash_svgrepo_com),
                                     contentDescription = "deleteCard",
                                     modifier = Modifier
-                                        .fillMaxSize(0.7f)
                                         .clickable {
-                                            pulisciCampi()
-                                            isDialogVisible = true
+                                            selectedIndex = index
+                                            deleteAlertDialog = true
+
+
                                         }
-                                )
+                                        .padding(6.dp))
 
                             }
-                        }
 
+
+                            // Immagine
+                            Image(
+                                painter = painterResource(id = R.drawable.baseline_credit_card_24),
+                                contentDescription = "Image",
+                                modifier = Modifier
+                                    .size(80.dp)
+                            )
+
+                            // Titolo
+                            Text(
+                                text = "Carta Mastercard\nMario Rossi\n **** 4902",
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp,
+                                modifier = Modifier
+                                    .padding(4.dp)
+                            )
+
+
+                        }
+                    }
+                }
+
+
+                // Aggiunge l'elemento per aggiungere altre Box
+                item {
+                    ElevatedCard(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .height(200.dp)
+                            .background(Color.White)
+                            .clickable {
+                                pulisciCampi()
+                                isDialogVisible = true
+                            },
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxSize() // Occupa tutto lo spazio disponibile
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_add_card_24),
+                                contentDescription = "deleteCard",
+                                modifier = Modifier.size(100.dp) // Imposta la dimensione dell'icona
+                            )
+                        }
                     }
                 }
             }
@@ -465,9 +438,11 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                                 TextButton(
                                     onClick = {
+                                        size++
+                                        isDialogVisible = false
 
                                     },
-                                    enabled = checkField()
+                                    enabled = true //checkField()
                                 ) {
                                     Text("OK")
                                 }
@@ -500,6 +475,57 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                         }
                     }
+                }
+            }
+
+
+            if (deleteAlertDialog) {
+                Dialog(onDismissRequest = { deleteAlertDialog = false }) {
+                    AlertDialog(title = {
+                        Text(
+                            text = "ATTENZIONE!",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    },
+                        text = {
+                            Text(
+                                text = "Sei sicuro di rimuovere questa carta?",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        onDismissRequest = { deleteAlertDialog = false }, confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    cardList = cardList.toMutableList().apply {
+                                        removeAt(selectedIndex)
+                                        deleteAlertDialog = false
+                                    }
+                                }, modifier = Modifier.align(Alignment.CenterEnd),
+                                content = { Text(text = "Cancella", fontSize = 15.sp) }
+                            )
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    cardList = cardList.toMutableList().apply {
+                                        removeAt(selectedIndex)
+                                        deleteAlertDialog = false
+                                    }
+                                },
+                                content = {
+                                    Text(
+                                        text = "Annulla",
+                                        fontSize = 15.sp,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }, modifier = Modifier
+                                    .align(Alignment.CenterStart)
+                                    .offset(-80.dp))
+
+                        }
+                    )
                 }
             }
         }

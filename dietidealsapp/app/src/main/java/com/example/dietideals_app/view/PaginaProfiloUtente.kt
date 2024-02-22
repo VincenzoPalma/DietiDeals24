@@ -10,7 +10,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,13 +26,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -62,8 +62,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Utente
@@ -83,33 +81,7 @@ class PaginaProfiloUtente : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = "SchermataAutenticazione"
-                    ) {
-                        composable("SchermataAutenticazione") {
-                            SchermataAutenticazione(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataHome") { SchermataHome(navController = navController) }
-                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
-                        composable("SchermataModificaProfilo") {
-                            SchermataModificaProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataPagamentiProfilo") {
-                            SchermataPagamentiProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
-                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
-                        composable("SchermataOfferte") { SchermataOfferte(navController = navController) }
-
-                    }
+                    SchermataProfiloUtente(navController)
                 }
             }
         }
@@ -177,7 +149,6 @@ fun SchermataProfiloUtente(navController: NavController) {
                 Column(
                     modifier = Modifier
                         .weight(1f)
-
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
@@ -462,13 +433,12 @@ fun SchermataProfiloUtente(navController: NavController) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(2.dp)
                     ) {
-                        Icon(
+                        Image(
                             painter = painterResource(id = iconId),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(30.dp)
-                                .clickable { navController.navigate(route) },
-                            tint = color
+                                .clickable { navController.navigate(route) }
 
                         )
 
@@ -498,8 +468,8 @@ fun SchermataProfiloUtente(navController: NavController) {
                     IconWithText(
                         iconId = R.drawable.instagramicon,
                         text = "Instagram",
-                        "",
-                        Color.Black
+                        "", Color.Black
+
                     )
                     Spacer(
                         modifier = Modifier
@@ -559,72 +529,87 @@ fun SchermataProfiloUtente(navController: NavController) {
 
 
                 }
-                BottomAppBar(
+                NavigationBar(
+                    tonalElevation = 30.dp,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(70.dp)// Add a black border
                         .constrainAs(bottomBar)
                         {
                             bottom.linkTo(parent.bottom)
-                        }
+                        },
+                    content = {
+                        NavigationBarItem(
+                            label = { Text(text = "Home") },
+                            selected = false,
+                            onClick = {
+                                navController.navigate("SchermataHome") {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = false
+                                    }
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.homeicon),
+                                    contentDescription = "Home"
+                                )
+                            }
+                        )
+                        NavigationBarItem(
+                            label = { Text(text = "Gestisci") },
+                            selected = false,
+                            onClick = {
+                                navController.navigate("SchermataGestioneAste") {
+                                    popUpTo("SchermataGestioneAste") {
+                                        inclusive = false
+                                    }
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.gestisci_icon),
+                                    contentDescription = "Gestione Aste"
+                                )
+                            }
+                        )
+                        NavigationBarItem(
+                            label = { Text(text = "Crea Asta") },
+                            selected = false,
+                            onClick = {
+                                navController.navigate("SchermataCreazioneAsta") {
+                                    popUpTo("SchermataCreazioneAsta") {
+                                        inclusive = false
+                                    }
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.crea_asta_icon),
+                                    contentDescription = "Crea Asta"
+                                )
+                            }
+                        )
+                        NavigationBarItem(
+                            label = { Text(text = "Profilo") },
+                            selected = true,
+                            onClick = {
+                                navController.navigate("SchermataProfiloUtente") {
+                                    popUpTo("SchermataProfiloUtente") {
+                                        inclusive = false
+                                    }
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.usericon),
+                                    contentDescription = "ProfiloUtente"
+                                )
+                            }
+                        )
 
-                        .background(color = Color.White) // Set the background color to white
-                        .border(1.dp, color = Color.Black)
-                        .height(60.dp)// Add a black border
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .width(0.dp)
-                            .weight(1f)
-                    )
-
-                    IconWithText(
-                        iconId = homeIcon,
-                        text = "Home",
-                        "SchermataHome",
-                        Color(colorGreen)
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .width(0.dp)
-                            .weight(1f)
-                    )
-
-                    IconWithText(
-                        iconId = gestisciAste,
-                        text = "Gestisci Aste",
-                        "",
-                        Color(colorGreen)
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .width(0.dp)
-                            .weight(1f)
-                    )
-
-                    IconWithText(
-                        iconId = creaAsta,
-                        text = "Crea Asta",
-                        "",
-                        Color(colorGreen)
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .width(0.dp)
-                            .weight(1f)
-                    )
-
-                    IconWithText(
-                        iconId = account,
-                        text = "Profilo",
-                        "SchermataProfiloUtente",
-                        Color(colorGreen)
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .width(0.dp)
-                            .weight(1f)
-                    )
-                }
+                    }
+                )
             }
 
         }

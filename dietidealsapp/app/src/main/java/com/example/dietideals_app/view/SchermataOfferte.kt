@@ -62,8 +62,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
@@ -79,34 +77,8 @@ class PaginaOfferte : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = "SchermataAutenticazione"
-                    ) {
-                        composable("SchermataAutenticazione") {
-                            SchermataAutenticazione(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataHome") { SchermataHome(navController = navController) }
-                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
-                        composable("SchermataModificaProfilo") {
-                            SchermataModificaProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataPagamentiProfilo") {
-                            SchermataPagamentiProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
-                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
-                        composable("SchermataPaginaAsta") { SchermataPaginaAsta(navController = navController) }
-                        composable("SchermataOfferte") { SchermataOfferte(navController = navController) }
+                    SchermataOfferte(navController)
 
-                    }
                 }
             }
         }

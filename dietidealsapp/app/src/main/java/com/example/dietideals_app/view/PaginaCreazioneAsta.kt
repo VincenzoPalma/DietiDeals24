@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -73,8 +74,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
@@ -91,34 +90,7 @@ class PaginaCreazioneAsta : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = "SchermataAutenticazione"
-                    ) {
-                        composable("SchermataAutenticazione") {
-                            SchermataAutenticazione(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataHome") { SchermataHome(navController = navController) }
-                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
-                        composable("SchermataModificaProfilo") {
-                            SchermataModificaProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataPagamentiProfilo") {
-                            SchermataPagamentiProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
-                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
-                        composable("SchermataPaginaAsta") { SchermataPaginaAsta(navController = navController) }
-                        composable("SchermataOfferte") { SchermataOfferte(navController = navController) }
-
-                    }
+                    SchermataCreazioneAsta(navController)
                 }
             }
         }
@@ -164,11 +136,11 @@ fun SchermataCreazioneAsta(navController: NavController) {
     val oreIntervalloFocusRequested = remember { FocusRequester() }
     var minutiIntervallo by remember { mutableStateOf("0") }
     val minutiIntervalloFocusRequested = remember { FocusRequester() }
-    var prezzoBase by remember { mutableStateOf("") }
+    var prezzo by remember { mutableStateOf("") }
     var descrizione by remember { mutableStateOf("") }
-    val prezzoBaseFocusRequested = remember { FocusRequester() }
+    val prezzoFocusrequested = remember { FocusRequester() }
     val descrizioneFocusRequested = remember { FocusRequester() }
-    val currentPage = remember { mutableStateOf(0) }
+    val currentPage = remember { mutableIntStateOf(0) }
     val openDateDialog = remember { mutableStateOf(false) }
     val state = rememberDatePickerState()
     val timeState = rememberTimePickerState(11, 30, true)
@@ -200,7 +172,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
         sogliaRialzo = "10"
         oreIntervallo = "1"
         minutiIntervallo = "0"
-        prezzoBase = ""
+        prezzo = ""
         descrizione = ""
         selectedHour = 0
         selectedMinute = 0
@@ -212,7 +184,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (background, topBar, contenuto) = createRefs()
+        val (background, topBar, contenuto, tab) = createRefs()
         Box(
             modifier = Modifier
                 .constrainAs(background) {
@@ -230,7 +202,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
             top.linkTo(parent.top)
         }, title = {
             Text(
-                text = "LE MIE ASTE",
+                text = "CREA ASTA",
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -244,10 +216,10 @@ fun SchermataCreazioneAsta(navController: NavController) {
                     contentDescription = null,
                     modifier = Modifier
                         .clickable {
-                            if (currentPage.value == 0) {
+                            if (currentPage.intValue == 0) {
                                 navController.navigate("SchermataHome")
                             } else {
-                                currentPage.value = 0
+                                currentPage.intValue = 0
                             }
 
 
@@ -269,6 +241,11 @@ fun SchermataCreazioneAsta(navController: NavController) {
         var tabSelezionata by remember { mutableIntStateOf(0) }
         Column(
             modifier = Modifier
+                .constrainAs(tab)
+                {
+                    top.linkTo(topBar.top)
+                }
+
 
                 .fillMaxHeight()
                 .offset(y = 60.dp)
@@ -305,7 +282,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                 TextButton(
                                     onClick = {
                                         selectedTabIndex.intValue = tabSelezionata
-                                        currentPage.value = 0
+                                        currentPage.intValue = 0
                                         reset()
                                         // Qui gestisci l'azione quando l'utente conferma l'operazione
                                         alertDialog =
@@ -347,14 +324,15 @@ fun SchermataCreazioneAsta(navController: NavController) {
             }
 
             // Contenuto dinamico in base alla scheda corrente
-            when (selectedTabIndex.value) {
+            when (selectedTabIndex.intValue) {
                 0 -> {
-                    when (currentPage.value) {
+                    when (currentPage.intValue) {
                         0 -> {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(16.dp)
+
                             )
                             {
                                 Text(
@@ -374,7 +352,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         imeAction = ImeAction.Next
                                     ),
                                     keyboardActions = KeyboardActions(
-                                        onNext = { prezzoBaseFocusRequested.requestFocus() }
+                                        onNext = { prezzoFocusrequested.requestFocus() }
                                     ))
                                 HorizontalDivider(
                                     // Aggiungi una linea divisoria
@@ -397,13 +375,13 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
 
-                                    OutlinedTextField(value = prezzoBase,
-                                        onValueChange = { prezzoBase = it },
+                                    OutlinedTextField(value = prezzo,
+                                        onValueChange = { prezzo = it },
                                         keyboardOptions = KeyboardOptions.Default.copy(
                                             imeAction = ImeAction.Next
                                         ),
                                         keyboardActions = KeyboardActions(
-                                            onNext = { prezzoBaseFocusRequested.requestFocus() }
+                                            onNext = { prezzoFocusrequested.requestFocus() }
                                         ),
                                         modifier = Modifier
                                             .focusRequester(descrizioneFocusRequested)
@@ -432,7 +410,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     )
 
                                     ElevatedButton(onClick = { isDialogVisible = true }) {
-                                        Text(text = "$categoriaSelezionata")
+                                        Text(text = categoriaSelezionata)
                                     }
 
                                 }
@@ -459,7 +437,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
-                                        onClick = { currentPage.value = 1 }, modifier = Modifier
+                                        onClick = { currentPage.intValue = 1 }, modifier = Modifier
                                             .offset(y = 500.dp)
                                             .padding(8.dp)
                                     ) {
@@ -538,7 +516,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     OutlinedTextField(
                                         value = sogliaRialzo,
                                         onValueChange = {
-                                            if (it.toIntOrNull() ?: 0 >= 10) {
+                                            if ((it.toIntOrNull() ?: 0) >= 10) {
                                                 sogliaRialzo = it
                                             }
                                         },
@@ -699,7 +677,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
 
 
-                    when (currentPage.value) {
+                    when (currentPage.intValue) {
                         0 -> {
                             Box(
                                 modifier = Modifier
@@ -747,8 +725,8 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
 
-                                    OutlinedTextField(value = prezzoBase,
-                                        onValueChange = { prezzoBase = it },
+                                    OutlinedTextField(value = prezzo,
+                                        onValueChange = { prezzo = it },
                                         keyboardOptions = KeyboardOptions.Default.copy(
                                             imeAction = ImeAction.Next
                                         ),
@@ -781,7 +759,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
                                     ElevatedButton(onClick = { isDialogVisible = true }) {
-                                        Text(text = "$categoriaSelezionata")
+                                        Text(text = categoriaSelezionata)
                                     }
 
                                 }
@@ -870,7 +848,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
-                                        onClick = { currentPage.value = 1 },
+                                        onClick = { currentPage.intValue = 1 },
                                         modifier = Modifier
                                             .offset(y = 500.dp)
                                             .padding(8.dp)
@@ -954,7 +932,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
                     val prezzoMassimoFocusRequested = remember { FocusRequester() }
                     val dataScadenzaFocusRequested = remember { FocusRequester() }
-                    when (currentPage.value) {
+                    when (currentPage.intValue) {
                         0 -> {
                             Box(
                                 modifier = Modifier
@@ -1002,16 +980,16 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
 
-                                    OutlinedTextField(value = prezzoMassimo,
-                                        onValueChange = { prezzoMassimo = it },
+                                    OutlinedTextField(value = prezzo,
+                                        onValueChange = { prezzo = it },
                                         keyboardOptions = KeyboardOptions.Default.copy(
                                             imeAction = ImeAction.Next
                                         ),
                                         keyboardActions = KeyboardActions(
-                                            onNext = { prezzoMassimoFocusRequested.requestFocus() }
+                                            onNext = { descrizioneFocusRequested.requestFocus() }
                                         ),
                                         modifier = Modifier
-                                            .focusRequester(descrizioneFocusRequested)
+                                            .focusRequester(prezzoFocusrequested)
                                             .width(100.dp)
                                             .height(50.dp),
                                         textStyle = TextStyle(fontSize = 15.sp)
@@ -1036,7 +1014,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
                                     ElevatedButton(onClick = { isDialogVisible = true }) {
-                                        Text(text = "$categoriaSelezionata")
+                                        Text(text = categoriaSelezionata)
                                     }
 
                                 }
@@ -1070,10 +1048,21 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
                                                 .focusRequester(dataScadenzaFocusRequested)
 
-
                                         )
-
                                     }
+                                    OutlinedTextField(
+                                        value = descrizione,
+                                        onValueChange = { descrizione = it },
+                                        label = { Text(text = "Descrizione") },
+                                        modifier = Modifier
+                                            .offset(y = 400.dp)
+                                            .fillMaxWidth()
+                                            .height(100.dp)
+                                            .focusRequester(descrizioneFocusRequested),
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            imeAction = ImeAction.Done
+                                        ),
+                                    )
 
 
                                 }
@@ -1082,7 +1071,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
-                                        onClick = { currentPage.value = 1 },
+                                        onClick = { currentPage.intValue = 1 },
                                         modifier = Modifier
                                             .offset(y = 500.dp)
                                             .padding(8.dp)
@@ -1166,7 +1155,8 @@ fun SchermataCreazioneAsta(navController: NavController) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    border = BorderStroke(1.dp, Color.Black),
                 ) {
                     Column(
                         modifier = Modifier
@@ -1177,8 +1167,6 @@ fun SchermataCreazioneAsta(navController: NavController) {
                         LazyColumn(
                             modifier = Modifier
                                 .padding(16.dp)
-
-
                         ) {
                             items(categorie.size) { index ->
                                 // Colonna per ogni elemento della lista
@@ -1191,17 +1179,22 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                categoriaSelezionata = categorie[index]
+                                                categoriaSelezionata =
+                                                    categorie[index]
                                                 isDialogVisible = false
-                                            }
+                                            },
                                     ) {
-                                        Text(text = categorie[index])
+                                        Text(
+                                            text = categorie[index],
+                                            modifier = Modifier.fillMaxWidth(),
+                                            textAlign = TextAlign.Center
+                                        )
 
                                     }
+                                    HorizontalDivider(thickness = 2.dp)
                                 }
                             }
                         }
-
                     }
                 }
             }

@@ -3,6 +3,9 @@ package com.example.dietideals_app.view
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -70,7 +73,10 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = "SchermataAutenticazione"
+                        startDestination = "SchermataAutenticazione",
+                        enterTransition = { fadeIn(tween(300)) },
+                        exitTransition = { fadeOut(tween(300)) }
+
                     ) {
                         composable("SchermataAutenticazione") {
                             SchermataAutenticazione(
@@ -135,7 +141,7 @@ fun SchermataAutenticazione(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (backgroundImage, title, appIcon, emailTextField, passwordTextField, accessButton, socialIcons, registratiText, registerButton) = createRefs()
+        val (backgroundImage, title, appIcon, emailTextField, passwordTextField, sociaText, accessButton, socialIcons, registratiText, registerButton) = createRefs()
 
         // Immagine di background
         Image(
@@ -275,7 +281,11 @@ fun SchermataAutenticazione(navController: NavController) {
                 if (isLoginEnabled) {
                     presenter.effettuaLogin(email, password)
                 }
-                navController.navigate("SchermataHome")
+                navController.navigate("SchermataHome") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = false
+                    }
+                }
             },
             modifier = Modifier
                 .constrainAs(accessButton) {
@@ -285,7 +295,7 @@ fun SchermataAutenticazione(navController: NavController) {
                 }
                 .width(140.dp)
                 .height(48.dp),
-            enabled = true //isLoginEnabled
+            enabled = true, //isLoginEnabled,
         ) {
             Text("ACCEDI", fontSize = 20.sp)
         }
@@ -298,15 +308,14 @@ fun SchermataAutenticazione(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(2.dp)
             ) {
-                Icon(
+                Image(
                     painter = painterResource(id = iconId),
                     contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)
                         .clickable { navController.navigate(route) },
-
-
-                    )
+                    contentScale = ContentScale.Crop
+                )
 
                 Text(
                     text = text,
@@ -316,10 +325,20 @@ fun SchermataAutenticazione(navController: NavController) {
                 )//
             }
         }
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .constrainAs(sociaText)
+            {
+                top.linkTo(accessButton.bottom, margin = 16.dp)
+            }, horizontalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Oppure accedi con", textAlign = TextAlign.Center, color = Color.Gray)
+
+        }
         Row(
             modifier = Modifier
                 .constrainAs(socialIcons) {
-                    top.linkTo(accessButton.bottom, margin = 15.dp)
+                    top.linkTo(sociaText.bottom)
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
                 }

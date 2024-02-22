@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,19 +21,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,21 +54,27 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -68,14 +83,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Notifica
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.random.Random
+import java.util.concurrent.TimeUnit
 
 class PaginaSchermataHome : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,34 +101,7 @@ class PaginaSchermataHome : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = "SchermataAutenticazione"
-                    ) {
-                        composable("SchermataAutenticazione") {
-                            SchermataAutenticazione(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataHome") { SchermataHome(navController = navController) }
-                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
-                        composable("SchermataModificaProfilo") {
-                            SchermataModificaProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataPagamentiProfilo") {
-                            SchermataPagamentiProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
-                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
-                        composable("SchermataPaginaAsta") { SchermataPaginaAsta(navController = navController) }
-                        composable("SchermataOfferte") { SchermataOfferte(navController = navController) }
-
-                    }
+                    SchermataHome(navController)
                 }
             }
         }
@@ -125,11 +112,15 @@ class PaginaSchermataHome : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataHome(navController: NavController) {
+
     val logoApp = painterResource(id = R.drawable.iconaapp)
     var isSearchVisible by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
     var isFilterVisible by remember { mutableStateOf(false) }
     var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val auctionType = listOf("Inglese", "Silenziosa", "Inversa")
+    val searchFocusRequester =
+        remember { FocusRequester() }
     val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf("") }
     fun generateNotifications(): List<Notifica> {
@@ -179,7 +170,7 @@ fun SchermataHome(navController: NavController) {
                 ModalDrawerSheet(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .fillMaxWidth(0.7f)
+                        .fillMaxWidth(0.7f),
                 ) {
                     Column(
                         modifier = Modifier
@@ -187,7 +178,6 @@ fun SchermataHome(navController: NavController) {
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(30.dp)
                     ) {
-
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -211,7 +201,6 @@ fun SchermataHome(navController: NavController) {
                                         },
                                     tint = Color(0xFF9B0404)
                                 )
-
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "Notifiche",
@@ -310,162 +299,195 @@ fun SchermataHome(navController: NavController) {
             },
 
             content = {
-                ConstraintLayout(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    val (background, topBar, filterBar, bottomBar, listaAste) = createRefs()
-                    Box(
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    ConstraintLayout(
                         modifier = Modifier
-                            .constrainAs(background) {
+                            .fillMaxSize()
+                    ) {
+                        val (background, topBar, filterBar, bottomBar, listaAste) = createRefs()
+                        Box(
+                            modifier = Modifier
+                                .constrainAs(background) {
+                                    top.linkTo(parent.top)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                    bottom.linkTo(parent.bottom)
+                                    width = Dimension.fillToConstraints
+                                    height = Dimension.fillToConstraints
+                                }
+                                .background(Color.White)
+                        ) {}
+
+
+                        TopAppBar(modifier = Modifier
+                            .constrainAs(topBar) {
                                 top.linkTo(parent.top)
                                 start.linkTo(parent.start)
                                 end.linkTo(parent.end)
-                                bottom.linkTo(parent.bottom)
-                                width = Dimension.fillToConstraints
-                                height = Dimension.fillToConstraints
-                            }
-                            .background(Color.White)
-                    ) {}
+                            },
+                            title = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Image(
+                                        painter = logoApp,
+                                        contentDescription = "logo",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .width(50.dp)
+                                            .height(50.dp)
+                                    )
+                                    if (!isSearchVisible) {
 
-
-                    TopAppBar(modifier = Modifier
-                        .constrainAs(topBar) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                        title = {
-                            if (!isSearchVisible) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_search_24),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .clickable {
-                                            isSearchVisible = !isSearchVisible
-                                        }
-                                        .size(40.dp)
-
-
-                                )
-                                Text(
-                                    text = "DIETI DEALS 24",
-                                    textAlign = TextAlign.Left,
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 30.sp
-                                )
-
-                            } else {
-
-                                TextField(
-                                    value = query,
-                                    onValueChange = { nuovaQuery -> query = nuovaQuery },
-                                    placeholder = {
                                         Text(
-                                            "...Cerca Asta",
-                                            textAlign = TextAlign.End, // Allinea il testo a sinistra
+                                            text = "DIETI DEALS 24",
+                                            textAlign = TextAlign.Center,
                                             modifier = Modifier
-                                                .padding(start = 150.dp)
-                                                .fillMaxWidth()
+                                                .fillMaxWidth(),
+
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 30.sp
                                         )
-                                    },
-                                    modifier = Modifier
-                                        .height(60.dp)
-                                        .fillMaxWidth(),
-                                    textStyle = TextStyle(
-                                        textAlign = TextAlign.End
-                                    ),
-                                    singleLine = true
-                                )
 
-                            }
-                        },
-                        colors = TopAppBarColors(
-                            containerColor = (MaterialTheme.colorScheme.primary),
-                            navigationIconContentColor = Color.White,
-                            titleContentColor = Color.White,
-                            actionIconContentColor = Color.White,
-                            scrolledContainerColor = Color.White
-                        ),
 
-                        actions = {
+                                    } else {
 
-                            Image(
-                                painter = logoApp,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp),
-                                contentScale = ContentScale.Crop
-                            )
-                        },
-                        navigationIcon = {
-                            BadgedBox(badge = {
-                                if (notifications.isNotEmpty()) {
-                                    Badge {
+                                        TextField(
+                                            value = query,
+                                            onValueChange = { nuovaQuery -> query = nuovaQuery },
+                                            placeholder = {
+                                                Text(
+                                                    "Cerca Asta",
 
-                                        Text(notifications.size.toString())
+                                                    modifier = Modifier
+                                                        .focusRequester(searchFocusRequester)
+                                                        .fillMaxWidth()
+                                                )
+                                            }, keyboardOptions = KeyboardOptions.Default.copy(
+                                                imeAction = ImeAction.Done
+                                            ),
+                                            keyboardActions = KeyboardActions(
+                                                onDone = { /*query*/ }
+                                            ),
+                                            modifier = Modifier
+                                                .height(60.dp)
+                                                .fillMaxWidth(),
+                                            singleLine = true
+                                        )
+
                                     }
                                 }
-                            }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_notifications_24),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .clickable {
-                                            scope.launch {
-                                                drawerState.apply {
-                                                    if (isClosed) open() else close()
-                                                }
-                                            }
-                                            // Azione da eseguire quando si clicca sull'icona di navigazione
-                                        }
-                                        .size(35.dp)
-                                )
-                            }
-                        }
-                    )
-                    Row(
-                        modifier = Modifier
-
-                            .fillMaxWidth()
-                            .padding(end = 16.dp)
-                            .constrainAs(filterBar)
-                            {
-                                top.linkTo(topBar.bottom)
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-
                             },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_filter_list_24),
-                            contentDescription = "filterButton",
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .size(30.dp)
-                                .clickable { isFilterVisible = true }
+                            colors = TopAppBarColors(
+                                containerColor = (MaterialTheme.colorScheme.primary),
+                                navigationIconContentColor = Color.White,
+                                titleContentColor = Color.White,
+                                actionIconContentColor = Color.White,
+                                scrolledContainerColor = Color.White
+                            ),
+
+                            actions = {
+                                if (!isSearchVisible) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_search_24),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .clickable {
+                                                isSearchVisible = !isSearchVisible
+
+                                            }
+                                            .size(40.dp)
+
+
+                                    )
+                                }
+
+                                BadgedBox(badge = {
+                                    if (notifications.isNotEmpty()) {
+                                        Badge {
+
+                                            Text(notifications.size.toString())
+                                        }
+                                    }
+                                }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_notifications_24),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .clickable {
+                                                scope.launch {
+                                                    drawerState.apply {
+                                                        if (isClosed) open() else close()
+                                                    }
+                                                }
+                                                // Azione da eseguire quando si clicca sull'icona di navigazione
+                                            }
+                                            .size(35.dp)
+                                    )
+                                }
+                            },
+                            navigationIcon = {
+
+                            }
                         )
+                        Row(
+                            modifier = Modifier
+
+                                .fillMaxWidth()
+                                .padding(start = 8.dp, end = 8.dp)
+                                .constrainAs(filterBar)
+                                {
+                                    top.linkTo(topBar.bottom)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+
+                                },
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "Aste in Corso",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                fontSize = 25.sp,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_filter_list_24),
+                                contentDescription = "filterButton",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clickable { isFilterVisible = true }
+                            )
 
 
 
-                        if (isFilterVisible) {
-                            Dialog(onDismissRequest = { isFilterVisible = false }) {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
+                            if (isFilterVisible) {
+                                Dialog(onDismissRequest = { isFilterVisible = false }) {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        border = BorderStroke(1.dp, Color.Black)
 
-                                ) {
-                                    TopAppBar(title = {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
+                                    ) {
+                                        TopAppBar(modifier = Modifier.height(40.dp), title = {
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(top = 6.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+
+                                                Text(
+                                                    text = "FILTRI",
+                                                    textAlign = TextAlign.Center,
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    fontWeight = FontWeight.Bold
+                                                )
+
+                                            }
+                                        }, actions = {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.baseline_close_24),
                                                 contentDescription = null,
@@ -475,125 +497,131 @@ fun SchermataHome(navController: NavController) {
 
                                                     }
                                                     .size(30.dp)
-
+                                                    .padding(top = 6.dp, end = 6.dp)
 
                                             )
+                                        }, colors = TopAppBarColors(
+                                            containerColor = (MaterialTheme.colorScheme.primary),
+                                            navigationIconContentColor = Color.White,
+                                            titleContentColor = Color.White,
+                                            actionIconContentColor = Color.White,
+                                            scrolledContainerColor = Color.White
+                                        )
+                                        )
+
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
                                             Text(
-                                                text = "FILTRI",
+                                                text = "TIPI DI ASTE",
                                                 textAlign = TextAlign.Center,
                                                 modifier = Modifier.fillMaxWidth(),
                                                 fontWeight = FontWeight.Bold
                                             )
                                         }
-                                    })
-
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        Text(
-                                            text = "TIPI DI ASTE",
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.fillMaxWidth(),
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center
                                         ) {
-
-                                            Text(text = "All'inglese", fontSize = 15.sp)
-                                            Checkbox(
-                                                checked = checkInglese,
-                                                onCheckedChange = { checkInglese = it },
-                                            )
-                                        }
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center
-                                        )
-                                        {
-                                            Text(text = "Inversa", fontSize = 15.sp)
-                                            Checkbox(
-                                                checked = checkInversa,
-                                                onCheckedChange = { checkInversa = it },
-                                            )
-                                        }
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center
-                                        ) {
-                                            Text(text = "Silenziosa", fontSize = 15.sp)
-
-                                            Checkbox(
-                                                checked = checkSilenziosa,
-                                                onCheckedChange = { checkSilenziosa = it },
-                                            )
-                                        }
-                                    }
-
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        ElevatedButton(onClick = { openCategoryDialog = true }) {
-                                            Text(text = categoriaSelezionata)
-                                        }
-                                        Spacer(modifier = Modifier.width(16.dp))
-                                        Text(
-                                            text = "Categoria  ",
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 20.sp
-                                        )
-                                    }
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        ElevatedButton(
-                                            onClick = { openCategoryDialog = true },
-                                            colors = ButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                                contentColor = Color(0xFFBA1A1A),
-                                                disabledContentColor = Color.Gray,
-                                                disabledContainerColor = Color.Gray
-                                            )
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.baseline_close_24),
-                                                contentDescription = null,
+                                            Row(
                                                 modifier = Modifier
-                                                    .clickable {
-                                                        checkSilenziosa = false
-                                                        checkInglese = false
-                                                        checkInversa = false
-                                                        categoriaSelezionata = "Seleziona Categoria"
-                                                    }
-                                                    .size(20.dp)
+                                                    .fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center
+                                            ) {
+
+                                                Text(text = "All'inglese", fontSize = 15.sp)
+                                                Checkbox(
+                                                    checked = checkInglese,
+                                                    onCheckedChange = { checkInglese = it },
+                                                )
+                                            }
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center
                                             )
-                                            Text(text = "RIMUOVI FILTRI")
+                                            {
+                                                Text(text = "Inversa", fontSize = 15.sp)
+                                                Checkbox(
+                                                    checked = checkInversa,
+                                                    onCheckedChange = { checkInversa = it },
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                            }
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center
+                                            ) {
+                                                Text(text = "Silenziosa", fontSize = 15.sp)
+
+                                                Checkbox(
+                                                    checked = checkSilenziosa,
+                                                    onCheckedChange = { checkSilenziosa = it },
+                                                )
+                                            }
                                         }
 
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            Text(
+                                                text = "Categoria  ",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 20.sp
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            ElevatedButton(onClick = {
+                                                openCategoryDialog = true
+                                            }) {
+                                                Text(text = categoriaSelezionata)
+                                            }
+
+                                        }
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            ElevatedButton(
+                                                onClick = { openCategoryDialog = true },
+                                                colors = ButtonColors(
+                                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                                    contentColor = Color(0xFFBA1A1A),
+                                                    disabledContentColor = Color.Gray,
+                                                    disabledContainerColor = Color.Gray
+                                                )
+                                            ) {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.baseline_close_24),
+                                                    contentDescription = null,
+                                                    modifier = Modifier
+                                                        .clickable {
+                                                            checkSilenziosa = false
+                                                            checkInglese = false
+                                                            checkInversa = false
+                                                            categoriaSelezionata =
+                                                                "Seleziona Categoria"
+                                                        }
+                                                        .size(20.dp)
+                                                )
+                                                Text(text = "RIMUOVI FILTRI")
+                                            }
+
+                                        }
+
+
                                     }
-
-
                                 }
                                 if (openCategoryDialog) {
                                     Dialog(onDismissRequest = { openCategoryDialog = false }) {
@@ -628,11 +656,16 @@ fun SchermataHome(navController: NavController) {
                                                                             categorie[index]
                                                                         openCategoryDialog = false
                                                                     },
-                                                                horizontalArrangement = Arrangement.Absolute.Left
-                                                            ) {
-                                                                Text(text = categorie[index])
+
+                                                                ) {
+                                                                Text(
+                                                                    text = categorie[index],
+                                                                    modifier = Modifier.fillMaxWidth(),
+                                                                    textAlign = TextAlign.Center
+                                                                )
 
                                                             }
+                                                            HorizontalDivider(thickness = 2.dp)
                                                         }
                                                     }
                                                 }
@@ -640,298 +673,353 @@ fun SchermataHome(navController: NavController) {
                                         }
                                     }
                                 }
+
+
                             }
 
                         }
+                        var timeLeft by rememberSaveable { mutableStateOf(0L) }
+                        var timerRunning by remember { mutableStateOf(false) }
+                        LaunchedEffect(Unit) {
 
-
-
-                        Text(
-                            text = "Aste in Corso",
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center,
-                            fontSize = 25.sp,
-                            modifier = Modifier.weight(1f),
-                        )
-
-                    }
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .constrainAs(listaAste)
-                            {
-                                top.linkTo(filterBar.bottom)
-
-                            }
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        items(6) { index ->
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                // Riquadro per ogni elemento della lista
-                                OutlinedCard(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(200.dp)
-                                        .padding(8.dp)
-                                        .clickable { navController.navigate("SchermataPaginaAsta") },
-                                    border = BorderStroke(1.dp, Color.Black),
-
-                                    ) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp),
-
-                                        ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.Center
-                                        ) {
-                                            // Immagine
-                                            Image(
-                                                painter = painterResource(id = R.drawable.defaultimage),
-                                                contentDescription = "Image",
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(80.dp),
-                                                contentScale = ContentScale.Crop
-                                            )
-                                        }
-
-                                        // Titolo
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.Center
-
-                                        ) {
-                                            Text(
-                                                text = "Asta $index ",
-                                                color = Color.Black,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 20.sp,
-                                                modifier = Modifier.padding(top = 8.dp)
-                                            )
-                                        }
+                            val inputText = "00:04:30" // Inserisci qui il tempo iniziale desiderato
+                            val time = inputText.split(":")
+                            if (time.size == 3) {
+                                val hours = time[0].toLongOrNull() ?: 0
+                                val minutes = time[1].toLongOrNull() ?: 0
+                                val seconds = time[2].toLongOrNull() ?: 0
+                                val totalTime = TimeUnit.HOURS.toMillis(hours) +
+                                        TimeUnit.MINUTES.toMillis(minutes) +
+                                        TimeUnit.SECONDS.toMillis(seconds)
+                                if (totalTime > 0) {
+                                    timeLeft = totalTime
+                                    timerRunning = true
+                                    while (timeLeft > 0 && timerRunning) {
+                                        delay(1000)
+                                        timeLeft -= 1000
                                     }
-
-                                    // Bottone
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        ElevatedButton(
-                                            onClick = { /* Azione del bottone */ },
-                                            modifier = Modifier.padding(bottom = 8.dp),
-                                            colors = ButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                contentColor = MaterialTheme.colorScheme.primary,
-                                                disabledContentColor = Color.Gray,
-                                                disabledContainerColor = Color.Gray
-                                            )
-                                        ) {
-                                            Text(
-                                                text = String.format(
-                                                    "€%.2f",
-                                                    80.0 + Random.nextDouble() * 9.0
-                                                ),
-                                                fontSize = 12.sp
-                                            )
-                                        }
-                                    }
-
-                                }
-
-
-                                // Riquadro per ogni elemento della lista
-                                OutlinedCard(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(200.dp)
-                                        .padding(8.dp)
-                                        .clickable { navController.navigate("SchermataPaginaAsta") },
-                                    border = BorderStroke(1.dp, Color.Black),
-
-                                    ) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp),
-
-                                        ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.Center
-                                        ) {
-                                            // Immagine
-                                            Image(
-                                                painter = painterResource(id = R.drawable.defaultimage),
-                                                contentDescription = "Image",
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(80.dp),
-                                                contentScale = ContentScale.Crop
-                                            )
-                                        }
-
-                                        // Titolo
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.Center
-                                        ) {
-                                            Text(
-                                                text = "Asta $index ",
-                                                color = Color.Black,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 20.sp,
-                                                modifier = Modifier.padding(top = 8.dp)
-                                            )
-                                        }
-                                    }
-
-                                    // Bottone
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        ElevatedButton(
-                                            onClick = { /* Azione del bottone */ },
-                                            modifier = Modifier.padding(bottom = 8.dp),
-                                            colors = ButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                contentColor = MaterialTheme.colorScheme.primary,
-                                                disabledContentColor = Color.Gray,
-                                                disabledContainerColor = Color.Gray
-                                            )
-                                        ) {
-                                            Text(
-                                                text = String.format(
-                                                    "€%.2f",
-                                                    80.0 + Random.nextDouble() * 9.0
-                                                ),
-                                                fontSize = 12.sp
-                                            )
-                                        }
-                                    }
-
+                                    timerRunning = false
                                 }
                             }
-
                         }
 
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(150.dp) // Altezza dello Spacer uguale all'altezza della BottomAppBar
-                            )
+                        fun formatTime(timeMillis: Long): String {
+                            val hours = TimeUnit.MILLISECONDS.toHours(timeMillis)
+                            val minutes = TimeUnit.MILLISECONDS.toMinutes(timeMillis) % 60
+                            val seconds = TimeUnit.MILLISECONDS.toSeconds(timeMillis) % 60
+                            return String.format("%02d:%02d:%02d", hours, minutes, seconds)
                         }
-                    }
-
-
-
-
-
-                    @Composable
-                    fun IconWithText(iconId: Int, text: String, route: String) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(2.dp)
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier
+                                .constrainAs(listaAste) {
+                                    top.linkTo(filterBar.bottom)
+                                }
+                                .fillMaxSize()
+                                .padding(16.dp)
                         ) {
-                            Icon(
-                                painter = painterResource(id = iconId),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .clickable { navController.navigate(route) },
-                                tint = Color(0xFF0EA639)
 
-                            )
 
-                            Text(
-                                text = text,
-                                fontSize = 14.sp,
-                                color = Color(0xFF0EA639)
-                            )//
-                        }
-                    }
+                            items(12) { index ->
+                                var open by remember {
+                                    mutableStateOf(false)
+                                }
+                                var type = auctionType.random()
+                                var category = categorie.random()
 
-                    BottomAppBar(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                                ElevatedCard(
+                                    modifier = Modifier
+                                        .height(if (!open) 230.dp else 290.dp)
+                                        .padding(8.dp)
+                                        .clickable { navController.navigate("SchermataPaginaAsta") },
+                                    elevation = CardDefaults.cardElevation(
+                                        defaultElevation = 6.dp
+                                    ),
+                                    content = {
+                                        Column(
+                                            modifier = Modifier.padding(bottom = 8.dp),
+                                        ) {
+                                            Image(
+                                                painter = painterResource(id = R.drawable.defaultimage),
+                                                contentDescription = "Image",
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(110.dp)
+                                                    .clip(
+                                                        shape = RoundedCornerShape(
+                                                            bottomStart = 16.dp,
+                                                            bottomEnd = 16.dp
+                                                        )
+                                                    ),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                            Spacer(modifier = Modifier.height(5.dp))
 
-                            .background(color = Color.White) // Set the background color to white
-                            .border(1.dp, color = Color.Black)
-                            .height(60.dp)// Add a black border
-                            .constrainAs(bottomBar)
-                            {
-                                bottom.linkTo(parent.bottom)
+                                            Text(
+                                                text = "Scarpe Nike",
+                                                color = Color.Black,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 20.sp,
+                                                modifier = Modifier
+                                                    .fillMaxWidth(),
+                                                textAlign = TextAlign.Center
+                                            )
+                                            Row(
+                                                horizontalArrangement = Arrangement.Start,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(start = 8.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.category_icon),
+                                                    contentDescription = "category",
+                                                    Modifier.size(15.dp)
+                                                )
+                                                Text(
+                                                    text = category,
+                                                    fontSize = 12.sp,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
+                                            Row(
+                                                horizontalArrangement = Arrangement.Start,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(start = 8.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.auction_type_icon),
+                                                    contentDescription = "auctionType",
+                                                    Modifier.size(15.dp)
+                                                )
+                                                Text(
+                                                    text = type,
+                                                    fontSize = 12.sp,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
+                                            if (open) {
+                                                Row(
+                                                    horizontalArrangement = Arrangement.Start,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(start = 8.dp),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.baseline_attach_money_24),
+                                                        contentDescription = "auctionType",
+                                                        Modifier.size(15.dp)
+                                                    )
+                                                    Text(
+                                                        text = if (type == "Inglese" || type == "Inversa") {
+                                                            "Prezzo Attuale " + "€300,00"
+                                                        } else {
+                                                            "Prezzo Base" + "€40,00"
+                                                        },
+                                                        fontSize = 12.sp,
+                                                        overflow = TextOverflow.Ellipsis
+                                                    )
+
+                                                }
+                                                if (type == "Inglese") {
+                                                    Row(
+                                                        horizontalArrangement = Arrangement.Start,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(start = 8.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Icon(
+                                                            painter = painterResource(id = R.drawable.growth),
+                                                            contentDescription = "SogliaRialzo",
+                                                            Modifier.size(15.dp)
+                                                        )
+                                                        Text(
+                                                            text = "€5,00",
+                                                            fontSize = 12.sp,
+                                                            overflow = TextOverflow.Ellipsis
+                                                        )
+                                                        Icon(
+                                                            painter = painterResource(id = R.drawable.baseline_access_time_filled_24),
+                                                            contentDescription = "SogliaRialzo",
+                                                            Modifier.size(15.dp),
+                                                            tint = MaterialTheme.colorScheme.error
+                                                        )
+                                                        Text(
+                                                            formatTime(timeLeft),
+                                                            fontSize = 12.sp,
+                                                            modifier = Modifier.padding(start = 4.dp),
+                                                            color = MaterialTheme.colorScheme.error
+                                                        )
+                                                    }
+                                                }
+                                                Row(
+                                                    horizontalArrangement = Arrangement.Start,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(start = 8.dp),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    when (type) {
+                                                        "Inversa" -> {
+                                                            Icon(
+                                                                painter = painterResource(id = R.drawable.baseline_calendar_month_24),
+                                                                contentDescription = "TimeLeft",
+                                                                Modifier.size(15.dp),
+                                                                tint = MaterialTheme.colorScheme.error
+                                                            )
+                                                            Text(
+                                                                "10/03/2024", //ToDo da sostituire con la data di scadenza dell'asta
+                                                                fontSize = 12.sp,
+                                                                modifier = Modifier.padding(start = 4.dp),
+                                                                color = MaterialTheme.colorScheme.error
+                                                            )
+                                                        }
+
+                                                        "Silenziosa" -> {
+                                                            Icon(
+                                                                painter = painterResource(id = R.drawable.baseline_calendar_month_24),
+                                                                contentDescription = "TimeLeft",
+                                                                Modifier.size(15.dp),
+                                                                tint = MaterialTheme.colorScheme.error
+                                                            )
+                                                            Text(
+                                                                "10/03/2024 22:00", //ToDo da sostituire con la data di scadenza dell'asta
+                                                                fontSize = 12.sp,
+                                                                modifier = Modifier.padding(start = 4.dp),
+                                                                color = MaterialTheme.colorScheme.error
+                                                            )
+
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
+                                            Row(
+                                                horizontalArrangement = Arrangement.Center,
+                                                modifier = Modifier
+                                                    .fillMaxWidth(),
+                                                verticalAlignment = Alignment.Bottom
+                                            ) {
+                                                IconButton(onClick = { open = !open }
+                                                ) {
+                                                    Icon(
+                                                        painter = painterResource(id = if (!open) R.drawable.baseline_keyboard_arrow_down_24 else R.drawable.baseline_keyboard_arrow_up_24),
+                                                        contentDescription = "ViewMore"
+                                                    )
+                                                }
+
+
+                                            }
+
+
+                                        }
+                                    }
+                                )
                             }
-                    ) {
-                        Spacer(
+
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(150.dp)
+                                )
+                            }
+                        }
+
+                        NavigationBar(
+                            tonalElevation = 30.dp,
                             modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.baseline_manage_accounts_24,
-                            text = "Profilo",
-                            "SchermataProfiloUtente"
+                                .fillMaxWidth()
+                                .height(70.dp)// Add a black border
+                                .constrainAs(bottomBar)
+                                {
+                                    bottom.linkTo(parent.bottom)
+                                },
+                            content = {
+                                NavigationBarItem(
+                                    label = { Text(text = "Home") },
+                                    selected = true,
+                                    onClick = {
+                                        navController.navigate("SchermataHome") {
+                                            popUpTo(navController.graph.startDestinationId) {
+                                                inclusive = false
+                                            }
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.homeicon),
+                                            contentDescription = "Home"
+                                        )
+                                    }
+                                )
+                                NavigationBarItem(
+                                    label = { Text(text = "Gestisci") },
+                                    selected = false,
+                                    onClick = {
+                                        navController.navigate("SchermataGestioneAste") {
+                                            popUpTo("SchermataGestioneAste") {
+                                                inclusive = false
+                                            }
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.gestisci_icon),
+                                            contentDescription = "Gestione Aste"
+                                        )
+                                    }
+                                )
+                                NavigationBarItem(
+                                    label = { Text(text = "Crea Asta") },
+                                    selected = false,
+                                    onClick = {
+                                        navController.navigate("SchermataCreazioneAsta") {
+                                            popUpTo("SchermataCreazioneAsta") {
+                                                inclusive = false
+                                            }
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.crea_asta_icon),
+                                            contentDescription = "Crea Asta"
+                                        )
+                                    }
+                                )
+                                NavigationBarItem(
+                                    label = { Text(text = "Profilo") },
+                                    selected = false,
+                                    onClick = {
+                                        navController.navigate("SchermataProfiloUtente") {
+                                            popUpTo("SchermataProfiloUtente") {
+                                                inclusive = false
+                                            }
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.usericon),
+                                            contentDescription = "ProfiloUtente"
+                                        )
+                                    }
+                                )
+
+                            }
                         )
 
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.hand_money_cash_hold_svgrepo_com,
-                            text = "Crea Asta",
-                            "SchermataCreazioneAsta"
-                        )
 
-
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-                        IconWithText(
-                            iconId = R.drawable.line_chart_svgrepo_com,
-                            text = "Gestisci Aste",
-                            "SchermataGestioneAste"
-                        )
-
-
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
-
-                        IconWithText(
-                            iconId = R.drawable.baseline_home_24,
-                            text = "Home",
-                            "SchermataHome"
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(0.dp)
-                                .weight(1f)
-                        )
                     }
 
 
                 }
-
-
-            })
+            }
+        )
     }
 }
 

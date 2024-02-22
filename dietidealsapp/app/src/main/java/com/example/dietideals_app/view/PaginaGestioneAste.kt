@@ -5,10 +5,8 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,16 +16,17 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -50,8 +49,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
@@ -66,33 +63,8 @@ class PaginaGestioneAste : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = "SchermataAutenticazione"
-                    ) {
-                        composable("SchermataAutenticazione") {
-                            SchermataAutenticazione(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
-                        composable("SchermataHome") { SchermataHome(navController = navController) }
-                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
-                        composable("SchermataModificaProfilo") {
-                            SchermataModificaProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataPagamentiProfilo") {
-                            SchermataPagamentiProfilo(
-                                navController = navController
-                            )
-                        }
-                        composable("SchermataGestioneAste") { SchermataGestioneAste(navController = navController) }
-                        composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
-                        composable("SchermataOfferte") { SchermataOfferte(navController = navController) }
+                    SchermataGestioneAste(navController)
 
-                    }
                 }
             }
         }
@@ -114,7 +86,7 @@ fun SchermataGestioneAste(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (background, topbar, bottomBar) = createRefs()
+        val (background, topbar, tabs, bottomBar) = createRefs()
         Box(
             modifier = Modifier
                 .constrainAs(background) {
@@ -148,7 +120,11 @@ fun SchermataGestioneAste(navController: NavController) {
                     contentDescription = null,
                     modifier = Modifier
                         .clickable {
-                            navController.navigate("SchermataHome")
+                            navController.navigate("SchermataHome") {
+                                popUpTo("SchermataGestioneAste") {
+                                    inclusive = true
+                                }
+                            }
 
 
                         }
@@ -170,7 +146,9 @@ fun SchermataGestioneAste(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .offset(y = 60.dp)
+                .constrainAs(tabs) {
+                    top.linkTo(topbar.bottom)
+                }
         ) {
             // TabRow per contenere le schede
             TabRow(selectedTabIndex.intValue) {
@@ -208,14 +186,17 @@ fun SchermataGestioneAste(navController: NavController) {
                                     .fillMaxWidth()
                             ) {
                                 // Riquadro per ogni elemento della lista
-                                OutlinedCard(
+                                ElevatedCard(
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(150.dp)
                                         .padding(2.dp),
-                                    border = BorderStroke(1.dp, Color.Black)
+                                    elevation = CardDefaults.cardElevation(
+                                        defaultElevation = 6.dp
+                                    ),
 
-                                ) {
+
+                                    ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                     ) {
@@ -226,7 +207,7 @@ fun SchermataGestioneAste(navController: NavController) {
                                                 contentDescription = "Image",
                                                 modifier = Modifier
                                                     .size(150.dp)
-                                                    .padding(8.dp)
+
                                             )
                                         }
                                         VerticalDivider()
@@ -398,96 +379,89 @@ fun SchermataGestioneAste(navController: NavController) {
                 }
             }
         }
-        @Composable
-        fun IconWithText(iconId: Int, text: String, route: String) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(2.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = iconId),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clickable { navController.navigate(route) },
-                    tint = Color(0xFF0EA639)
 
-                )
 
-                Text(
-                    text = text,
-                    fontSize = 14.sp,
-                    color = Color(0xFF0EA639)
-                )//
-            }
-        }
-
-        BottomAppBar(
+        NavigationBar(
+            tonalElevation = 30.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color.White) // Set the background color to white
-                .border(1.dp, color = Color.Black)
-                .height(60.dp)// Add a black border
+                .height(70.dp)// Add a black border
                 .constrainAs(bottomBar)
                 {
                     bottom.linkTo(parent.bottom)
-                }
-        ) {
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-            IconWithText(
-                iconId = R.drawable.baseline_home_24,
-                text = "Home",
-                "SchermataHome"
-            )
+                },
+            content = {
+                NavigationBarItem(
+                    label = { Text(text = "Home") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("SchermataHome") {
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.homeicon),
+                            contentDescription = "Home"
+                        )
+                    }
+                )
+                NavigationBarItem(
+                    label = { Text(text = "Gestisci") },
+                    selected = true,
+                    onClick = {
+                        navController.navigate("SchermataGestioneAste") {
+                            popUpTo("SchermataGestioneAste") {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.gestisci_icon),
+                            contentDescription = "Gestione Aste"
+                        )
+                    }
+                )
+                NavigationBarItem(
+                    label = { Text(text = "Crea Asta") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("SchermataCreazioneAsta") {
+                            popUpTo("SchermataCreazioneAsta") {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.crea_asta_icon),
+                            contentDescription = "Crea Asta"
+                        )
+                    }
+                )
+                NavigationBarItem(
+                    label = { Text(text = "Profilo") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("SchermataProfiloUtente") {
+                            popUpTo("SchermataProfiloUtente") {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.usericon),
+                            contentDescription = "ProfiloUtente"
+                        )
+                    }
+                )
 
-
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-            IconWithText(
-                iconId = R.drawable.line_chart_svgrepo_com,
-                text = "Gestisci Aste",
-                ""
-            )
-
-
-
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-            IconWithText(
-                iconId = R.drawable.hand_money_cash_hold_svgrepo_com,
-                text = "Crea Asta",
-                ""
-            )
-
-
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-            IconWithText(
-                iconId = R.drawable.baseline_manage_accounts_24,
-                text = "Profilo",
-                "SchermataProfiloUtente"
-            )
-
-
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-        }
+            }
+        )
     }
 }
 
