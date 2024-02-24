@@ -40,7 +40,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,14 +67,18 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Utente
+import com.example.dietideals_app.model.dto.DatiProfiloUtente
 import com.example.dietideals_app.model.enum.RuoloUtente
+import com.example.dietideals_app.presenter.PaginaProfiloUtentePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
+import java.util.UUID
 
 class PaginaProfiloUtente : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,6 +107,7 @@ class PaginaProfiloUtente : ComponentActivity() {
 @Composable
 fun SchermataProfiloUtente(navController: NavController) {
 
+    val presenter = PaginaProfiloUtentePresenter()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val previousBackStackEntry = navController.previousBackStackEntry
@@ -114,32 +124,18 @@ fun SchermataProfiloUtente(navController: NavController) {
     val creaAsta = R.drawable.hand_money_cash_hold_svgrepo_com
     val account = R.drawable.baseline_manage_accounts_24
     val colorGreen = 0xFF0EA639
+    var datiProfiloUtente by remember { mutableStateOf<DatiProfiloUtente?>(null) }
 
-    val utente = Utente(
-        "mrossi",
-        "mario.rossi@example.com",
-        "password123",
-        "Mario",
-        "Rossi",
-        LocalDate.of(1990, 5, 15),
-        "12345678999",
-        File("path/file"),
-        File("path/file"),
-        null,
-        mutableSetOf(),
-        mutableSetOf(),
-        mutableSetOf(),
-        mutableSetOf(),
-        RuoloUtente.COMPRATORE,
-        "Sono Mario Rossi, un appassionato venditore di aste con una vasta esperienza nel settore." +
-                " Offro una selezione di oggetti unici e preziosi, curando ogni dettaglio delle mie aste per garantire esperienze indimenticabili ai miei acquirenti." +
-                "Conosco il valore degli oggetti che metto all'asta e mi impegno a offrire un servizio clienti impeccabile." + "Sono qui per fornire autenticità, qualità e emozioni nel mondo delle aste.",
-        "www.marione.com",
-        "Via Roma, 123, 00100, Roma, Italia",
-        "instagram",
-        "facebook",
-        "twitter"
-    )
+    LaunchedEffect(Unit) {
+        val uuidString = navController.previousBackStackEntry?.savedStateHandle?.get<String>("idUtente")
+        println(uuidString)
+        datiProfiloUtente = if (uuidString.isNullOrBlank()){
+            presenter.visualizzaDatiUtente(null)
+        } else {
+            presenter.visualizzaDatiUtente(UUID.fromString(uuidString))
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -267,15 +263,16 @@ fun SchermataProfiloUtente(navController: NavController) {
                             contentDescription = null,
                             modifier = Modifier
                                 .clickable {
-                                    if (previousDestination == "SchermataPaginaAsta"){
+                                    if (previousDestination == "SchermataPaginaAsta") {
                                         navController.popBackStack()
-                                    }else{
+                                    } else {
 
-                                    scope.launch {
-                                        drawerState.apply {
-                                            if (isClosed) open() else close()
+                                        scope.launch {
+                                            drawerState.apply {
+                                                if (isClosed) open() else close()
+                                            }
                                         }
-                                    }}
+                                    }
                                     // Azione da eseguire quando si clicca sull'icona di navigazione
                                 }
                                 .size(35.dp)
@@ -325,7 +322,7 @@ fun SchermataProfiloUtente(navController: NavController) {
 
                 }
                 Text(
-                    text = "MARIO ROSSI",
+                    text = datiProfiloUtente?.nome + " " + datiProfiloUtente?.cognome,
                     modifier = Modifier
                         .constrainAs(nomeUtente)
                         {
@@ -338,7 +335,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     fontWeight = FontWeight.Bold, // Imposta il grassetto
                 )
                 Text(
-                    text = "@" + utente.username,
+                    text = "@" + datiProfiloUtente?.username,
                     modifier = Modifier
                         .constrainAs(usernameUtente) {
                             top.linkTo(nomeUtente.bottom)
@@ -364,7 +361,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
-                utente.descrizione?.let {
+                datiProfiloUtente?.descrizione?.let {
                     Text(
                         text = it,
                         modifier = Modifier
@@ -410,7 +407,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                                 fontSize = 20.sp
                             )
                         ) {
-                            append(utente.sitoWeb)
+                            append(datiProfiloUtente?.sitoWeb)
                             addStringAnnotation("URL", "https://www.example.com", 0, length)
                         }
                     }
@@ -523,7 +520,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     )
 
                     Spacer(modifier = Modifier.width(10.dp))
-                    utente.indirizzo?.let {
+                    datiProfiloUtente?.indirizzo?.let {
                         Text(
                             text = it,
                             modifier = Modifier.weight(1f),

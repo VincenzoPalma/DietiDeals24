@@ -1,6 +1,8 @@
 package com.example.dietideals_app.view
 
+import android.content.Context
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.tween
@@ -30,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,19 +59,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
-import com.example.dietideals_app.model.enum.TipoAsta
-import com.example.dietideals_app.presenter.AutenticazionePresenter
-import com.example.dietideals_app.repository.ApiAsta
-import com.example.dietideals_app.repository.ApiUtente
-import com.example.dietideals_app.repository.AstaRepository
-import com.example.dietideals_app.repository.UtenteRepository
-import com.example.dietideals_app.repository.interfacceRepository.AstaService
+import com.example.dietideals_app.presenter.PaginaAutenticazionePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.UUID
 import java.util.regex.Pattern
 
 class MainActivity : ComponentActivity() {
@@ -95,7 +95,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
                         composable("SchermataHome") { SchermataHome(navController = navController) }
-                        composable("SchermataProfiloUtente") { SchermataProfiloUtente(navController = navController) }
+                        composable("SchermataProfiloUtente") {
+                            SchermataProfiloUtente(navController = navController) }
                         composable("SchermataModificaProfilo") {
                             SchermataModificaProfilo(
                                 navController = navController
@@ -122,8 +123,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SchermataAutenticazione(navController: NavController) {
-    val presenter =
-        AutenticazionePresenter() // Istanza del presenter per la gestione dell'autenticazione
+    val presenter = PaginaAutenticazionePresenter() // Istanza del presenter per la gestione dell'autenticazione
     var email by remember { mutableStateOf("") } // Variabile per memorizzare l'email
 
 
@@ -144,6 +144,7 @@ fun SchermataAutenticazione(navController: NavController) {
     val logoGoogle = R.drawable.googleicon
     val logoGitHub = R.drawable.githubicon
     val logoApp = painterResource(id = R.drawable.iconaapp)
+
 
     var passwordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della password
     var isLoginEnabled by remember { mutableStateOf(false) } // Variabile per tenere traccia dello stato del bottone di login
@@ -279,8 +280,9 @@ fun SchermataAutenticazione(navController: NavController) {
             keyboardActions = KeyboardActions(
                 onDone = {
                     if (isLoginEnabled) {
-                        // Perform login action
-                        presenter.effettuaLogin(email, password)
+                        CoroutineScope(Dispatchers.Main).launch {
+
+                        }
                     }
                 }
             )
@@ -289,8 +291,8 @@ fun SchermataAutenticazione(navController: NavController) {
         // Bottone accesso
         ElevatedButton(
             onClick = {
-                if (isLoginEnabled) {
-                    presenter.effettuaLogin(email, password)
+                if (true) {
+                    //login
                 }
                 navController.navigate("SchermataHome") {
                     popUpTo(navController.graph.startDestinationId) {

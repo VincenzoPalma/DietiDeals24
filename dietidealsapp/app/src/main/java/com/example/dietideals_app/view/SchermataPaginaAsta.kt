@@ -39,6 +39,8 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -90,7 +92,7 @@ class PaginaAsta : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataPaginaAsta(navController: NavController) {
-    var timeLeft by rememberSaveable { mutableStateOf(0L) }
+    var timeLeft by rememberSaveable { mutableLongStateOf(0L) }
 
     fun formatTime(timeMillis: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(timeMillis)
@@ -118,21 +120,15 @@ fun SchermataPaginaAsta(navController: NavController) {
     val colorGreen = 0xFF0EA639
     val colorRed = 0xFF9B0404
     val context = LocalContext.current
-    val currentPage = remember { mutableStateOf(0) }
+    val currentPage = remember { mutableIntStateOf(0) }
     var openDialog = remember { mutableStateOf(false) }
     var offerta by remember { mutableStateOf("") }
     val aste = listOf("All'inglese", "Silenziosa", "Inversa")
     val tipoAsta = aste.random()
 
-
-
-
-
-
     rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         // Handle the result if needed
     }
-
 
     ConstraintLayout(
         modifier = Modifier
@@ -239,6 +235,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                     TextButton(
                         modifier = Modifier.padding(start = 5.dp),
                         onClick = {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(key = "idUtente", value = "76c21822-0ca8-4a31-a296-1aa48092bc0e") //inserire id dell'utente proprietario dell'asta
                             navController.navigate("SchermataProfiloUtente")
                         },
 
@@ -448,7 +445,7 @@ fun SchermataPaginaAsta(navController: NavController) {
 
         if (openDialog.value) {
 
-            when (currentPage.value) {
+            when (currentPage.intValue) {
                 0 -> {
                     BasicAlertDialog(
                         onDismissRequest = { openDialog.value = false },
@@ -511,7 +508,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                                         contentColor = Color.White,
                                         disabledContentColor = Color.Gray,
                                         disabledContainerColor = Color.Gray
-                                    ), onClick = { currentPage.value = 1 }) {
+                                    ), onClick = { currentPage.intValue = 1 }) {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.baseline_done_24),
@@ -532,7 +529,7 @@ fun SchermataPaginaAsta(navController: NavController) {
 
                 1 -> {
                     AlertDialog(
-                        onDismissRequest = { currentPage.value = 0 },
+                        onDismissRequest = { currentPage.intValue = 0 },
                         title = {
                             Text(
                                 text = "Attenzione!",
@@ -546,7 +543,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                         confirmButton = {
                             TextButton(
                                 onClick = {
-                                    currentPage.value = 2
+                                    currentPage.intValue = 2
                                 }
 
 
@@ -558,7 +555,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                         dismissButton = {
                             TextButton(
                                 onClick = {
-                                    currentPage.value = 0
+                                    currentPage.intValue = 0
                                 }, modifier = Modifier.padding(end = 100.dp)
                             ) {
                                 Text(
@@ -591,7 +588,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                             ) {
                                 TextButton(
                                     onClick = {
-                                        currentPage.value = 0
+                                        currentPage.intValue = 0
                                         openDialog.value = false
                                     }
 

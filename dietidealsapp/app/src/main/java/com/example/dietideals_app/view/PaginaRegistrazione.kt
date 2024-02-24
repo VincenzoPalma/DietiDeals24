@@ -76,7 +76,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
-import com.example.dietideals_app.presenter.AutenticazionePresenter
+import com.example.dietideals_app.presenter.PaginaAutenticazionePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
 import java.text.SimpleDateFormat
@@ -130,7 +130,7 @@ fun SchermataRegistrazione(navController: NavController) {
     val cognomeFocusRequester =
         remember { FocusRequester() } // Richiede il focus per l'input del cognome.
 
-    val presenter = AutenticazionePresenter()
+    val presenter = PaginaAutenticazionePresenter()
     val isDialogVisible = remember { mutableStateOf(false) }
 
     val state = rememberDatePickerState()
