@@ -300,13 +300,13 @@ fun SchermataModificaProfilo(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(2.dp)
             ) {
-                Icon(
+                Image(
                     painter = painterResource(id = iconId),
                     contentDescription = null,
                     modifier = Modifier
                         .size(30.dp)
                         .clickable { navController.navigate(route) },
-                    tint = color
+
 
                 )
 

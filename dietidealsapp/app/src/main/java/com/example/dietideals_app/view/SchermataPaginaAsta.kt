@@ -193,8 +193,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                     bottom.linkTo(parent.bottom)
                 }
                 .padding(top = 40.dp, start = 8.dp, end = 8.dp, bottom = 45.dp)
-                .clickable { navController.navigate("SchermataPaginaAsta") }
-                .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
+                ,
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp
             ), content = {
