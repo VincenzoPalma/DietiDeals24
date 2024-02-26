@@ -1,8 +1,7 @@
 package com.example.dietideals_app.view
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.tween
@@ -32,7 +31,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,11 +57,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
-import com.example.dietideals_app.presenter.PaginaAutenticazionePresenter
+import com.example.dietideals_app.viewmodel.PaginaAutenticazioneViewModel
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
 import com.google.firebase.Firebase
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
@@ -72,6 +69,8 @@ import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 class MainActivity : ComponentActivity() {
+
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -123,9 +122,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SchermataAutenticazione(navController: NavController) {
-    val presenter = PaginaAutenticazionePresenter() // Istanza del presenter per la gestione dell'autenticazione
+    val presenter = PaginaAutenticazioneViewModel() // Istanza del presenter per la gestione dell'autenticazione
     var email by remember { mutableStateOf("") } // Variabile per memorizzare l'email
-
+    val auth: FirebaseAuth = Firebase.auth
 
     fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z](.*)(@)(.+)(\\.)(.{1,})"
@@ -291,13 +290,20 @@ fun SchermataAutenticazione(navController: NavController) {
         // Bottone accesso
         ElevatedButton(
             onClick = {
-                if (true) {
-                    //login
-                }
-                navController.navigate("SchermataHome") {
-                    popUpTo(navController.graph.startDestinationId) {
-                        inclusive = false
-                    }
+                if (true /*isLoginEnabled*/) {
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                navController.navigate("SchermataHome") {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = false
+                                    }
+                                }
+                            } else {
+                                //errore login non riuscito
+                            }
+                        }
+
                 }
             },
             modifier = Modifier

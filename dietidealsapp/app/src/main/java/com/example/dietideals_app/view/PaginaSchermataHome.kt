@@ -87,6 +87,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Notifica
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -113,11 +116,12 @@ class PaginaSchermataHome : ComponentActivity() {
 @Composable
 fun SchermataHome(navController: NavController) {
 
+    val auth: FirebaseAuth = Firebase.auth
     val logoApp = painterResource(id = R.drawable.iconaapp)
     var isSearchVisible by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
     var isFilterVisible by remember { mutableStateOf(false) }
-    var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val auctionType = listOf("Inglese", "Silenziosa", "Inversa")
     val searchFocusRequester =
         remember { FocusRequester() }

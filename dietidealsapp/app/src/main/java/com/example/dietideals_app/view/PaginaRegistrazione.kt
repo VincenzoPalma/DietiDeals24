@@ -5,11 +5,13 @@ package com.example.dietideals_app.view
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,6 +50,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -76,14 +79,21 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
-import com.example.dietideals_app.presenter.PaginaAutenticazionePresenter
+import com.example.dietideals_app.model.ContoCorrente
+import com.example.dietideals_app.model.dto.UtenteRegistrazione
+import com.example.dietideals_app.model.enum.RuoloUtente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
+import com.example.dietideals_app.viewmodel.PaginaRegistrazioneViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
+import java.time.format.DateTimeFormatter
+import java.util.Formatter
 
 class RegistrazioneActivity : ComponentActivity() {
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -101,12 +111,12 @@ class RegistrazioneActivity : ComponentActivity() {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
 fun SchermataRegistrazione(navController: NavController) {
-    val background =
-        painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
+    val background = painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
 
 // Variabili per memorizzare le informazioni dell'utente.
     var username by remember { mutableStateOf("") } // Username
@@ -115,9 +125,7 @@ fun SchermataRegistrazione(navController: NavController) {
     var confermaPassword by remember { mutableStateOf("") } // Conferma della password
     var nome by remember { mutableStateOf("") } // Nome dell'utente
     var cognome by remember { mutableStateOf("") } // Cognome dell'utente
-
     var passwordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della password.
-
 
     val passwordFocusRequester =
         remember { FocusRequester() } // Richiede il focus per l'input della password.
@@ -130,103 +138,19 @@ fun SchermataRegistrazione(navController: NavController) {
     val cognomeFocusRequester =
         remember { FocusRequester() } // Richiede il focus per l'input del cognome.
 
-    val presenter = PaginaAutenticazionePresenter()
+    val viewModel = PaginaRegistrazioneViewModel()
     val isDialogVisible = remember { mutableStateOf(false) }
-
     val state = rememberDatePickerState()
     val openDialog = remember { mutableStateOf(false) }
+    val currentPage = remember { mutableIntStateOf(0) }
 
-    val currentPage = remember { mutableStateOf(0) }
 
-
-    when (currentPage.value) {
+    when (currentPage.intValue) {
         0 -> {
             ConstraintLayout(
                 modifier = Modifier.fillMaxSize()
             ) {
-
-
                 val (backgroundImage, title, emailTextField, usernameTextfield, passwordTextField, confermaPasswordTextfield, datiAngraficiText, nomeTextfield, dataDiNascitafield, bottoneAvanti) = createRefs()
-                fun isEmailValid(email: String): Boolean {
-                    // In questo esempio, si utilizza un'espressione regolare per verificare il formato dell'email
-                    val emailRegex = Regex("^[A-Za-z](.*)(@)(.+)(\\.)(.+)")
-                    return email.matches(emailRegex)
-                }
-
-
-                // Funzione di validazione dell'username
-                fun isUsernameValid(username: String): Boolean {
-                    // Puoi definire i criteri di validazione dell'username qui
-                    return username.isNotBlank()
-                }
-
-                // Funzione di validazione della password
-                fun isPasswordValid(password: String): Boolean {
-                    // Puoi definire i criteri di validazione della password qui (es. lunghezza minima)
-                    return password.length >= 8
-                }
-
-                // Funzione di verifica della corrispondenza tra password e conferma password
-                fun isPasswordMatching(password: String, confirmPassword: String): Boolean {
-                    return password == confirmPassword
-                }
-
-                // Funzione di validazione del nome
-                fun isNomeValid(nome: String): Boolean {
-                    // Puoi definire i criteri di validazione del nome qui
-                    return nome.isNotBlank()
-                }
-
-                // Funzione di validazione del cognome
-                fun isCognomeValid(cognome: String): Boolean {
-                    // Puoi definire i criteri di validazione del cognome qui
-                    return cognome.isNotBlank()
-                }
-
-                fun calculateAge(birthDate: Date, currentDate: Date): Int {
-                    val birthCalendar = Calendar.getInstance()
-                    val currentCalendar = Calendar.getInstance()
-
-                    birthCalendar.time = birthDate
-                    currentCalendar.time = currentDate
-
-                    var age = currentCalendar.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR)
-
-                    // Riduci l'età di uno se la data di nascita non è ancora arrivata quest'anno
-                    if (currentCalendar.get(Calendar.DAY_OF_YEAR) < birthCalendar.get(Calendar.DAY_OF_YEAR)) {
-                        age--
-                    }
-
-                    return age
-                }
-
-                fun isUserAdult(selectedDateMillis: Long?): Boolean {
-                    // Verifica se la data di nascita è stata selezionata
-                    if (selectedDateMillis == null) {
-                        return false
-                    }
-
-                    // Calcola la data corrente
-                    val currentDate = Calendar.getInstance().time
-
-                    // Ottieni la data di nascita dall'input dell'utente
-                    val birthDate = Date(selectedDateMillis)
-
-                    // Calcola l'età dell'utente
-                    val age = calculateAge(birthDate, currentDate)
-
-                    // Verifica se l'utente è maggiorenne (ad esempio, se ha almeno 18 anni)
-                    return age >= 18
-                }
-
-                fun checkFields(): Boolean {
-                    // Verifica qui tutti i campi e restituisci true solo se sono tutti compilati correttamente
-                    return isEmailValid(email) && isUsernameValid(username) && isPasswordValid(
-                        password
-                    ) && isPasswordMatching(
-                        password, confermaPassword
-                    ) && isNomeValid(nome) && isCognomeValid(cognome) && isUserAdult(state.selectedDateMillis)
-                }
                 // Immagine di background
                 Image(
                     painter = background,
@@ -259,7 +183,6 @@ fun SchermataRegistrazione(navController: NavController) {
                             .size(35.dp)  // Imposta la dimensione dell'icona
                             .clickable {
                                 // Aggiungi l'azione desiderata quando viene cliccata l'icona
-                                presenter.effettuaRegistrazione()
                                 navController.navigate("SchermataAutenticazione")
                             },
                         tint = Color.White
@@ -289,7 +212,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     value = email,
                     onValueChange = {
                         email = it
-                        isValidEmail = isEmailValid(it)
+                        isValidEmail = viewModel.isEmailValid(it)
                     },
                     trailingIcon = {
                         Icon(
@@ -371,7 +294,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     },
                     onValueChange = {
                         username = it
-                        isValidUsername = isUsernameValid(username)
+                        isValidUsername = viewModel.isUsernameValid(username)
                     },
 
                     label = {
@@ -434,8 +357,8 @@ fun SchermataRegistrazione(navController: NavController) {
                     },
                     onValueChange = {
                         password = it
-                        isValidPassword = isPasswordValid(it)
-                        matchedPassword = isPasswordMatching(it, confermaPassword)
+                        isValidPassword = viewModel.isPasswordValid(it)
+                        matchedPassword = viewModel.isPasswordMatching(it, confermaPassword)
                     },
                     label = {
                         Text(
@@ -497,8 +420,8 @@ fun SchermataRegistrazione(navController: NavController) {
                     },
                     onValueChange = {
                         confermaPassword = it
-                        matchedPassword = isPasswordMatching(password, it)
-                        isValidConfirmedPassword = isPasswordValid(confermaPassword)
+                        matchedPassword = viewModel.isPasswordMatching(password, it)
+                        isValidConfirmedPassword = viewModel.isPasswordValid(confermaPassword)
                     },
                     label = {
                         Text(
@@ -552,7 +475,7 @@ fun SchermataRegistrazione(navController: NavController) {
                         value = nome,
                         onValueChange = {
                             nome = it
-                            isValidName = isNomeValid(it)
+                            isValidName = viewModel.isNomeValid(it)
                         },
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedBorderColor = if (isValidName) Color(0xFF0EA639) else Color.Gray,
@@ -581,7 +504,7 @@ fun SchermataRegistrazione(navController: NavController) {
                         value = cognome,
                         onValueChange = {
                             cognome = it
-                            isValidCognome = isCognomeValid(it)
+                            isValidCognome = viewModel.isCognomeValid(it)
                         },
                         shape = RoundedCornerShape(15.dp),
                         label = {
@@ -602,15 +525,6 @@ fun SchermataRegistrazione(navController: NavController) {
                     )
                 }
 
-
-
-                @SuppressLint("SimpleDateFormat")
-                fun convertMillisToDate(millis: Long): String {
-                    val formatter = SimpleDateFormat("dd/MM/yyyy")
-                    return formatter.format(Date(millis))
-                }
-
-
                 OutlinedButton(
                     onClick = { openDialog.value = true },
 
@@ -626,29 +540,29 @@ fun SchermataRegistrazione(navController: NavController) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_calendar_month_24),
                         contentDescription = null,
-                        tint = if (isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
+                        tint = if (viewModel.isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
                             0xFF0EA639
-                        ) else if (!isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
+                        ) else if (!viewModel.isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
                             0xFF9B0404
                         ) else (Color.Gray)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (state.selectedDateMillis == null) "Nato il DD/MM/YYYY" else "Nato il " + convertMillisToDate(
+                        text = if (state.selectedDateMillis == null) "Nato il DD/MM/YYYY" else "Nato il " + viewModel.convertMillisToDate(
                             state.selectedDateMillis!!
-                        ),
-                        color = if (isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
+                        ).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString(),
+                        color = if (viewModel.isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
                             0xFF0EA639
-                        ) else if (!isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
+                        ) else if (!viewModel.isUserAdult(state.selectedDateMillis) && state.selectedDateMillis != null) Color(
                             0xFF9B0404
                         ) else (Color.Gray)
                     )
                 }
                 ElevatedButton(
                     onClick = {
-                        currentPage.value = 1
+                        currentPage.intValue = 1
                     },
-                    enabled = checkFields(),
+                    enabled = viewModel.checkFields(email, password, confermaPassword, nome, cognome, username, state),
                     modifier = Modifier// Posiziona il pulsante in basso a destra
                         .padding(16.dp)
                         .constrainAs(bottoneAvanti) {
@@ -735,7 +649,7 @@ fun SchermataRegistrazione(navController: NavController) {
                         modifier = Modifier
                             .size(35.dp)
                             .clickable {
-                                currentPage.value = 0
+                                currentPage.intValue = 0
                             },
                         tint = Color.White
                     )
@@ -813,7 +727,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     }, fontFamily = titleCustomFont
                 )
                 ElevatedButton(onClick = {
-                    currentPage.value = 2
+                    currentPage.intValue = 2
                 }, modifier = Modifier.constrainAs(bottoneAvanti) {
                     top.linkTo(testoOpzionale.bottom, margin = 100.dp)
                     bottom.linkTo(parent.bottom, margin = 16.dp)
@@ -869,7 +783,7 @@ fun SchermataRegistrazione(navController: NavController) {
                         modifier = Modifier
                             .size(35.dp)
                             .clickable {
-                                currentPage.value = 1
+                                currentPage.intValue = 1
                             },
                         tint = Color.White
                     )
@@ -934,7 +848,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     // Bottone "DIVENTA UN VENDITORE"
                     ElevatedButton(
                         onClick = {
-                            currentPage.value = 3
+                            currentPage.intValue = 3
                         },
 
                         modifier = Modifier
@@ -950,6 +864,9 @@ fun SchermataRegistrazione(navController: NavController) {
                     }
                     TextButton(
                         onClick = {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, null, null, null, null))
+                            }
                             isDialogVisible.value = true
                         },
                         // Aggiungi un margine inferiore
@@ -983,35 +900,18 @@ fun SchermataRegistrazione(navController: NavController) {
 
 
             var partitaIva by remember { mutableStateOf("") } //11 caratteri numerici
-            fun isValidPartitaIva(partitaIva: String): Boolean {
-                return partitaIva.length == 11 && partitaIva.all { it.isDigit() }
-            }
 
             var nomeTitolare by remember { mutableStateOf("") }
-            fun isValidNomeTitolare(nomeTitolare: String): Boolean {
-                return nomeTitolare.isNotBlank()
-            }
 
             var codiceBicSwift by remember { mutableStateOf("") } //8-11 cifre
-            fun isValidCodiceBicSwift(codiceBicSwift: String): Boolean {
-                return codiceBicSwift.length in 8..11
-            }
 
             var iban by remember { mutableStateOf("") } /*27caratteri lettere e numeri*/
-            fun isValidIban(iban: String): Boolean {
-                return iban.length == 27 && iban.matches(Regex("[A-Za-z0-9]+"))
-            }
 
 
             var isCodiceBicSwiftValid by remember { mutableStateOf(false) }
+            var isNomeTitolareValid by remember { mutableStateOf(false) }
             var isIbanValid by remember { mutableStateOf(false) }
             var isPartitaIvaValid by remember { mutableStateOf(false) }
-
-            fun checkFields(): Boolean {
-                return isValidNomeTitolare(nomeTitolare) && isValidCodiceBicSwift(codiceBicSwift) && isValidIban(
-                    iban
-                ) && isValidPartitaIva(partitaIva)
-            }
 
             val nomeTitolareFocusRequester = remember { FocusRequester() }
             val bicSwiftCodeFocusReqeuster = remember { FocusRequester() }
@@ -1119,7 +1019,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     value = partitaIva,
                     onValueChange = {
                         partitaIva = it
-                        isPartitaIvaValid = isValidPartitaIva(it)
+                        isPartitaIvaValid = viewModel.isValidPartitaIva(it)
                     },
                     label = {
                         Text(
@@ -1185,31 +1085,33 @@ fun SchermataRegistrazione(navController: NavController) {
                 )
                 OutlinedTextField(
                     value = nomeTitolare,
-                    onValueChange = { nomeTitolare = it },
+                    onValueChange = { nomeTitolare = it
+                        isNomeTitolareValid = viewModel.isValidNomeTitolare(it)
+                                    },
                     label = {
                         Text(
                             "Nome Titolare",
-                            color = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Black
+                            color = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Black
                         )
                     },
 
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
-                        focusedBorderColor = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
+                        unfocusedBorderColor = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
+                        focusedBorderColor = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
                     ),
                     leadingIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_account_circle_24),
                             contentDescription = null,
-                            tint = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
+                            tint = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
                         )
                     },
                     trailingIcon = {
                         Icon(
-                            painter = painterResource(id = if (nomeTitolare.isNotEmpty()) R.drawable.baseline_done_24 else R.drawable.empty),
+                            painter = painterResource(id = if (isNomeTitolareValid) R.drawable.baseline_done_24 else R.drawable.empty),
                             contentDescription = null,
-                            tint = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
-                            modifier = if (nomeTitolare.isEmpty()) Modifier.alpha(0f) else Modifier
+                            tint = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
+                            modifier = if (isNomeTitolareValid) Modifier.alpha(0f) else Modifier
                         )
                     },
                     modifier = Modifier
@@ -1235,7 +1137,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     value = codiceBicSwift,
                     onValueChange = {
                         codiceBicSwift = it
-                        isCodiceBicSwiftValid = isValidCodiceBicSwift(it)
+                        isCodiceBicSwiftValid = viewModel.isValidCodiceBicSwift(it)
                     },
                     label = {
                         Text(
@@ -1296,7 +1198,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     value = iban,
                     onValueChange = {
                         iban = it
-                        isIbanValid = isValidIban(it)
+                        isIbanValid = viewModel.isValidIban(it)
                     },
                     label = {
                         Text(
@@ -1364,7 +1266,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     // Bottone Annulla
                     ElevatedButton(
                         onClick = {
-                            currentPage.value = 2
+                            currentPage.intValue = 2
                         },
 
                         colors = ButtonColors(
@@ -1383,12 +1285,13 @@ fun SchermataRegistrazione(navController: NavController) {
 
                     // Bottone Conferma
                     ElevatedButton(
-                        enabled = checkFields(),
+                        enabled = viewModel.checkFieldsDatiVenditore(nomeTitolare, codiceBicSwift, partitaIva, iban),
                         onClick = {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, partitaIva, null, null, ContoCorrente(nomeTitolare, codiceBicSwift, iban)))
+                            }
                             isDialogVisible.value = true
-
                         },
-
                         ) {
                         Text(
                             text = "CONFERMA",
@@ -1424,10 +1327,7 @@ fun SchermataRegistrazione(navController: NavController) {
                         navController.navigate("SchermataAutenticazione")
                     }) {
                         Text(text = "ACCEDI", fontSize = 20.sp)
-
                     }
-
-
                 }
             }
         }
@@ -1435,6 +1335,7 @@ fun SchermataRegistrazione(navController: NavController) {
 }
 
 
+@SuppressLint("NewApi")
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegisterScreen() {

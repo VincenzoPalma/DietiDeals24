@@ -67,14 +67,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Utente
 import com.example.dietideals_app.model.dto.DatiProfiloUtente
 import com.example.dietideals_app.model.enum.RuoloUtente
-import com.example.dietideals_app.presenter.PaginaProfiloUtentePresenter
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.viewmodel.PaginaProfiloUtenteViewModel
+import com.example.dietideals_app.viewmodel.listener.DatiUtenteListener
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
@@ -90,11 +90,6 @@ class PaginaProfiloUtente : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-
-
-
-
-
                 }
             }
         }
@@ -107,7 +102,7 @@ class PaginaProfiloUtente : ComponentActivity() {
 @Composable
 fun SchermataProfiloUtente(navController: NavController) {
 
-    val presenter = PaginaProfiloUtentePresenter()
+    val viewModel = PaginaProfiloUtenteViewModel()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val previousBackStackEntry = navController.previousBackStackEntry
@@ -126,13 +121,25 @@ fun SchermataProfiloUtente(navController: NavController) {
     val colorGreen = 0xFF0EA639
     var datiProfiloUtente by remember { mutableStateOf<DatiProfiloUtente?>(null) }
 
+    val listener = remember {
+        object : DatiUtenteListener {
+            override fun onDataLoaded(datiUtente: DatiProfiloUtente?) {
+                datiProfiloUtente = datiUtente
+            }
+
+            override fun onError() {
+                // Gestisci l'errore
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
-        val uuidString = navController.previousBackStackEntry?.savedStateHandle?.get<String>("idUtente")
-        println(uuidString)
-        datiProfiloUtente = if (uuidString.isNullOrBlank()){
-            presenter.visualizzaDatiUtente(null)
+        val uuidString =
+            navController.previousBackStackEntry?.savedStateHandle?.get<String>("idUtente")
+        if (uuidString.isNullOrBlank()) {
+            viewModel.visualizzaDatiUtente(null, listener)
         } else {
-            presenter.visualizzaDatiUtente(UUID.fromString(uuidString))
+            viewModel.visualizzaDatiUtente(UUID.fromString(uuidString), listener)
         }
     }
 
@@ -259,7 +266,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                 },
                     navigationIcon = {
                         Icon(
-                            painter = if (previousDestination == "SchermataPaginaAsta")backIcon else menuIcon,
+                            painter = if (previousDestination == "SchermataPaginaAsta") backIcon else menuIcon,
                             contentDescription = null,
                             modifier = Modifier
                                 .clickable {
@@ -284,19 +291,22 @@ fun SchermataProfiloUtente(navController: NavController) {
                         actionIconContentColor = Color.White,
                         scrolledContainerColor = Color.White
                     ),
-                    actions = {if (previousDestination == "SchermataPaginaAsta"){}else{
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_brush_24),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .clickable {
-                                    navController.navigate("SchermataModificaProfilo")
+                    actions = {
+                        if (previousDestination == "SchermataPaginaAsta") {
+                        } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_brush_24),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .clickable {
+                                        navController.navigate("SchermataModificaProfilo")
 
-                                }
-                                .size(40.dp)
+                                    }
+                                    .size(40.dp)
 
-                        )
-                    }}
+                            )
+                        }
+                    }
                 )
                 val screenWidth = LocalDensity.current.run {
                     LocalConfiguration.current.screenWidthDp.dp
@@ -532,7 +542,8 @@ fun SchermataProfiloUtente(navController: NavController) {
 
 
                 }
-                if (previousDestination == "SchermataPaginaAsta"){}else{
+                if (previousDestination == "SchermataPaginaAsta") {
+                } else {
                     NavigationBar(
                         tonalElevation = 30.dp,
                         modifier = Modifier
@@ -626,7 +637,7 @@ fun SchermataProfiloUtente(navController: NavController) {
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SchermataUtente(navController: NavController){
+fun SchermataUtente(navController: NavController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -645,8 +656,6 @@ fun SchermataUtente(navController: NavController){
 
     val utente = Utente(
         "mrossi",
-        "mario.rossi@example.com",
-        "password123",
         "Mario",
         "Rossi",
         LocalDate.of(1990, 5, 15),

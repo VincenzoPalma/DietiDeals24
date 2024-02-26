@@ -4,7 +4,7 @@ import com.example.dietideals_app.model.enum.RuoloUtente
 import java.io.File
 import java.time.LocalDate
 
-class Utente(val username: String, val email: String, val password: String,
+class Utente(val username: String,
              val nome: String, val cognome: String, val dataDiNascita: LocalDate,
              var partitaIva: String, var documentoRiconoscimento: File,var immagineProfilo: File,
              var contoCorrente: ContoCorrente?, var carteAssociate: MutableSet<Carta> = mutableSetOf(),
