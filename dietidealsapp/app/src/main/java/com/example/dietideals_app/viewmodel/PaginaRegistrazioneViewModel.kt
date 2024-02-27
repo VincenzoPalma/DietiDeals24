@@ -19,7 +19,7 @@ class PaginaRegistrazioneViewModel {
 
     fun isEmailValid(email: String): Boolean {
         // In questo esempio, si utilizza un'espressione regolare per verificare il formato dell'email
-        val emailRegex = Regex("^[A-Za-z](.*)(@)(.+)(\\.)(.+)")
+        val emailRegex = Regex("^[A-Za-z](.*)(@)(.+)(\\.com|it)\$")
         return email.matches(emailRegex)
     }
 
@@ -130,5 +130,15 @@ class PaginaRegistrazioneViewModel {
         withContext(Dispatchers.IO) {
             utenteRepository.createUtente(datiRegistrazione)
         }
+    }
+
+    suspend fun doesEmailExist(email: String) : Boolean {
+        val utente = utenteRepository.getUtenteByEmail(email)
+        return utente != null
+    }
+
+    suspend fun doesUsernameExist(username: String) : Boolean {
+        val utente = utenteRepository.getUtenteByUsername(username)
+        return utente != null
     }
 }

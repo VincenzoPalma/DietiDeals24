@@ -44,7 +44,7 @@ object RetrofitClient {
                     .build()
                 chain.proceed(newRequest)
             } else {
-                println("non autenticato")
+                println("non autenticato") //gestire errori
                 chain.proceed(chain.request())
             }
         }.build()
@@ -65,7 +65,7 @@ object RetrofitClient {
 
     object ApiRegistrazione {
         val utenteService: UtenteService by lazy {
-            RetrofitClient.retrofitWithoutAuthorization.create(UtenteService::class.java)
+            retrofitWithoutAuthorization.create(UtenteService::class.java)
         }
 
     }

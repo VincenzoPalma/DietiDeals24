@@ -199,8 +199,11 @@ fun SchermataRegistrazione(navController: NavController) {
                 }
 
                 var isValidEmail by remember { mutableStateOf(false) }
+                var emailExists by remember { mutableStateOf(false) }
 // Text Field E-mail
-                OutlinedTextField(label = {
+                OutlinedTextField(
+                    supportingText = { Text(text = if (emailExists) "E-mail non disponibile" else "", color = MaterialTheme.colorScheme.error)},
+                    label = {
                     Text(
                         "E-mail",
                         color = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(
@@ -260,7 +263,10 @@ fun SchermataRegistrazione(navController: NavController) {
 
 // Text Field Username
                 var isValidUsername by remember { mutableStateOf(false) }
-                OutlinedTextField(value = username,
+                var usernameExists by remember { mutableStateOf(false) }
+                OutlinedTextField(
+                    supportingText = { Text(text = if (usernameExists) "Username non disponibile" else "", color = MaterialTheme.colorScheme.error)},
+                    value = username,
                     shape = RoundedCornerShape(15.dp),
                     leadingIcon = {
                         Icon(
@@ -560,7 +566,13 @@ fun SchermataRegistrazione(navController: NavController) {
                 }
                 ElevatedButton(
                     onClick = {
-                        currentPage.intValue = 1
+                        CoroutineScope(Dispatchers.Main).launch {
+                            emailExists = viewModel.doesEmailExist(email)
+                            usernameExists = viewModel.doesUsernameExist(username)
+                            if(!emailExists && !usernameExists){
+                                currentPage.intValue = 1
+                            }
+                        }
                     },
                     enabled = viewModel.checkFields(email, password, confermaPassword, nome, cognome, username, state),
                     modifier = Modifier// Posiziona il pulsante in basso a destra
@@ -1305,7 +1317,7 @@ fun SchermataRegistrazione(navController: NavController) {
 
     }
     if (isDialogVisible.value) {
-        Dialog(onDismissRequest = { isDialogVisible.value = false }) {
+        Dialog(onDismissRequest = {}) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)

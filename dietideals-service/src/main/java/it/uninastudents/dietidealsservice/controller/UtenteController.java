@@ -6,6 +6,7 @@ import it.uninastudents.dietidealsservice.model.dto.UtenteRegistrazione;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.service.UtenteService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +21,24 @@ public class UtenteController {
     private final UtenteService utenteService;
 
     @PostMapping("/registrazione")
-    public ResponseEntity<Utente> saveUtente(@RequestBody @Valid UtenteRegistrazione datiRegistrazione) throws FirebaseAuthException {
+    public ResponseEntity<Utente> saveUtente(@RequestBody @Valid UtenteRegistrazione datiRegistrazione) {
         Utente utente = utenteService.registraUtente(datiRegistrazione);
-        return ResponseEntity.created(URI.create("/registrazione/%s".formatted(utente.getId()))).body(utente);
+        if (utente != null){
+            return ResponseEntity.created(URI.create("/registrazione/%s".formatted(utente.getId()))).body(utente);
+        }
+        return ResponseEntity.badRequest().body(null);
+    }
+
+    @GetMapping("/registrazione/esisteEmail/{email}")
+    public ResponseEntity<Utente> getUtenteByEmail(@PathVariable @Email String email){
+        Utente utente = utenteService.getUtenteByEmail(email);
+        return ResponseEntity.ok(utente);
+    }
+
+    @GetMapping("/registrazione/esisteUsername/{username}")
+    public ResponseEntity<Utente> getUtenteByUsername(@PathVariable String username){
+        Utente utente = utenteService.getUtenteByUsername(username);
+        return ResponseEntity.ok(utente);
     }
 
     @PutMapping("/utente/modificaDatiUtente")
@@ -30,6 +46,7 @@ public class UtenteController {
         Utente utente = utenteService.modificaDatiUtente(datiProfiloUtente);
         return ResponseEntity.ok().location(URI.create("/utente/%s/datiUtente".formatted(utente.getId()))).body(utente);
     }
+
 
     @GetMapping("/utente/datiUtente")
     public ResponseEntity<DatiProfiloUtente> getDatiUtente(@RequestParam(name = "idUtente", required = false) UUID idUtente) {

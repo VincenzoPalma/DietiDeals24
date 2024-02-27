@@ -8,7 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 
-interface ContoCorrenteController {
+interface ContoCorrenteService {
 
     @POST("utente/contoCorrente")
     fun saveContoCorrente(@Body creaContoCorrente: CreaContoCorrente) : Call<ContoCorrente>

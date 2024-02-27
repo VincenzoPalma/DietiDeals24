@@ -27,7 +27,7 @@ public class Utente extends BaseEntity {
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private RuoloUtente ruolo;
 
     @Column(nullable = false)

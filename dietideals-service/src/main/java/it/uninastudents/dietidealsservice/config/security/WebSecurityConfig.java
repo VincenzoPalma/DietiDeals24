@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -33,8 +34,8 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .authorizeHttpRequests(it -> it.requestMatchers("/registrazione").permitAll())
-                .authorizeHttpRequests(it -> it.requestMatchers("*/**").permitAll()) //cambiare in auth
+                .authorizeHttpRequests(it -> it.requestMatchers("/registrazione/**").permitAll())
+                .authorizeHttpRequests(it -> it.requestMatchers("*/**").authenticated())
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(it -> it.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(it -> it.authenticationEntryPoint(restAuthenticationEntryPoint()))

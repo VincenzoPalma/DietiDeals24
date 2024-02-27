@@ -6,6 +6,7 @@ import com.example.dietideals_app.model.dto.UtenteRegistrazione
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okio.Buffer
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -44,19 +45,68 @@ class UtenteRepository {
                     call: Call<Utente>,
                     response: Response<Utente>
                 ) {
+                    val requestBody = call.request().body()
+                    val buffer = Buffer()
+                    requestBody?.writeTo(buffer)
+                    val requestBodyString = buffer.readUtf8()
+                    println("Request body: $requestBodyString")
+                    println(response.code())
                     if (response.isSuccessful) {
                         val risultato = response.body()
-                        if (risultato != null) {
-                            println(risultato.username)
-                        }
+                        println(risultato)
                         deferred.complete(risultato)
                     } else {
-                        println(response.code())
                         deferred.complete(null)
                     }
                 }
                 override fun onFailure(call: Call<Utente>, t: Throwable) {
                     println(t.message)
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
+
+    suspend fun getUtenteByEmail(email: String): Utente? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Utente?>()
+            RetrofitClient.ApiRegistrazione.utenteService.getUtenteByEmail(email).enqueue(object :
+                Callback<Utente> {
+                override fun onResponse(
+                    call: Call<Utente>,
+                    response: Response<Utente>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<Utente>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
+
+    suspend fun getUtenteByUsername(username: String): Utente? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Utente?>()
+            RetrofitClient.ApiRegistrazione.utenteService.getUtenteByUsername(username).enqueue(object :
+                Callback<Utente> {
+                override fun onResponse(
+                    call: Call<Utente>,
+                    response: Response<Utente>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<Utente>, t: Throwable) {
                     deferred.complete(null)
                 }
             })

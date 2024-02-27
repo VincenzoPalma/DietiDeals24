@@ -1,6 +1,7 @@
 package com.example.dietideals_app.view
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +43,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,11 +65,11 @@ import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.regex.Pattern
 
 class MainActivity : ComponentActivity() {
 
@@ -89,7 +92,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("SchermataAutenticazione") {
                             SchermataAutenticazione(
-                                navController = navController
+                                navController = navController, this@MainActivity
                             )
                         }
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
@@ -121,18 +124,12 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun SchermataAutenticazione(navController: NavController) {
+fun SchermataAutenticazione(navController: NavController, activity: Activity) {
     val presenter = PaginaAutenticazioneViewModel() // Istanza del presenter per la gestione dell'autenticazione
     var email by remember { mutableStateOf("") } // Variabile per memorizzare l'email
-    val auth: FirebaseAuth = Firebase.auth
-
-    fun isValidEmail(email: String): Boolean {
-        val emailRegex = "^[A-Za-z](.*)(@)(.+)(\\.)(.{1,})"
-        val pattern = Pattern.compile(emailRegex)
-        val matcher = pattern.matcher(email)
-        return matcher.matches()
-    }
-
+    val firebaseAuth: FirebaseAuth = Firebase.auth
+    val oAuthGitHubProvider = OAuthProvider.newBuilder("github.com")
+    val pendingResultTask = firebaseAuth.pendingAuthResult
 
     var password by remember { mutableStateOf("") } // Variabile per memorizzare la password
     val passwordFocusRequester =
@@ -147,6 +144,13 @@ fun SchermataAutenticazione(navController: NavController) {
 
     var passwordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della password
     var isLoginEnabled by remember { mutableStateOf(false) } // Variabile per tenere traccia dello stato del bottone di login
+    var loginFailed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (firebaseAuth.currentUser != null) {
+            firebaseAuth.signOut()
+        }
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -238,6 +242,7 @@ fun SchermataAutenticazione(navController: NavController) {
 
         // Text field password
         OutlinedTextField(
+            supportingText = { Text(text = if(loginFailed) "Utente non trovato" else "", color = MaterialTheme.colorScheme.error)},
             value = password,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
             shape = RoundedCornerShape(15.dp),
@@ -290,8 +295,8 @@ fun SchermataAutenticazione(navController: NavController) {
         // Bottone accesso
         ElevatedButton(
             onClick = {
-                if (true /*isLoginEnabled*/) {
-                    auth.signInWithEmailAndPassword(email, password)
+                if (isLoginEnabled) {
+                    firebaseAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 navController.navigate("SchermataHome") {
@@ -300,7 +305,7 @@ fun SchermataAutenticazione(navController: NavController) {
                                     }
                                 }
                             } else {
-                                //errore login non riuscito
+                                loginFailed = true
                             }
                         }
 
@@ -314,13 +319,12 @@ fun SchermataAutenticazione(navController: NavController) {
                 }
                 .width(140.dp)
                 .height(48.dp),
-            enabled = true, //isLoginEnabled,
+            enabled = isLoginEnabled,
         ) {
             Text("ACCEDI", fontSize = 20.sp)
         }
 
         // Icone social
-
         @Composable
         fun IconWithText(iconId: Int, text: String, route: String) {
             Column(
@@ -387,8 +391,31 @@ fun SchermataAutenticazione(navController: NavController) {
         // Bottone registrazione
         ElevatedButton(
             onClick = {
+                if (pendingResultTask != null) {
+                    pendingResultTask
+                        .addOnSuccessListener {
 
-                navController.navigate("SchermataRegistrazione")
+                        }
+                        .addOnFailureListener {
+                            // Handle failure.
+                        }
+                } else {
+                    firebaseAuth
+                        .startActivityForSignInWithProvider(activity, oAuthGitHubProvider.build())
+                        .addOnSuccessListener {
+                            // User is signed in.
+                            // IdP data available in
+                            // authResult.getAdditionalUserInfo().getProfile().
+                            // The OAuth access token can also be retrieved:
+                            // ((OAuthCredential)authResult.getCredential()).getAccessToken().
+                            // The OAuth secret can be retrieved by calling:
+                            // ((OAuthCredential)authResult.getCredential()).getSecret().
+                        }
+                        .addOnFailureListener {
+                            // Handle failure.
+                        }
+                }
+                //navController.navigate("SchermataRegistrazione")
             },
             modifier = Modifier
                 .constrainAs(registerButton) {
@@ -406,11 +433,11 @@ fun SchermataAutenticazione(navController: NavController) {
 }
 
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
     DietidealsappTheme {
         val navController = rememberNavController()
-        SchermataAutenticazione(navController)
+        SchermataAutenticazione(navController,)
     }
-}
+}*/

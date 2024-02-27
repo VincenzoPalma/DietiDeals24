@@ -15,10 +15,12 @@ import it.uninastudents.dietidealsservice.repository.ContoCorrenteRepository;
 import it.uninastudents.dietidealsservice.repository.UtenteRepository;
 import it.uninastudents.dietidealsservice.repository.specs.UtenteSpecs;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.processing.SQL;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,18 +41,25 @@ public class UtenteService {
         return result.orElse(null);
     }
 
-    public Utente registraUtente(UtenteRegistrazione utenteRegistrazione) throws FirebaseAuthException {
+    public Utente registraUtente(UtenteRegistrazione utenteRegistrazione) {
         //inserimento utente nel db
-        Utente utente = utenteMapper.utenteRegistrazioneToUtente(utenteRegistrazione);
-        utente.setContoCorrente(null);
-        utente = utenteRepository.save(utente);
-        ContoCorrente nuovoContoCorrente = contoCorrenteMapper.creaContoCorrenteToContoCorrente(utenteRegistrazione.getContoCorrente());
-        if (nuovoContoCorrente != null && utente.getRuolo().equals(RuoloUtente.VENDITORE)) {
-            nuovoContoCorrente.setUtente(utente);
-            nuovoContoCorrente = contoCorrenteRepository.save(nuovoContoCorrente);
-            utente.setContoCorrente(nuovoContoCorrente);
-            utente = utenteRepository.save(utente);
+        Utente utente = null;
+        try {
+        if (utenteRegistrazione.getContoCorrente() == null){
+            utenteRegistrazione.setRuolo(RuoloUtente.COMPRATORE);
+        } else {
+            utenteRegistrazione.setRuolo(RuoloUtente.VENDITORE);
         }
+        utente = utenteMapper.utenteRegistrazioneToUtente(utenteRegistrazione);
+        utente.setContoCorrente(null);
+            utente = utenteRepository.save(utente);
+            ContoCorrente nuovoContoCorrente = contoCorrenteMapper.creaContoCorrenteToContoCorrente(utenteRegistrazione.getContoCorrente());
+            if (nuovoContoCorrente != null && utente.getRuolo().equals(RuoloUtente.VENDITORE)) {
+                nuovoContoCorrente.setUtente(utente);
+                nuovoContoCorrente = contoCorrenteRepository.save(nuovoContoCorrente);
+                utente.setContoCorrente(nuovoContoCorrente);
+                utente = utenteRepository.save(utente);
+            }
         //registrazione utente
         UserRecord.CreateRequest request = new UserRecord.CreateRequest()
                 .setEmail(utenteRegistrazione.getEmail())
@@ -62,6 +71,10 @@ public class UtenteService {
         UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
         utente.setIdAuth(userRecord.getUid());
         utente = utenteRepository.save(utente);
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+            return null;
+        }
         return utente;
     }
 
@@ -93,6 +106,18 @@ public class UtenteService {
         utente.setSitoWeb(Objects.requireNonNullElse(datiProfiloUtente.getSitoWeb(), utente.getSitoWeb()));
         utente.setUrlFotoProfilo(Objects.requireNonNullElse(datiProfiloUtente.getUrlFotoProfilo(), utente.getUrlFotoProfilo()));
         return utenteRepository.save(utente);
+    }
+
+    public Utente getUtenteByEmail(String email){
+        var spec = UtenteSpecs.hasEmail(email);
+        Optional<Utente> result = utenteRepository.findOne(spec);
+        return result.orElse(null);
+    }
+
+    public Utente getUtenteByUsername(String username){
+        var spec = UtenteSpecs.hasUsername(username);
+        Optional<Utente> result = utenteRepository.findOne(spec);
+        return result.orElse(null);
     }
 
 }
