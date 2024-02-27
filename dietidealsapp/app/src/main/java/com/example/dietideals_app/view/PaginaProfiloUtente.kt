@@ -371,7 +371,9 @@ fun SchermataProfiloUtente(navController: NavController) {
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
-                datiProfiloUtente?.descrizione?.let {
+
+            //SE E NULL CREA UN TESTO VUOTO ALTRIMENTO LO METTO, non riusciva giustamente a metteren null come testo e impazziva
+                (if(datiProfiloUtente?.descrizione ==null) "" else datiProfiloUtente!!.descrizione)?.let {
                     Text(
                         text = it,
                         modifier = Modifier
@@ -388,6 +390,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         overflow = TextOverflow.Ellipsis// Aggiunge tre puntini alla fine del testo se viene troncato
                     )
                 }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -668,9 +671,10 @@ fun SchermataUtente(navController: NavController) {
         mutableSetOf(),
         mutableSetOf(),
         RuoloUtente.COMPRATORE,
-        "Sono Mario Rossi, un appassionato venditore di aste con una vasta esperienza nel settore." +
+        null,/*"Sono Mario Rossi, un appassionato venditore di aste con una vasta esperienza nel settore." +
                 " Offro una selezione di oggetti unici e preziosi, curando ogni dettaglio delle mie aste per garantire esperienze indimenticabili ai miei acquirenti." +
                 "Conosco il valore degli oggetti che metto all'asta e mi impegno a offrire un servizio clienti impeccabile." + "Sono qui per fornire autenticità, qualità e emozioni nel mondo delle aste.",
+        */
         "www.marione.com",
         "Via Roma, 123, 00100, Roma, Italia",
         "instagram",

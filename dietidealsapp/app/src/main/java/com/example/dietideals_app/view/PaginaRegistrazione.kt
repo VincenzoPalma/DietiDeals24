@@ -145,6 +145,15 @@ fun SchermataRegistrazione(navController: NavController) {
     val currentPage = remember { mutableIntStateOf(0) }
 
 
+    //TODO IN TEORIA RISOLTO INIZIALIZZANDO LE VARIABILI QUI ALTRIMENTI SI RESETTAVANO A FALSE E QUINDI USCIVA TUTTO ROSSO
+    var isValidEmail by remember { mutableStateOf(false) }
+    var emailExists by remember { mutableStateOf(false) }
+    var isValidUsername by remember { mutableStateOf(false) }
+    var usernameExists by remember { mutableStateOf(false) }
+    var isValidPassword by remember { mutableStateOf(false) }
+    var matchedPassword by remember { mutableStateOf(false) }
+
+
     when (currentPage.intValue) {
         0 -> {
             ConstraintLayout(
@@ -198,8 +207,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     )
                 }
 
-                var isValidEmail by remember { mutableStateOf(false) }
-                var emailExists by remember { mutableStateOf(false) }
+
 // Text Field E-mail
                 OutlinedTextField(
                     supportingText = { Text(text = if (emailExists) "E-mail non disponibile" else "", color = MaterialTheme.colorScheme.error)},
@@ -262,8 +270,7 @@ fun SchermataRegistrazione(navController: NavController) {
                 )
 
 // Text Field Username
-                var isValidUsername by remember { mutableStateOf(false) }
-                var usernameExists by remember { mutableStateOf(false) }
+
                 OutlinedTextField(
                     supportingText = { Text(text = if (usernameExists) "Username non disponibile" else "", color = MaterialTheme.colorScheme.error)},
                     value = username,
@@ -325,8 +332,7 @@ fun SchermataRegistrazione(navController: NavController) {
                 )
 
 // Text Field Password
-                var isValidPassword by remember { mutableStateOf(false) }
-                var matchedPassword by remember { mutableStateOf(false) }
+
                 OutlinedTextField(value = password,
                     visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
                     shape = RoundedCornerShape(15.dp),
@@ -369,7 +375,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     label = {
                         Text(
                             "Password",
-                            color = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                            color = if (isValidPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && !isValidPassword) Color(
                                 0xFF9B0404
                             ) else Color.Black,
                         )

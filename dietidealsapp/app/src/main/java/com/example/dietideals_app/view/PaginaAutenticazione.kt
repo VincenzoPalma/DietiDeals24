@@ -3,6 +3,7 @@ package com.example.dietideals_app.view
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.tween
@@ -122,8 +123,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
+
 fun SchermataAutenticazione(navController: NavController, activity: Activity) {
     val presenter = PaginaAutenticazioneViewModel() // Istanza del presenter per la gestione dell'autenticazione
     var email by remember { mutableStateOf("") } // Variabile per memorizzare l'email
@@ -242,7 +243,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
 
         // Text field password
         OutlinedTextField(
-            supportingText = { Text(text = if(loginFailed) "Utente non trovato" else "", color = MaterialTheme.colorScheme.error)},
+            supportingText = { Text(text = if(loginFailed) "Utente non trovato" else "", color = MaterialTheme.colorScheme.error,modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)},
             value = password,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
             shape = RoundedCornerShape(15.dp),
@@ -324,9 +325,13 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
             Text("ACCEDI", fontSize = 20.sp)
         }
 
-        // Icone social
+        //TODO FUNZIONE CHE CREA IMMAGINE + TESTO SOTTO
+        //HA iconaID = ID dell'immagine da visualizzare
+        //text = testo da visualizzare SOTTO l'icona
+        //TODO Cosa da fare
         @Composable
-        fun IconWithText(iconId: Int, text: String, route: String) {
+        fun IconWithText(iconId: Int, text: String, /*TODO passare per parametro quello che deve fare l'icona quando viene cliccata*/)    {
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(2.dp)
@@ -336,7 +341,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
                     contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)
-                        .clickable { navController.navigate(route) },
+                        .clickable { /*TODO qui inserire la cosa generale da fare*/},
                     contentScale = ContentScale.Crop
                 )
 
@@ -369,11 +374,14 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            IconWithText(logoGoogle, "GOOGLE", "")
+
+            //CHIAMATE FUNZIONE ICON WITH TEXT
+
+            IconWithText(logoGoogle, "GOOGLE", /*PASSARE IL PARAMETRO*/) //TODO IonaGoogle, inserire accesso con google
             Spacer(modifier = Modifier.width(65.dp))
-            IconWithText(logoFacebook, "FACEBOOK", "")
+            IconWithText(logoFacebook, "FACEBOOK", /*PASSARE IL PARAMETRO*/)//TODO facebook, inserire accesso con Facebook
             Spacer(modifier = Modifier.width(65.dp))
-            IconWithText(logoGitHub, "GITHUB", "")
+            IconWithText(logoGitHub, "GITHUB", /*PASSARE IL PARAMETRO*/) //TODO IconaGitHub, inserire accesso con gitHub
         }
 
         // Testo registrazione
@@ -437,7 +445,5 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
 @Composable
 fun PreviewLoginScreen() {
     DietidealsappTheme {
-        val navController = rememberNavController()
-        SchermataAutenticazione(navController,)
     }
 }*/
