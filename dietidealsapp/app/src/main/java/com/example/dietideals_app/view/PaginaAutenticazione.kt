@@ -3,7 +3,6 @@ package com.example.dietideals_app.view
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.tween
@@ -44,7 +43,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -64,8 +62,12 @@ import com.example.dietideals_app.R
 import com.example.dietideals_app.viewmodel.PaginaAutenticazioneViewModel
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
+import com.facebook.FacebookSdk
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FacebookAuthCredential
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
@@ -130,7 +132,9 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
     var email by remember { mutableStateOf("") } // Variabile per memorizzare l'email
     val firebaseAuth: FirebaseAuth = Firebase.auth
     val oAuthGitHubProvider = OAuthProvider.newBuilder("github.com")
+    val oAuthGoogleProvider = OAuthProvider.newBuilder("google.com")
     val pendingResultTask = firebaseAuth.pendingAuthResult
+    FacebookSdk.fullyInitialize()
 
     var password by remember { mutableStateOf("") } // Variabile per memorizzare la password
     val passwordFocusRequester =
@@ -330,7 +334,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
         //text = testo da visualizzare SOTTO l'icona
         //TODO Cosa da fare
         @Composable
-        fun IconWithText(iconId: Int, text: String, /*TODO passare per parametro quello che deve fare l'icona quando viene cliccata*/)    {
+        fun IconWithText(iconId: Int, text: String, funzioneAutenticazione: () -> Unit)    {
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -341,7 +345,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
                     contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)
-                        .clickable { /*TODO qui inserire la cosa generale da fare*/},
+                        .clickable { funzioneAutenticazione() },
                     contentScale = ContentScale.Crop
                 )
 
@@ -353,6 +357,32 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
                 )//
             }
         }
+
+        fun thirdPartyAuth(oAuthProvider: OAuthProvider.Builder) {
+            if (pendingResultTask != null) {
+                pendingResultTask
+                    .addOnSuccessListener {
+
+                    }
+                    .addOnFailureListener {
+                        loginFailed = true
+                    }
+            } else {
+                firebaseAuth
+                    .startActivityForSignInWithProvider(activity, oAuthProvider.build())
+                    .addOnSuccessListener {
+                        if (it.additionalUserInfo?.isNewUser == true) {
+                            navController.navigate("SchermataRegistrazione")
+                        } else {
+                            navController.navigate("SchermataHome")
+                        }
+                    }
+                    .addOnFailureListener {
+                        loginFailed = true
+                    }
+            }
+        }
+
         Row(modifier = Modifier
             .fillMaxWidth()
             .constrainAs(sociaText)
@@ -377,11 +407,11 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
 
             //CHIAMATE FUNZIONE ICON WITH TEXT
 
-            IconWithText(logoGoogle, "GOOGLE", /*PASSARE IL PARAMETRO*/) //TODO IonaGoogle, inserire accesso con google
+            IconWithText(logoGoogle, "GOOGLE") { thirdPartyAuth(oAuthGoogleProvider) } //TODO IonaGoogle, inserire accesso con google
             Spacer(modifier = Modifier.width(65.dp))
-            IconWithText(logoFacebook, "FACEBOOK", /*PASSARE IL PARAMETRO*/)//TODO facebook, inserire accesso con Facebook
+            IconWithText(logoFacebook, "FACEBOOK") { thirdPartyAuth(oAuthGitHubProvider) }//TODO facebook, inserire accesso con Facebook
             Spacer(modifier = Modifier.width(65.dp))
-            IconWithText(logoGitHub, "GITHUB", /*PASSARE IL PARAMETRO*/) //TODO IconaGitHub, inserire accesso con gitHub
+            IconWithText(logoGitHub, "GITHUB") { thirdPartyAuth(oAuthGitHubProvider) } //TODO IconaGitHub, inserire accesso con gitHub
         }
 
         // Testo registrazione
@@ -399,31 +429,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
         // Bottone registrazione
         ElevatedButton(
             onClick = {
-                if (pendingResultTask != null) {
-                    pendingResultTask
-                        .addOnSuccessListener {
-
-                        }
-                        .addOnFailureListener {
-                            // Handle failure.
-                        }
-                } else {
-                    firebaseAuth
-                        .startActivityForSignInWithProvider(activity, oAuthGitHubProvider.build())
-                        .addOnSuccessListener {
-                            // User is signed in.
-                            // IdP data available in
-                            // authResult.getAdditionalUserInfo().getProfile().
-                            // The OAuth access token can also be retrieved:
-                            // ((OAuthCredential)authResult.getCredential()).getAccessToken().
-                            // The OAuth secret can be retrieved by calling:
-                            // ((OAuthCredential)authResult.getCredential()).getSecret().
-                        }
-                        .addOnFailureListener {
-                            // Handle failure.
-                        }
-                }
-                //navController.navigate("SchermataRegistrazione")
+                navController.navigate("SchermataRegistrazione")
             },
             modifier = Modifier
                 .constrainAs(registerButton) {
@@ -441,9 +447,9 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
 }
 
 
-/*@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
     DietidealsappTheme {
     }
-}*/
+}

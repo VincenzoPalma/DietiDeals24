@@ -15,13 +15,10 @@ import java.util.UUID
 interface UtenteService {
 
     @POST("registrazione")
-    fun createUtente(@Body datiRegistrazione: UtenteRegistrazione): Call<Utente>
+    fun createUtente(@Body datiRegistrazione: UtenteRegistrazione, @Query("idFirebase") idFirebase: String?): Call<Utente>
 
     @GET("registrazione/esisteEmail/{email}")
     fun getUtenteByEmail(@Path("email") email : String): Call<Utente>
-
-    @GET("registrazione/esisteUsername/{username}")
-    fun getUtenteByUsername(@Path("username") username : String): Call<Utente>
 
     @PUT("utente/modificaDatiUtente")
     fun modificaDatiUtente(@Body datiProfiloUtente: DatiProfiloUtente): Call<Utente>

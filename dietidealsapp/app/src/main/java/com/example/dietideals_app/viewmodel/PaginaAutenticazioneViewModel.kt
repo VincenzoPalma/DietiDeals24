@@ -5,6 +5,7 @@ import java.util.regex.Pattern
 
 class PaginaAutenticazioneViewModel {
     val repository = UtenteRepository()
+    val viewModelRegistrazione = PaginaRegistrazioneViewModel()
 
     fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z](.*)(@)(.+)(\\.com|it)\$"
@@ -12,4 +13,5 @@ class PaginaAutenticazioneViewModel {
         val matcher = pattern.matcher(email)
         return matcher.matches()
     }
+
 }

@@ -26,7 +26,7 @@ class PaginaRegistrazioneViewModel {
     // Funzione di validazione dell'username
     fun isUsernameValid(username: String): Boolean {
         // Puoi definire i criteri di validazione dell'username qui
-        return username.isNotBlank()
+        return username.isNotEmpty()
     }
 
     // Funzione di validazione della password
@@ -89,13 +89,14 @@ class PaginaRegistrazioneViewModel {
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    fun checkFields(email : String, password: String, confermaPassword: String, nome: String, cognome: String, username: String, state: DatePickerState): Boolean {
+    fun checkFields(email : String, password: String, confermaPassword: String, nome: String, cognome: String, username: String, state: DatePickerState, isRegistrazioneTerzeParti: Boolean): Boolean {
         // Verifica qui tutti i campi e restituisci true solo se sono tutti compilati correttamente
-        return isEmailValid(email) && isUsernameValid(username) && isPasswordValid(
-            password
-        ) && isPasswordMatching(
-            password, confermaPassword
-        ) && isNomeValid(nome) && isCognomeValid(cognome) && isUserAdult(state.selectedDateMillis)
+        return isEmailValid(email) &&
+                isUsernameValid(username) &&
+                (isRegistrazioneTerzeParti || (isPasswordValid(password) && isPasswordMatching(password, confermaPassword))) &&
+                isNomeValid(nome) &&
+                isCognomeValid(cognome) &&
+                isUserAdult(state.selectedDateMillis)
     }
 
     fun isValidPartitaIva(partitaIva: String): Boolean {
@@ -126,9 +127,9 @@ class PaginaRegistrazioneViewModel {
         return LocalDate.parse(dateString, formatterStringToLocalDate)
     }
 
-    suspend fun registraUtente(datiRegistrazione: UtenteRegistrazione) {
+    suspend fun registraUtente(datiRegistrazione: UtenteRegistrazione, idFirebase: String?) {
         withContext(Dispatchers.IO) {
-            utenteRepository.createUtente(datiRegistrazione)
+            utenteRepository.createUtente(datiRegistrazione, idFirebase)
         }
     }
 
@@ -137,8 +138,4 @@ class PaginaRegistrazioneViewModel {
         return utente != null
     }
 
-    suspend fun doesUsernameExist(username: String) : Boolean {
-        val utente = utenteRepository.getUtenteByUsername(username)
-        return utente != null
-    }
 }

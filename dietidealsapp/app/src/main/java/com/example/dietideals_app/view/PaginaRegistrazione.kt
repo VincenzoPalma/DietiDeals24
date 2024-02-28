@@ -85,12 +85,13 @@ import com.example.dietideals_app.model.enum.RuoloUtente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
 import com.example.dietideals_app.viewmodel.PaginaRegistrazioneViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
-import java.util.Formatter
 
 class RegistrazioneActivity : ComponentActivity() {
     @SuppressLint("NewApi")
@@ -139,6 +140,8 @@ fun SchermataRegistrazione(navController: NavController) {
         remember { FocusRequester() } // Richiede il focus per l'input del cognome.
 
     val viewModel = PaginaRegistrazioneViewModel()
+    val firebaseAuth: FirebaseAuth = Firebase.auth
+    val isRegistrazioneTerzeParti = firebaseAuth.currentUser != null
     val isDialogVisible = remember { mutableStateOf(false) }
     val state = rememberDatePickerState()
     val openDialog = remember { mutableStateOf(false) }
@@ -149,7 +152,6 @@ fun SchermataRegistrazione(navController: NavController) {
     var isValidEmail by remember { mutableStateOf(false) }
     var emailExists by remember { mutableStateOf(false) }
     var isValidUsername by remember { mutableStateOf(false) }
-    var usernameExists by remember { mutableStateOf(false) }
     var isValidPassword by remember { mutableStateOf(false) }
     var matchedPassword by remember { mutableStateOf(false) }
 
@@ -208,8 +210,16 @@ fun SchermataRegistrazione(navController: NavController) {
                 }
 
 
+                if (isRegistrazioneTerzeParti){
+                    email = firebaseAuth.currentUser?.email.toString()
+                    username = firebaseAuth.currentUser?.displayName.toString()
+                    isValidEmail = viewModel.isEmailValid(email)
+                    isValidUsername = viewModel.isUsernameValid(username)
+                }
+
 // Text Field E-mail
                 OutlinedTextField(
+                    readOnly = isRegistrazioneTerzeParti,
                     supportingText = { Text(text = if (emailExists) "E-mail non disponibile" else "", color = MaterialTheme.colorScheme.error)},
                     label = {
                     Text(
@@ -272,7 +282,7 @@ fun SchermataRegistrazione(navController: NavController) {
 // Text Field Username
 
                 OutlinedTextField(
-                    supportingText = { Text(text = if (usernameExists) "Username non disponibile" else "", color = MaterialTheme.colorScheme.error)},
+                    readOnly = isRegistrazioneTerzeParti,
                     value = username,
                     shape = RoundedCornerShape(15.dp),
                     leadingIcon = {
@@ -334,6 +344,7 @@ fun SchermataRegistrazione(navController: NavController) {
 // Text Field Password
 
                 OutlinedTextField(value = password,
+                    enabled = !isRegistrazioneTerzeParti,
                     visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
                     shape = RoundedCornerShape(15.dp),
                     leadingIcon = {
@@ -397,6 +408,7 @@ fun SchermataRegistrazione(navController: NavController) {
                 var isValidConfirmedPassword by remember { mutableStateOf(false) }
 
                 OutlinedTextField(value = confermaPassword,
+                    enabled = !isRegistrazioneTerzeParti,
                     visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
                     shape = RoundedCornerShape(15.dp),
                     leadingIcon = {
@@ -574,13 +586,12 @@ fun SchermataRegistrazione(navController: NavController) {
                     onClick = {
                         CoroutineScope(Dispatchers.Main).launch {
                             emailExists = viewModel.doesEmailExist(email)
-                            usernameExists = viewModel.doesUsernameExist(username)
-                            if(!emailExists && !usernameExists){
+                            if(!emailExists){
                                 currentPage.intValue = 1
                             }
                         }
                     },
-                    enabled = viewModel.checkFields(email, password, confermaPassword, nome, cognome, username, state),
+                    enabled = viewModel.checkFields(email, password, confermaPassword, nome, cognome, username, state, isRegistrazioneTerzeParti),
                     modifier = Modifier// Posiziona il pulsante in basso a destra
                         .padding(16.dp)
                         .constrainAs(bottoneAvanti) {
@@ -883,7 +894,14 @@ fun SchermataRegistrazione(navController: NavController) {
                     TextButton(
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, null, null, null, null))
+                                if (isRegistrazioneTerzeParti) {
+                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, null, null, null, null, null),
+                                        firebaseAuth.currentUser?.uid
+                                    )
+
+                                } else {
+                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, null, null, null, null), null)
+                                }
                             }
                             isDialogVisible.value = true
                         },
@@ -1306,7 +1324,13 @@ fun SchermataRegistrazione(navController: NavController) {
                         enabled = viewModel.checkFieldsDatiVenditore(nomeTitolare, codiceBicSwift, partitaIva, iban),
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, partitaIva, null, null, ContoCorrente(nomeTitolare, codiceBicSwift, iban)))
+                                if (isRegistrazioneTerzeParti){
+                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, null, partitaIva, null, null, ContoCorrente(nomeTitolare, codiceBicSwift, iban)),
+                                        firebaseAuth.currentUser?.uid
+                                    )
+                                } else {
+                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, partitaIva, null, null, ContoCorrente(nomeTitolare, codiceBicSwift, iban)), null)
+                                }
                             }
                             isDialogVisible.value = true
                         },
