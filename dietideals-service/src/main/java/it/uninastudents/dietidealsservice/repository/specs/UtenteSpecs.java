@@ -20,8 +20,4 @@ public class UtenteSpecs {
         return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("email"), target)) : none();
     }
 
-    public static Specification<Utente> hasUsername(String target) {
-        return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("username"), target)) : none();
-    }
-
 }

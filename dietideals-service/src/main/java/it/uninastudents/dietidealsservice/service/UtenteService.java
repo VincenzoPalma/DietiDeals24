@@ -1,7 +1,6 @@
 package it.uninastudents.dietidealsservice.service;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import it.uninastudents.dietidealsservice.model.User;
 import it.uninastudents.dietidealsservice.model.dto.DatiProfiloUtente;
@@ -15,12 +14,10 @@ import it.uninastudents.dietidealsservice.repository.ContoCorrenteRepository;
 import it.uninastudents.dietidealsservice.repository.UtenteRepository;
 import it.uninastudents.dietidealsservice.repository.specs.UtenteSpecs;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.processing.SQL;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,7 +38,7 @@ public class UtenteService {
         return result.orElse(null);
     }
 
-    public Utente registraUtente(UtenteRegistrazione utenteRegistrazione) {
+    public Utente registraUtente(UtenteRegistrazione utenteRegistrazione, String idFireBase) {
         //inserimento utente nel db
         Utente utente = null;
         try {
@@ -61,16 +58,20 @@ public class UtenteService {
                 utente = utenteRepository.save(utente);
             }
         //registrazione utente
-        UserRecord.CreateRequest request = new UserRecord.CreateRequest()
-                .setEmail(utenteRegistrazione.getEmail())
-                .setPassword(utenteRegistrazione.getPassword())
-                .setDisplayName(utenteRegistrazione.getUsername());
-        if (utenteRegistrazione.getUrlFotoProfilo() != null) {
-            request.setPhotoUrl(utenteRegistrazione.getUrlFotoProfilo());
+        if (idFireBase == null) {
+            UserRecord.CreateRequest request = new UserRecord.CreateRequest()
+                    .setEmail(utenteRegistrazione.getEmail())
+                    .setPassword(utenteRegistrazione.getPassword())
+                    .setDisplayName(utenteRegistrazione.getUsername());
+            if (utenteRegistrazione.getUrlFotoProfilo() != null) {
+                request.setPhotoUrl(utenteRegistrazione.getUrlFotoProfilo());
+            }
+            UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
+            utente.setIdAuth(userRecord.getUid());
+        } else {
+            utente.setIdAuth(idFireBase);
         }
-        UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
-        utente.setIdAuth(userRecord.getUid());
-        utente = utenteRepository.save(utente);
+            utente = utenteRepository.save(utente);
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
             return null;
@@ -110,12 +111,6 @@ public class UtenteService {
 
     public Utente getUtenteByEmail(String email){
         var spec = UtenteSpecs.hasEmail(email);
-        Optional<Utente> result = utenteRepository.findOne(spec);
-        return result.orElse(null);
-    }
-
-    public Utente getUtenteByUsername(String username){
-        var spec = UtenteSpecs.hasUsername(username);
         Optional<Utente> result = utenteRepository.findOne(spec);
         return result.orElse(null);
     }

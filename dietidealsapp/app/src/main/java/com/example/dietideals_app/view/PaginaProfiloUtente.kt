@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -68,6 +69,8 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.transform.CircleCropTransformation
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Utente
 import com.example.dietideals_app.model.dto.DatiProfiloUtente
@@ -79,6 +82,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
 import java.util.UUID
+
 
 class PaginaProfiloUtente : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -322,9 +326,12 @@ fun SchermataProfiloUtente(navController: NavController) {
                         .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
                 ) {
                     // Immagine all'interno della Box circolare
-                    Image(
-                        painter = profilePicture, // Rimpiazza con la tua immagine
-                        contentDescription = null,
+                    //sistemare l'immagine in modo che copra l'intero cerchio
+                    AsyncImage(
+                        model = datiProfiloUtente?.urlFotoProfilo,
+                        placeholder = painterResource(id = R.drawable.ic_launcher_foreground),
+                        error = painterResource(id = R.drawable.ic_launcher_foreground),
+                        contentDescription = "Immagine del profilo dell'utente",
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(CircleShape)

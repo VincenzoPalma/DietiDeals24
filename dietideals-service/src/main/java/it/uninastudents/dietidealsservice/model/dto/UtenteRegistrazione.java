@@ -3,6 +3,7 @@ package it.uninastudents.dietidealsservice.model.dto;
 import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
@@ -11,6 +12,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.time.LocalDate;
 
 @Data
@@ -36,7 +38,6 @@ public class UtenteRegistrazione {
     @Email
     private String email;
 
-    @NotBlank
     private String password;
 
     @Pattern(regexp = "^[0-9]{11}$|^[0-9]{0}$")
@@ -46,6 +47,7 @@ public class UtenteRegistrazione {
 
     private String urlFotoProfilo;
 
+    @Valid
     private CreaContoCorrente contoCorrente;
 
 }

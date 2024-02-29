@@ -88,9 +88,13 @@ import com.example.dietideals_app.viewmodel.PaginaRegistrazioneViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.time.format.DateTimeFormatter
 
 class RegistrazioneActivity : ComponentActivity() {
@@ -127,6 +131,7 @@ fun SchermataRegistrazione(navController: NavController) {
     var nome by remember { mutableStateOf("") } // Nome dell'utente
     var cognome by remember { mutableStateOf("") } // Cognome dell'utente
     var passwordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della password.
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val passwordFocusRequester =
         remember { FocusRequester() } // Richiede il focus per l'input della password.
@@ -142,6 +147,8 @@ fun SchermataRegistrazione(navController: NavController) {
     val viewModel = PaginaRegistrazioneViewModel()
     val firebaseAuth: FirebaseAuth = Firebase.auth
     val isRegistrazioneTerzeParti = firebaseAuth.currentUser != null
+    val storage = Firebase.storage
+    val storageRef = storage.reference
     val isDialogVisible = remember { mutableStateOf(false) }
     val state = rememberDatePickerState()
     val openDialog = remember { mutableStateOf(false) }
@@ -697,17 +704,13 @@ fun SchermataRegistrazione(navController: NavController) {
                 }
 
                 LocalContext.current as ComponentActivity
-                var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
                 // Definisci il contratto per l'activity result
                 val getContent =
                     rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-                        // Gestisci l'URI dell'immagine selezionata
-                        // Puoi eseguire ulteriori operazioni qui, come caricare l'immagine
                         uri?.let {
                             selectedImageUri = it
                         }
                     }
-
                 // Cerchio con icona di una matita al centro
                 Box(
                     modifier = Modifier
@@ -738,6 +741,7 @@ fun SchermataRegistrazione(navController: NavController) {
                         modifier = Modifier.size(70.dp)
                     )
                 }
+
                 Text(
                     text = "IMMAGINE DEL PROFILO",
                     modifier = Modifier.constrainAs(testoImmagine) {
@@ -894,17 +898,29 @@ fun SchermataRegistrazione(navController: NavController) {
                     TextButton(
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
+                                    var downloadUrl: String? = null;
+                                    if (selectedImageUri != null) {
+                                        val immagineProfiloRef = storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
+                                        selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
+                                        immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
+                                            // Ottieni l'URL di download dell'immagine
+                                            downloadUrl = uri.toString()
+                                        }.addOnFailureListener { exception ->
+                                            // Gestisci eventuali errori nell'ottenere l'URL di download
+                                            println("Errore durante il recupero dell'URL di download: $exception")
+                                        }
+                                    }
+                                delay(500)
                                 if (isRegistrazioneTerzeParti) {
-                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, null, null, null, null, null),
-                                        firebaseAuth.currentUser?.uid
-                                    )
+                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, null, null, null, downloadUrl, null),
+                                        firebaseAuth.currentUser?.uid)
 
                                 } else {
-                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, null, null, null, null), null)
+                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, null, null, downloadUrl, null), null)
                                 }
-                            }
                             isDialogVisible.value = true
-                        },
+                        }
+                            },
                         // Aggiungi un margine inferiore
 
 
@@ -1324,16 +1340,30 @@ fun SchermataRegistrazione(navController: NavController) {
                         enabled = viewModel.checkFieldsDatiVenditore(nomeTitolare, codiceBicSwift, partitaIva, iban),
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                if (isRegistrazioneTerzeParti){
-                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, null, partitaIva, null, null, ContoCorrente(nomeTitolare, codiceBicSwift, iban)),
+                                var downloadUrl: String? = null;
+                                if (selectedImageUri != null) {
+                                    val immagineProfiloRef = storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
+                                    selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
+                                    immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
+                                        // Ottieni l'URL di download dell'immagine
+                                        downloadUrl = uri.toString()
+                                    }.addOnFailureListener { exception ->
+                                        // Gestisci eventuali errori nell'ottenere l'URL di download
+                                        println("Errore durante il recupero dell'URL di download: $exception")
+                                    }
+                                }
+                                delay(500)
+                                if (isRegistrazioneTerzeParti) {
+                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, null, partitaIva, null, downloadUrl, ContoCorrente(nomeTitolare, codiceBicSwift, iban)),
                                         firebaseAuth.currentUser?.uid
                                     )
+
                                 } else {
-                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, partitaIva, null, null, ContoCorrente(nomeTitolare, codiceBicSwift, iban)), null)
+                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, partitaIva, null, downloadUrl, ContoCorrente(nomeTitolare, codiceBicSwift, iban)), null)
                                 }
-                            }
-                            isDialogVisible.value = true
-                        },
+                                isDialogVisible.value = true
+                        }
+                            },
                         ) {
                         Text(
                             text = "CONFERMA",

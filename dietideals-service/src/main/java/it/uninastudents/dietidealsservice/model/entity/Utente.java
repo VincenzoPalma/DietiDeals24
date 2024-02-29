@@ -17,7 +17,6 @@ import java.util.Set;
 @Entity
 @Table(name = "utente", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email"),
-        @UniqueConstraint(columnNames = "username"),
         @UniqueConstraint(columnNames = "idAuth")
 })
 public class Utente extends BaseEntity {
@@ -27,7 +26,7 @@ public class Utente extends BaseEntity {
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private RuoloUtente ruolo;
 
     @Column(nullable = false)

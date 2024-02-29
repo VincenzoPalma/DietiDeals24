@@ -35,7 +35,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(it -> it.requestMatchers("/registrazione/**").permitAll())
-                .authorizeHttpRequests(it -> it.requestMatchers("*/**").authenticated())
+                .authorizeHttpRequests(it -> it.requestMatchers("*/**").permitAll())
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(it -> it.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(it -> it.authenticationEntryPoint(restAuthenticationEntryPoint()))

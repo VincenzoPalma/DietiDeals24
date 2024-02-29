@@ -1,6 +1,5 @@
 package it.uninastudents.dietidealsservice.controller;
 
-import com.google.firebase.auth.FirebaseAuthException;
 import it.uninastudents.dietidealsservice.model.dto.DatiProfiloUtente;
 import it.uninastudents.dietidealsservice.model.dto.UtenteRegistrazione;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
@@ -21,8 +20,8 @@ public class UtenteController {
     private final UtenteService utenteService;
 
     @PostMapping("/registrazione")
-    public ResponseEntity<Utente> saveUtente(@RequestBody @Valid UtenteRegistrazione datiRegistrazione) {
-        Utente utente = utenteService.registraUtente(datiRegistrazione);
+    public ResponseEntity<Utente> saveUtente(@RequestBody @Valid UtenteRegistrazione datiRegistrazione, @RequestParam(required = false) String idFirebase) {
+        Utente utente = utenteService.registraUtente(datiRegistrazione, idFirebase);
         if (utente != null){
             return ResponseEntity.created(URI.create("/registrazione/%s".formatted(utente.getId()))).body(utente);
         }
@@ -32,12 +31,6 @@ public class UtenteController {
     @GetMapping("/registrazione/esisteEmail/{email}")
     public ResponseEntity<Utente> getUtenteByEmail(@PathVariable @Email String email){
         Utente utente = utenteService.getUtenteByEmail(email);
-        return ResponseEntity.ok(utente);
-    }
-
-    @GetMapping("/registrazione/esisteUsername/{username}")
-    public ResponseEntity<Utente> getUtenteByUsername(@PathVariable String username){
-        Utente utente = utenteService.getUtenteByUsername(username);
         return ResponseEntity.ok(utente);
     }
 
