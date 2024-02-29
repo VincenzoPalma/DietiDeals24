@@ -373,7 +373,7 @@ fun SchermataRegistrazione(navController: NavController) {
                             painter = painterResource(id = if (!passwordVisibile) R.drawable.baseline_remove_red_eye_24 else R.drawable.closed_eye_icon),
                             contentDescription = null,
                             modifier = Modifier.clickable { passwordVisibile = !passwordVisibile },
-                            tint = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                            tint = if (isValidPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!isValidPassword)) Color(
                                 0xFF9B0404
                             ) else Color.Gray,
                         )
