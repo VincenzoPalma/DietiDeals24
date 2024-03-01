@@ -5,6 +5,7 @@ import com.example.dietideals_app.model.dto.CreaAsta
 import com.example.dietideals_app.model.enum.CategoriaAsta
 import com.example.dietideals_app.model.enum.StatoAsta
 import com.example.dietideals_app.model.enum.TipoAsta
+import com.example.dietideals_app.model.list.AstaList
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -17,7 +18,7 @@ interface AstaService {
     fun saveAsta(@Body creaAsta: CreaAsta) : Call<Asta>
 
     @GET("aste")
-    fun getAste(@Query("page") page: Int, @Query("size") size: Int, @Query("nome") nome: String?, @Query("tipo") tipo: TipoAsta?, @Query("categoria") categoria: CategoriaAsta?): Call<List<Asta>>
+    fun getAste(@Query("page") page: Int, @Query("size") size: Int, @Query("nome") nome: String?, @Query("tipo") tipo: TipoAsta?, @Query("categoria") categoria: CategoriaAsta?): Call<AstaList>
 
     @GET("utente/aste")
     fun getAsteUtente(@Query("page") page: Int, @Query("size") size: Int, @Query("stato") statoAsta: StatoAsta?): Call<List<Asta>>

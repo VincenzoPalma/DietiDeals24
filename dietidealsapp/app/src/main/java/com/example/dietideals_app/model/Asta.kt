@@ -8,18 +8,19 @@ import java.math.BigDecimal
 import java.time.OffsetDateTime
 
 
-class Asta(val nome: String, val descrizione: String,val immagine: File,
+class Asta(val nome: String, val descrizione: String,val urlFoto: String,
            val dataScadenza : OffsetDateTime, val prezzoBase : BigDecimal,
            val sogliaRialzo : BigDecimal, val intervalloTempoOfferta : OffsetDateTime,
            val categoria: CategoriaAsta, val tipo: TipoAsta, val stato: StatoAsta,
            val proprietario: Utente,var offerte: MutableSet<Offerta> = mutableSetOf()){
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Asta) return false
 
         if (nome != other.nome) return false
         if (descrizione != other.descrizione) return false
-        if (immagine != other.immagine) return false
+        if (urlFoto != other.urlFoto) return false
         if (dataScadenza != other.dataScadenza) return false
         if (prezzoBase != other.prezzoBase) return false
         if (sogliaRialzo != other.sogliaRialzo) return false
@@ -28,13 +29,15 @@ class Asta(val nome: String, val descrizione: String,val immagine: File,
         if (tipo != other.tipo) return false
         if (stato != other.stato) return false
         if (proprietario != other.proprietario) return false
-        return offerte == other.offerte
+        if (offerte != other.offerte) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
         var result = nome.hashCode()
         result = 31 * result + descrizione.hashCode()
-        result = 31 * result + immagine.hashCode()
+        result = 31 * result + urlFoto.hashCode()
         result = 31 * result + dataScadenza.hashCode()
         result = 31 * result + prezzoBase.hashCode()
         result = 31 * result + sogliaRialzo.hashCode()

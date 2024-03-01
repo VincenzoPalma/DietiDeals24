@@ -85,8 +85,11 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.Asta
 import com.example.dietideals_app.model.Notifica
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.viewmodel.SchermataHomeViewModel
+import com.example.dietideals_app.viewmodel.listener.AsteListener
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -116,6 +119,7 @@ class PaginaSchermataHome : ComponentActivity() {
 @Composable
 fun SchermataHome(navController: NavController) {
 
+    val viewModel = SchermataHomeViewModel()
     val auth: FirebaseAuth = Firebase.auth
     val logoApp = painterResource(id = R.drawable.iconaapp)
     var isSearchVisible by remember { mutableStateOf(false) }
@@ -127,6 +131,25 @@ fun SchermataHome(navController: NavController) {
         remember { FocusRequester() }
     val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf("") }
+    var asteVisualizzate = emptyList<Asta>()
+
+    val listener = remember {
+        object : AsteListener {
+            override fun onAsteLoaded(aste: List<Asta>) {
+                asteVisualizzate = aste
+            }
+
+            override fun onError() {
+                // Gestisci l'errore
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.mostraAste(0, null, null, null, listener)
+        println("home")
+    }
+
     fun generateNotifications(): List<Notifica> {
         // Implementa questa funzione secondo le tue esigenze
         // Restituisce una lista di notifiche
