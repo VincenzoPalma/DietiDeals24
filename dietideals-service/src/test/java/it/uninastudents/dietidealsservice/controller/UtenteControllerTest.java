@@ -55,14 +55,14 @@ class UtenteControllerTest {
         utenteRisultato.setIdAuth("abcdefghilmnopqrstuvz1234567");
         utenteRisultato.setId(idUtenteRisultato);
 
-        when(utenteServiceMock.registraUtente(any(UtenteRegistrazione.class))).thenReturn(utenteRisultato);
+        when(utenteServiceMock.registraUtente(any(UtenteRegistrazione.class), eq(null))).thenReturn(utenteRisultato);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/registrazione")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8")
                 .content(objectMapper.writeValueAsString(datiNuovoUtente))).andReturn();
 
-        verify(utenteServiceMock, times(1)).registraUtente(any(UtenteRegistrazione.class));
+        verify(utenteServiceMock, times(1)).registraUtente(any(UtenteRegistrazione.class), eq(null));
         assertEquals(201, mvcResult.getResponse().getStatus());
         assertEquals(objectMapper.writeValueAsString(utenteRisultato), mvcResult.getResponse().getContentAsString());
         assertEquals("/registrazione/" + idUtenteRisultato, mvcResult.getResponse().getHeader("Location"));
@@ -82,14 +82,14 @@ class UtenteControllerTest {
         utenteRisultato.setIdAuth("abcdefghilmnopqrstuvz1234567");
         utenteRisultato.setId(idUtenteRisultato);
 
-        when(utenteServiceMock.registraUtente(any(UtenteRegistrazione.class))).thenReturn(utenteRisultato);
+        when(utenteServiceMock.registraUtente(any(UtenteRegistrazione.class), eq(null))).thenReturn(utenteRisultato);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/registrazione")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8")
                 .content(objectMapper.writeValueAsString(datiNuovoUtente))).andReturn();
 
-        verify(utenteServiceMock, times(0)).registraUtente(any(UtenteRegistrazione.class));
+        verify(utenteServiceMock, times(0)).registraUtente(any(UtenteRegistrazione.class), eq(null));
         assertEquals(400, mvcResult.getResponse().getStatus());
         assertEquals("", mvcResult.getResponse().getContentAsString());
 
@@ -168,6 +168,24 @@ class UtenteControllerTest {
 
         JsonNode bodyRisposta = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
         verify(utenteServiceMock, times(1)).getDatiUtente(idUtente);
+        assertEquals(objectMapper.writeValueAsString(risultato), bodyRisposta.toString());
+        assertEquals(200, mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    void getUtenteByEmailTest() throws Exception {
+        Utente risultato = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Utente.class);
+        String emailUtente = "test.test@test.com";
+        risultato.setEmail(emailUtente);
+        when(utenteServiceMock.getUtenteByEmail(emailUtente)).thenReturn(risultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .get("/registrazione/esisteEmail/" + emailUtente)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")).andReturn();
+
+        JsonNode bodyRisposta = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
+        verify(utenteServiceMock, times(1)).getUtenteByEmail(emailUtente);
         assertEquals(objectMapper.writeValueAsString(risultato), bodyRisposta.toString());
         assertEquals(200, mvcResult.getResponse().getStatus());
     }

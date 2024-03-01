@@ -2,4 +2,5 @@
     <string name="app_name">dietideals-app</string>
     <string name="facebook_app_id">775986947914746</string>
     <string name="fb_login_protocol_scheme">fb775986947914746</string>
+    <string name="facebook_client_token">f467f74c71ba4655d5e07a8236d39f28</string>
 </resources>

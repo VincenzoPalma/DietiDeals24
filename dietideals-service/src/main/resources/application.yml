@@ -10,20 +10,6 @@ spring:
     show-sql: true
     generate-ddl: true
 security:
-  oauth2:
-    client:
-      registration:
-        google:
-          client-id: "80319647136-m6c5aqga238mhoglsb3jcnm244mdj0je.apps.googleusercontent.com"
-          scope: openid,email,profile
-          redirect-uri: "http://localhost:8080/login/oauth2/code/{registrationId}"
-      provider:
-        google:
-          authorization-uri: https://accounts.google.com/o/oauth2/auth
-          token-uri: https://oauth2.googleapis.com/token
-          user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
-          user-name-attribute: sub
-
   firebase-props:
     enable-strict-server-session: false
     enable-check-session-revoked: false

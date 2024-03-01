@@ -43,6 +43,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,12 +63,16 @@ import com.example.dietideals_app.R
 import com.example.dietideals_app.viewmodel.PaginaAutenticazioneViewModel
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
+import com.facebook.AccessToken
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
 import com.facebook.FacebookSdk
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FacebookAuthCredential
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
@@ -135,6 +140,8 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
     val oAuthGoogleProvider = OAuthProvider.newBuilder("google.com")
     val pendingResultTask = firebaseAuth.pendingAuthResult
     FacebookSdk.fullyInitialize()
+    val facebookCallbackManager = CallbackManager.Factory.create();
+    val facebookLoginManager = LoginManager.getInstance()
 
     var password by remember { mutableStateOf("") } // Variabile per memorizzare la password
     val passwordFocusRequester =
@@ -382,6 +389,38 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
                     }
             }
         }
+        val context = LocalContext.current
+        fun facebookAuth() {
+            facebookLoginManager.registerCallback(facebookCallbackManager, object :
+                FacebookCallback<LoginResult> {
+                override fun onSuccess(result: LoginResult) {
+                    // L'utente è stato autenticato con successo
+                    println("1")
+                    val accessToken = AccessToken.getCurrentAccessToken()
+                    val credential = accessToken?.let { FacebookAuthProvider.getCredential(it.token) }
+
+                    if(accessToken == null) {
+                        navController.navigate("SchermataRegistrazione")
+                    } else {
+                        navController.navigate("SchermataHome")
+                    }
+                    // Puoi gestire ulteriormente l'accesso qui
+                }
+
+                override fun onCancel() {
+                    println("2")
+                    // L'utente ha annullato l'accesso
+                }
+
+                override fun onError(error: FacebookException) {
+                    println("3")
+                    // Si è verificato un errore durante l'accesso
+                }
+            })
+
+            facebookLoginManager.logInWithReadPermissions(context as Activity, listOf("email", "public_profile"))
+            println(AccessToken.getCurrentAccessToken())
+        }
 
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -409,7 +448,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
 
             IconWithText(logoGoogle, "GOOGLE") { thirdPartyAuth(oAuthGoogleProvider) } //TODO IonaGoogle, inserire accesso con google
             Spacer(modifier = Modifier.width(65.dp))
-            IconWithText(logoFacebook, "FACEBOOK") { thirdPartyAuth(oAuthGitHubProvider) }//TODO facebook, inserire accesso con Facebook
+            IconWithText(logoFacebook, "FACEBOOK") { facebookAuth() } //TODO facebook, inserire accesso con Facebook
             Spacer(modifier = Modifier.width(65.dp))
             IconWithText(logoGitHub, "GITHUB") { thirdPartyAuth(oAuthGitHubProvider) } //TODO IconaGitHub, inserire accesso con gitHub
         }
