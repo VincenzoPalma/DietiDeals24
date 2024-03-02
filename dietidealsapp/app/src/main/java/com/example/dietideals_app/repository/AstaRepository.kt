@@ -25,11 +25,9 @@ class AstaRepository {
                     response: Response<AstaList>
                 ) {
                     if (response.isSuccessful) {
-                        println("successo")
-                        val risultato : List<Asta>? = response.body()?.listaAste
+                        val risultato : List<Asta>? = response.body()?.content
                         deferred.complete(risultato)
                     } else {
-                        println("non successo")
                         deferred.complete(null)
                     }
                 }

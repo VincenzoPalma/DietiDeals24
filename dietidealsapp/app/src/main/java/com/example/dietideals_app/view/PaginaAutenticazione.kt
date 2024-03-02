@@ -2,6 +2,7 @@ package com.example.dietideals_app.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
@@ -70,6 +72,7 @@ import com.facebook.FacebookException
 import com.facebook.FacebookSdk
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import com.facebook.login.widget.LoginButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -81,9 +84,37 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
+    private val facebookCallbackManager = CallbackManager.Factory.create();
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        FacebookUtil.callbackManager.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        LoginManager.getInstance().registerCallback(facebookCallbackManager, object :
+            FacebookCallback<LoginResult> {
+            override fun onSuccess(result: LoginResult) {
+                // L'utente è stato autenticato con successo
+                val accessToken = AccessToken.getCurrentAccessToken()
+                val credential = accessToken?.let { FacebookAuthProvider.getCredential(it.token) }
+                // Puoi gestire ulteriormente l'accesso qui
+            }
+
+            override fun onCancel() {
+                // L'utente ha annullato l'accesso
+            }
+
+            override fun onError(error: FacebookException) {
+                // Si è verificato un errore durante l'accesso
+            }
+
+        })
+
+
         setContent {
             DietidealsappTheme {
                 Surface(
@@ -130,6 +161,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+object FacebookUtil {
+    val callbackManager by lazy {
+        CallbackManager.Factory.create()
+    }
+}
+
 @Composable
 
 fun SchermataAutenticazione(navController: NavController, activity: Activity) {
@@ -139,13 +176,11 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
     val oAuthGitHubProvider = OAuthProvider.newBuilder("github.com")
     val oAuthGoogleProvider = OAuthProvider.newBuilder("google.com")
     val pendingResultTask = firebaseAuth.pendingAuthResult
-    FacebookSdk.fullyInitialize()
-    val facebookCallbackManager = CallbackManager.Factory.create();
-    val facebookLoginManager = LoginManager.getInstance()
 
     var password by remember { mutableStateOf("") } // Variabile per memorizzare la password
     val passwordFocusRequester =
         remember { FocusRequester() } // Richiede il focus per l'input della password
+
     // Valori per le immagini della schermata
     val background = painterResource(id = R.drawable.sfondo1)
     val logoFacebook = R.drawable.facebookicon
@@ -336,10 +371,78 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
             Text("ACCEDI", fontSize = 20.sp)
         }
 
-        //TODO FUNZIONE CHE CREA IMMAGINE + TESTO SOTTO
         //HA iconaID = ID dell'immagine da visualizzare
         //text = testo da visualizzare SOTTO l'icona
-        //TODO Cosa da fare
+        @Composable
+        fun FacebookIconWithText(
+            text: String,
+            onSuccess: (LoginResult) -> Unit,
+            onCancel: () -> Unit,
+            onError: (FacebookException?) -> Unit
+        ) {
+            val callbackManager = FacebookUtil.callbackManager
+            val context = LocalContext.current
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(2.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = logoFacebook),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable {
+                            val loginManager = LoginManager.getInstance()
+                            loginManager.logInWithReadPermissions(
+                                context as Activity,
+                                listOf("email", "public_profile")
+                            )
+                            loginManager.registerCallback(
+                                callbackManager,
+                                object : FacebookCallback<LoginResult> {
+                                    override fun onSuccess(result: LoginResult) {
+                                        onSuccess(result)
+                                        Firebase.auth
+                                            .signInWithCredential(
+                                                FacebookAuthProvider.getCredential(
+                                                    result.accessToken.token
+                                                )
+                                            )
+                                            .addOnCompleteListener { task ->
+                                                if (task.isSuccessful) {
+                                                    if (task.result.additionalUserInfo?.isNewUser == true) {
+                                                        navController.navigate("SchermataRegistrazione")
+                                                    } else {
+                                                        navController.navigate("SchermataHome")
+                                                    }
+                                                }
+                                            }
+                                    }
+
+                                    override fun onCancel() {
+                                        onCancel()
+                                        println("Login : On Cancel")
+                                    }
+
+                                    override fun onError(error: FacebookException) {
+                                        onError(error)
+                                        println("Login : ${error.localizedMessage}")
+                                    }
+                                })
+                        },
+                    contentScale = ContentScale.Crop
+                )
+
+                Text(
+                    text = text,
+                    fontSize = 15.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
         @Composable
         fun IconWithText(iconId: Int, text: String, funzioneAutenticazione: () -> Unit)    {
 
@@ -361,7 +464,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
                     fontSize = 15.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
-                )//
+                )
             }
         }
 
@@ -389,38 +492,6 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
                     }
             }
         }
-        val context = LocalContext.current
-        fun facebookAuth() {
-            facebookLoginManager.registerCallback(facebookCallbackManager, object :
-                FacebookCallback<LoginResult> {
-                override fun onSuccess(result: LoginResult) {
-                    // L'utente è stato autenticato con successo
-                    println("1")
-                    val accessToken = AccessToken.getCurrentAccessToken()
-                    val credential = accessToken?.let { FacebookAuthProvider.getCredential(it.token) }
-
-                    if(accessToken == null) {
-                        navController.navigate("SchermataRegistrazione")
-                    } else {
-                        navController.navigate("SchermataHome")
-                    }
-                    // Puoi gestire ulteriormente l'accesso qui
-                }
-
-                override fun onCancel() {
-                    println("2")
-                    // L'utente ha annullato l'accesso
-                }
-
-                override fun onError(error: FacebookException) {
-                    println("3")
-                    // Si è verificato un errore durante l'accesso
-                }
-            })
-
-            facebookLoginManager.logInWithReadPermissions(context as Activity, listOf("email", "public_profile"))
-            println(AccessToken.getCurrentAccessToken())
-        }
 
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -445,12 +516,11 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
         ) {
 
             //CHIAMATE FUNZIONE ICON WITH TEXT
-
-            IconWithText(logoGoogle, "GOOGLE") { thirdPartyAuth(oAuthGoogleProvider) } //TODO IonaGoogle, inserire accesso con google
+            IconWithText(logoGoogle, "GOOGLE") { thirdPartyAuth(oAuthGoogleProvider) }
             Spacer(modifier = Modifier.width(65.dp))
-            IconWithText(logoFacebook, "FACEBOOK") { facebookAuth() } //TODO facebook, inserire accesso con Facebook
+            FacebookIconWithText("FACEBOOK", onSuccess = {}, onCancel = {}) { }
             Spacer(modifier = Modifier.width(65.dp))
-            IconWithText(logoGitHub, "GITHUB") { thirdPartyAuth(oAuthGitHubProvider) } //TODO IconaGitHub, inserire accesso con gitHub
+            IconWithText(logoGitHub, "GITHUB") { thirdPartyAuth(oAuthGitHubProvider) }
         }
 
         // Testo registrazione

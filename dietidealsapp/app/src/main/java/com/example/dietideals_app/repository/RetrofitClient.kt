@@ -4,13 +4,21 @@ import com.example.dietideals_app.repository.interfacceRepository.AstaService
 import com.example.dietideals_app.repository.interfacceRepository.UtenteService
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializer
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+
 
 object RetrofitClient {
     private const val BASE_URL = "http://10.0.2.2:8080/"
@@ -52,15 +60,25 @@ object RetrofitClient {
         return Retrofit.Builder()
             .client(clientWithAuthorization)
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+            .addConverterFactory(GsonConverterFactory.create(
+                GsonBuilder().registerTypeAdapter(
+                    OffsetDateTime::class.java,
+                    JsonDeserializer { json, type, jsonDeserializationContext ->
+                        val text = json.getAsJsonPrimitive().asString
+                        OffsetDateTime.parse(text)
+                    }).create())).build()
     }
 
     val retrofitWithoutAuthorization: Retrofit by lazy { //da usare solo per la registrazione (senza autenticazione)
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+            .addConverterFactory(GsonConverterFactory.create(
+                GsonBuilder().registerTypeAdapter(
+                    OffsetDateTime::class.java,
+                    JsonDeserializer { json, type, jsonDeserializationContext ->
+                        val text = json.getAsJsonPrimitive().asString
+                        OffsetDateTime.parse(text)
+                    }).create())).build()
     }
 
     object ApiRegistrazione {

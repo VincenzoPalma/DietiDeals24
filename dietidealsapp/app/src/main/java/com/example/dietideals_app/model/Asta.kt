@@ -10,7 +10,7 @@ import java.time.OffsetDateTime
 
 class Asta(val nome: String, val descrizione: String,val urlFoto: String,
            val dataScadenza : OffsetDateTime, val prezzoBase : BigDecimal,
-           val sogliaRialzo : BigDecimal, val intervalloTempoOfferta : OffsetDateTime,
+           val sogliaRialzo : BigDecimal, val intervalloTempoOfferta : Int,
            val categoria: CategoriaAsta, val tipo: TipoAsta, val stato: StatoAsta,
            val proprietario: Utente,var offerte: MutableSet<Offerta> = mutableSetOf()){
 

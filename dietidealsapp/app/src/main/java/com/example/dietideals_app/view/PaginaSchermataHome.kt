@@ -147,7 +147,6 @@ fun SchermataHome(navController: NavController) {
 
     LaunchedEffect(Unit) {
         viewModel.mostraAste(0, null, null, null, listener)
-        println("home")
     }
 
     fun generateNotifications(): List<Notifica> {
