@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -63,9 +65,18 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.Asta
+import com.example.dietideals_app.model.enum.TipoAsta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializer
 import kotlinx.coroutines.delay
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class PaginaAsta : ComponentActivity() {
@@ -123,8 +134,12 @@ fun SchermataPaginaAsta(navController: NavController) {
     val currentPage = remember { mutableIntStateOf(0) }
     var openDialog = remember { mutableStateOf(false) }
     var offerta by remember { mutableStateOf("") }
-    val aste = listOf("All'inglese", "Silenziosa", "Inversa")
-    val tipoAsta = aste.random()
+    var astaVisualizzata by remember { mutableStateOf<Asta?>(null)}
+
+    LaunchedEffect(Unit) {
+        val astaJson = navController.previousBackStackEntry?.savedStateHandle?.get<String>("asta")
+        astaVisualizzata = Gson().fromJson(astaJson, Asta::class.java)
+    }
 
     rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         // Handle the result if needed
@@ -198,10 +213,11 @@ fun SchermataPaginaAsta(navController: NavController) {
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-
-                    Image(
-                        painter = painterResource(id = R.drawable.defaultimage),
-                        contentDescription = null,
+                    AsyncImage(
+                        model = astaVisualizzata?.urlFoto,
+                        placeholder = painterResource(id = R.drawable.defaultimage),
+                        error = painterResource(id = R.drawable.defaultimage),
+                        contentDescription = "Immagine dell'asta",
                         modifier = Modifier
                             .clip(
                                 shape = RoundedCornerShape(
@@ -226,7 +242,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                     horizontalArrangement = Arrangement.Absolute.Left,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Scarpe Nike", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                    astaVisualizzata?.nome?.let { Text(text = it, fontSize = 30.sp, fontWeight = FontWeight.Bold) }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(text = "di", fontSize = 20.sp, fontWeight = FontWeight.Bold)
 
@@ -235,12 +251,12 @@ fun SchermataPaginaAsta(navController: NavController) {
                     TextButton(
                         modifier = Modifier.padding(start = 5.dp),
                         onClick = {
-                            navController.currentBackStackEntry?.savedStateHandle?.set(key = "idUtente", value = "76c21822-0ca8-4a31-a296-1aa48092bc0e") //inserire id dell'utente proprietario dell'asta
+                            navController.currentBackStackEntry?.savedStateHandle?.set(key = "idUtente", value = astaVisualizzata?.proprietario?.id) //inserire id dell'utente proprietario dell'asta
                             navController.navigate("SchermataProfiloUtente")
                         },
 
                         ) {
-                        Text(text = "@marioRossi", fontSize = 15.sp)
+                        astaVisualizzata?.proprietario?.username?.let { Text(text = "@$it", fontSize = 15.sp) }
 
                     }
 
@@ -252,12 +268,12 @@ fun SchermataPaginaAsta(navController: NavController) {
                     horizontalArrangement = Arrangement.Absolute.Left,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "RetroFit Air 20XX: esclusiva, leggera, ad alte prestazioni. " +
-                                "L'ultima tecnologia Nike incontra il design classico." +
-                                " Perfetta per gli amanti dello stile e dell'azione. Offri ora e vola con stile.",
-                        fontSize = 15.sp
-                    )
+                    astaVisualizzata?.descrizione?.let {
+                        Text(
+                            text = it,
+                            fontSize = 15.sp
+                        )
+                    }
 
 
                 }
@@ -272,13 +288,14 @@ fun SchermataPaginaAsta(navController: NavController) {
                         painter = painterResource(id = R.drawable.baseline_category_24),
                         contentDescription = null
                     )
-                    Text(text = "Abbigliamento", fontSize = 15.sp)
+                    astaVisualizzata?.categoria?.name?.replace("_", " ", false)
+                        ?.let { Text(text = it, fontSize = 15.sp) }
                     Spacer(Modifier.width(80.dp))
                     Icon(
                         painter = painterResource(id = R.drawable.auction_hammer),
                         contentDescription = null
                     )
-                    Text(text = tipoAsta, fontSize = 15.sp)
+                    astaVisualizzata?.tipo?.let { Text(text = it.name, fontSize = 15.sp) }
                 }
                 Row(
                     modifier = Modifier
@@ -292,7 +309,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                         contentDescription = null
                     )
                     Text(text = "OFFERTA ATTUALE €35", color = MaterialTheme.colorScheme.primary)
-                    if (tipoAsta == "All'inglese" || tipoAsta == "Inversa") {
+                    if (astaVisualizzata?.tipo == TipoAsta.INGLESE || astaVisualizzata?.tipo == TipoAsta.INVERSA) {
                         val text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
@@ -300,7 +317,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                                     fontSize = 15.sp
                                 )
                             ) {
-                                append("Luca Gialli")
+                                append("Luca Gialli") //username ultimo offerente
                                 addStringAnnotation("URL", "https://www.example.com", 0, length)
                             }
                         }
@@ -311,13 +328,13 @@ fun SchermataPaginaAsta(navController: NavController) {
                                 navController.navigate("SchermataProfiloUtente")
                             },
 
-                            ) {
+                            ) {//username ultimo offerente
                             Text(text = "@LucaGialli", fontSize = 15.sp)
 
                         }
                     }
                 }
-                if (tipoAsta == "All'inglese") {
+                if (astaVisualizzata?.tipo == TipoAsta.INGLESE) {
                     var timerRunning by remember { mutableStateOf(false) }
                     Row(
                         modifier = Modifier
@@ -330,7 +347,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                             painter = painterResource(id = R.drawable.growth),
                             contentDescription = null
                         )
-                        Text(text = " SOGLIA DI RIALZO €10", fontSize = 15.sp)
+                        Text(text = " SOGLIA DI RIALZO " + astaVisualizzata!!.sogliaRialzo.toString(), fontSize = 15.sp)
                     }
                     LaunchedEffect(Unit) {
 
@@ -363,16 +380,16 @@ fun SchermataPaginaAsta(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = if (tipoAsta == "All'inglese") R.drawable.baseline_access_time_filled_24 else R.drawable.baseline_calendar_month_24),
+                        painter = painterResource(id = if (astaVisualizzata?.tipo == TipoAsta.INGLESE) R.drawable.baseline_access_time_filled_24 else R.drawable.baseline_calendar_month_24),
                         contentDescription = null
                     )
                     Text(
-                        if (tipoAsta == "All'inglese") "Tempo rimanente: " else {
+                        if (astaVisualizzata?.tipo == TipoAsta.INGLESE) "Tempo rimanente: " else {
                             "Data di scadenza"
                         }, fontSize = 15.sp, color = Color(colorRed)
                     )
-                    when (tipoAsta) {
-                        "All'inglese" -> {
+                    when (astaVisualizzata?.tipo) {
+                        TipoAsta.INGLESE -> {
                             Text(
                                 formatTime(timeLeft),
                                 fontSize = 15.sp,
@@ -380,20 +397,23 @@ fun SchermataPaginaAsta(navController: NavController) {
                             )
                         }
 
-                        "Inversa" -> {
-                            Text(
-                                "10/03/2024", //ToDo da sostituire con la data di scadenza dell'asta
-                                fontSize = 15.sp,
-                                modifier = Modifier.padding(start = 4.dp), color = Color(colorRed)
-                            )
+                        TipoAsta.INVERSA -> {
+                            astaVisualizzata?.dataScadenza?.let {
+                                Text(
+                                    "prova",//it.format(DateTimeFormatter.ofPattern("dd/MM/yy")),
+                                    fontSize = 15.sp,
+                                    modifier = Modifier.padding(start = 4.dp), color = Color(colorRed)
+                                )
+                            }
                         }
 
                         else -> {
-                            Text(
-                                "10/03/2024 22:00", //ToDo da sostituire con la data di scadenza dell'asta
-                                fontSize = 15.sp,
-                                modifier = Modifier.padding(start = 4.dp), color = Color(colorRed)
-                            )
+                                    Text(
+                                        "prova",
+                                        fontSize = 15.sp,
+                                        modifier = Modifier.padding(start = 4.dp), color = Color(colorRed)
+                                    )
+
 
                         }
                     }
@@ -412,17 +432,17 @@ fun SchermataPaginaAsta(navController: NavController) {
                         disabledContentColor = Color.Gray,
                         disabledContainerColor = Color.Gray
                     ), onClick = {
-                        if (tipoAsta != "Silenziosa") openDialog.value = true
+                        if (astaVisualizzata?.tipo != TipoAsta.SILENZIOSA) openDialog.value = true
                         else {
                             navController.navigate("SchermataOfferte")
                         }
                     }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                painter = painterResource(id = if (tipoAsta != "Silenziosa") R.drawable.hand_money_cash_hold_svgrepo_com else R.drawable.baseline_remove_red_eye_24),
+                                painter = painterResource(id = if (astaVisualizzata?.tipo != TipoAsta.SILENZIOSA) R.drawable.hand_money_cash_hold_svgrepo_com else R.drawable.baseline_remove_red_eye_24),
                                 contentDescription = null
                             )
-                            Text(text = if (tipoAsta != "Silenziosa") "FAI UN OFFERTA" else "VISUALIZZA OFFERTE")
+                            Text(text = if (astaVisualizzata?.tipo != TipoAsta.SILENZIOSA) "FAI UN OFFERTA" else "VISUALIZZA OFFERTE")
                         }
 
                     }

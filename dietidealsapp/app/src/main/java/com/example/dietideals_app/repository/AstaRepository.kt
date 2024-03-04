@@ -17,7 +17,6 @@ class AstaRepository {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<List<Asta>?>()
 
-            // Effettua la chiamata all'API per ottenere le aste
             ApiAsta.astaService.getAste(0, 12, nome, tipo, categoria).enqueue(object :
                 Callback<AstaList> {
                 override fun onResponse(
@@ -33,7 +32,6 @@ class AstaRepository {
                 }
 
                 override fun onFailure(call: Call<AstaList>, t: Throwable) {
-                    println("errore " + t.message)
                     deferred.complete(null)
                 }
             })

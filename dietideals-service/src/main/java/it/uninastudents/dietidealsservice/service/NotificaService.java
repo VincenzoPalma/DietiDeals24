@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,9 +39,9 @@ public class NotificaService {
         notificaRepository.delete(spec);
     }
 
-    public Page<Notifica> findAllNotificheUtente(Pageable pageable) {
+    public List<Notifica> findAllNotificheUtente() {
         Utente utente = utenteService.getUtenteAutenticato();
         var spec = NotificaSpecs.hasUtente(utente.getId());
-        return notificaRepository.findAll(spec, pageable);
+        return notificaRepository.findAll(spec);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.dietideals_app.repository
 
 import com.example.dietideals_app.repository.interfacceRepository.AstaService
+import com.example.dietideals_app.repository.interfacceRepository.NotificaService
 import com.example.dietideals_app.repository.interfacceRepository.UtenteService
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -102,3 +103,9 @@ object RetrofitClient {
             RetrofitClient.getClientWithAuthorization().create(AstaService::class.java)
         }
     }
+
+object ApiNotifica {
+    val notificaService: NotificaService by lazy {
+        RetrofitClient.getClientWithAuthorization().create(NotificaService::class.java)
+    }
+}

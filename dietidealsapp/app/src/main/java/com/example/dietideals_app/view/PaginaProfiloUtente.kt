@@ -380,23 +380,21 @@ fun SchermataProfiloUtente(navController: NavController) {
                 )
 
             //SE E NULL CREA UN TESTO VUOTO ALTRIMENTO LO METTO, non riusciva giustamente a metteren null come testo e impazziva
-                (if(datiProfiloUtente?.descrizione ==null) "" else datiProfiloUtente!!.descrizione)?.let {
-                    Text(
-                        text = it,
-                        modifier = Modifier
-                            .constrainAs(shortBioUtente)
-                            {
-                                top.linkTo(shortBioLabel.bottom)
-                            }
-                            .padding(8.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Left,
-                        fontSize = 20.sp,
-                        color = Color.Black,// Imposta il grassetto
-                        maxLines = 6, // Imposta il numero massimo di righe
-                        overflow = TextOverflow.Ellipsis// Aggiunge tre puntini alla fine del testo se viene troncato
-                    )
-                }
+                Text(
+                    text = ((if(datiProfiloUtente?.descrizione == null) "" else datiProfiloUtente!!.descrizione).toString()),
+                    modifier = Modifier
+                        .constrainAs(shortBioUtente)
+                        {
+                            top.linkTo(shortBioLabel.bottom)
+                        }
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Left,
+                    fontSize = 20.sp,
+                    color = Color.Black,// Imposta il grassetto
+                    maxLines = 6, // Imposta il numero massimo di righe
+                    overflow = TextOverflow.Ellipsis// Aggiunge tre puntini alla fine del testo se viene troncato
+                )
 
                 Row(
                     modifier = Modifier
@@ -644,7 +642,7 @@ fun SchermataProfiloUtente(navController: NavController) {
     )
 }
 
-@SuppressLint("SuspiciousIndentation")
+/*@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataUtente(navController: NavController) {
@@ -1073,7 +1071,7 @@ fun SchermataUtente(navController: NavController) {
             }
         )
     }
-}
+} */
 
 
 @Preview(showBackground = true)

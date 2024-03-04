@@ -85,17 +85,25 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Asta
 import com.example.dietideals_app.model.Notifica
+import com.example.dietideals_app.model.enum.CategoriaAsta
+import com.example.dietideals_app.model.enum.TipoAsta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.SchermataHomeViewModel
 import com.example.dietideals_app.viewmodel.listener.AsteListener
+import com.example.dietideals_app.viewmodel.listener.NotificaListener
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 class PaginaSchermataHome : ComponentActivity() {
@@ -124,49 +132,55 @@ fun SchermataHome(navController: NavController) {
     val auth: FirebaseAuth = Firebase.auth
     val logoApp = painterResource(id = R.drawable.iconaapp)
     var isSearchVisible by remember { mutableStateOf(false) }
-    var searchText by remember { mutableStateOf("") }
     var isFilterVisible by remember { mutableStateOf(false) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val auctionType = listOf("Inglese", "Silenziosa", "Inversa")
     val searchFocusRequester =
         remember { FocusRequester() }
     val scope = rememberCoroutineScope()
-    var query by remember { mutableStateOf("") }
-    var asteVisualizzate = emptyList<Asta>()
-    var asteCaricate by remember { mutableStateOf(false) }
+    var asteVisualizzate by remember { mutableStateOf<List<Asta>>(emptyList()) }
+    var numeroPagina = 0
+    var nomeAstaRicerca by remember { mutableStateOf("") }
+    var categoriaAstaRicerca by remember { mutableStateOf<CategoriaAsta?>(null) }
+    var tipoAstaRicerca by remember { mutableStateOf<TipoAsta?>(null) }
+    var notifications by remember { mutableStateOf<List<Notifica>>(emptyList()) }
 
-    val listener = remember {
+    val listenerAste = remember {
         object : AsteListener {
             override fun onAsteLoaded(aste: List<Asta>) {
-                asteVisualizzate = aste
+                if (asteVisualizzate.isEmpty()){
+                    asteVisualizzate = aste
+                } else {
+                    asteVisualizzate + aste
+                }
             }
 
             override fun onError() {
-                // Gestisci l'errore
+                println("Impossibile trovare le aste")
+            }
+        }
+    }
+
+    val listenerNotifiche = remember {
+        object : NotificaListener {
+            override fun onNotificheLoaded(notifiche: List<Notifica>) {
+                notifications = notifiche
+            }
+
+            override fun onNotificheDeleted() {
+                notifications = emptyList()
+            }
+
+            override fun onError() {
+                println("Impossibile trovare le notifiche")
             }
         }
     }
 
     LaunchedEffect(Unit) {
-        viewModel.mostraAste(0, null, null, null, listener)
-        delay(500)
-        asteCaricate = true
+        viewModel.mostraAste(numeroPagina, null, null, null, listenerAste)
+        viewModel.mostraNotifiche(listenerNotifiche)
     }
 
-    fun generateNotifications(): List<Notifica> {
-        // Implementa questa funzione secondo le tue esigenze
-        // Restituisce una lista di notifiche
-        return listOf(
-            //Notifica("Notifica 1", LocalDateTime.now()),
-            //Notifica("Notifica 2", LocalDateTime.now()),
-            //Notifica("Notifica 3", LocalDateTime.now()),
-            //Notifica("Notifica 4", LocalDateTime.now()),
-            //Notifica("Notifica 5", LocalDateTime.now()),
-            //Notifica("Notifica 6", LocalDateTime.now())
-        )
-    }
-
-    var notifications by remember { mutableStateOf(generateNotifications()) }
 
     var checkInglese by remember { mutableStateOf(false) }
     var checkInversa by remember { mutableStateOf(false) }
@@ -246,7 +260,11 @@ fun SchermataHome(navController: NavController) {
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(30.dp)
-                                        .clickable { notifications = emptyList() },
+                                        .clickable {
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                viewModel.deleteNotifiche(listenerNotifiche)
+                                            }
+                                                   },
                                     tint = Color.Black
                                 )
 
@@ -259,8 +277,8 @@ fun SchermataHome(navController: NavController) {
                                         .weight(1f)
                                         .padding(16.dp)
                                 ) {
-                                    items(notifications.size) { notification ->
-
+                                    items(notifications.size) { index ->
+                                        val notifica = notifications[index]
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -281,7 +299,7 @@ fun SchermataHome(navController: NavController) {
 
                                                     // Titolo
                                                     Text(
-                                                        text = "Hai Vinto l'asta $notification\n Scarpe Adidas per € 40",
+                                                        text = notifica.contenuto,
                                                         color = Color.Black,
                                                         fontWeight = FontWeight.Bold,
                                                         fontSize = 8.sp,
@@ -292,9 +310,11 @@ fun SchermataHome(navController: NavController) {
                                                     VerticalDivider()
                                                     Column {
                                                         // Immagine
-                                                        Image(
-                                                            painter = painterResource(id = R.drawable.defaultimage),
-                                                            contentDescription = "Image",
+                                                        AsyncImage(
+                                                            model = notifica.asta.urlFoto,
+                                                            placeholder = painterResource(id = R.drawable.defaultimage),
+                                                            error = painterResource(id = R.drawable.defaultimage),
+                                                            contentDescription = "Immagine dell'asta nella notifica",
                                                             modifier = Modifier
                                                                 .size(100.dp)
                                                         )
@@ -384,8 +404,8 @@ fun SchermataHome(navController: NavController) {
                                 } else {
 
                                     TextField(
-                                        value = query,
-                                        onValueChange = { nuovaQuery -> query = nuovaQuery },
+                                        value = nomeAstaRicerca,
+                                        onValueChange = { nomeAstaRicerca = it },
                                         placeholder = {
                                             Text(
                                                 "Cerca Asta",
@@ -398,7 +418,11 @@ fun SchermataHome(navController: NavController) {
                                             imeAction = ImeAction.Done
                                         ),
                                         keyboardActions = KeyboardActions(
-                                            onDone = { /*query*/ }
+                                            onDone = { isSearchVisible = false
+                                                asteVisualizzate = emptyList()
+                                                viewModel.mostraAste(numeroPagina, nomeAstaRicerca, categoriaAstaRicerca, tipoAstaRicerca, listenerAste)
+
+                                            }
                                         ),
                                         modifier = Modifier
                                             .height(60.dp)
@@ -494,7 +518,10 @@ fun SchermataHome(navController: NavController) {
 
 
                         if (isFilterVisible) {
-                            Dialog(onDismissRequest = { isFilterVisible = false }) {
+                            Dialog(onDismissRequest = { isFilterVisible = false
+                                asteVisualizzate = emptyList()
+                                viewModel.mostraAste(0, nomeAstaRicerca, categoriaAstaRicerca, tipoAstaRicerca, listenerAste)
+                            }) {
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth(),
@@ -524,7 +551,14 @@ fun SchermataHome(navController: NavController) {
                                             modifier = Modifier
                                                 .clickable {
                                                     isFilterVisible = false
-
+                                                    asteVisualizzate = emptyList()
+                                                    viewModel.mostraAste(
+                                                        0,
+                                                        nomeAstaRicerca,
+                                                        categoriaAstaRicerca,
+                                                        tipoAstaRicerca,
+                                                        listenerAste
+                                                    )
                                                 }
                                                 .size(30.dp)
                                                 .padding(top = 6.dp, end = 6.dp)
@@ -564,7 +598,12 @@ fun SchermataHome(navController: NavController) {
                                             Text(text = "All'inglese", fontSize = 15.sp)
                                             Checkbox(
                                                 checked = checkInglese,
-                                                onCheckedChange = { checkInglese = it },
+                                                onCheckedChange = { checkInglese = it
+                                                    tipoAstaRicerca = if(checkInglese){
+                                                        TipoAsta.INGLESE
+                                                    } else {
+                                                        null
+                                                    }},
                                             )
                                         }
                                         Row(
@@ -577,7 +616,13 @@ fun SchermataHome(navController: NavController) {
                                             Text(text = "Inversa", fontSize = 15.sp)
                                             Checkbox(
                                                 checked = checkInversa,
-                                                onCheckedChange = { checkInversa = it },
+                                                onCheckedChange = { checkInversa = it
+                                                    tipoAstaRicerca = if(checkInversa){
+                                                        TipoAsta.INVERSA
+                                                    } else {
+                                                        null
+                                                    }
+                                                },
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
                                         }
@@ -591,7 +636,12 @@ fun SchermataHome(navController: NavController) {
 
                                             Checkbox(
                                                 checked = checkSilenziosa,
-                                                onCheckedChange = { checkSilenziosa = it },
+                                                onCheckedChange = { checkSilenziosa = it
+                                                    tipoAstaRicerca = if(checkSilenziosa){
+                                                        TipoAsta.SILENZIOSA
+                                                    } else {
+                                                        null
+                                                    }},
                                             )
                                         }
                                     }
@@ -624,7 +674,13 @@ fun SchermataHome(navController: NavController) {
                                         horizontalArrangement = Arrangement.Center
                                     ) {
                                         ElevatedButton(
-                                            onClick = { openCategoryDialog = true },
+                                            onClick = {
+                                                checkSilenziosa = false
+                                                checkInglese = false
+                                                checkInversa = false
+                                                categoriaSelezionata = "Seleziona Categoria"
+                                                categoriaAstaRicerca = null
+                                                tipoAstaRicerca = null},
                                             colors = ButtonColors(
                                                 containerColor = MaterialTheme.colorScheme.errorContainer,
                                                 contentColor = Color(0xFFBA1A1A),
@@ -636,13 +692,6 @@ fun SchermataHome(navController: NavController) {
                                                 painter = painterResource(id = R.drawable.baseline_close_24),
                                                 contentDescription = null,
                                                 modifier = Modifier
-                                                    .clickable {
-                                                        checkSilenziosa = false
-                                                        checkInglese = false
-                                                        checkInversa = false
-                                                        categoriaSelezionata =
-                                                            "Seleziona Categoria"
-                                                    }
                                                     .size(20.dp)
                                             )
                                             Text(text = "RIMUOVI FILTRI")
@@ -685,6 +734,16 @@ fun SchermataHome(navController: NavController) {
                                                                     categoriaSelezionata =
                                                                         categorie[index]
                                                                     openCategoryDialog = false
+                                                                    categoriaAstaRicerca =
+                                                                        CategoriaAsta.valueOf(
+                                                                            categorie[index]
+                                                                                .uppercase()
+                                                                                .replace(
+                                                                                    " ",
+                                                                                    "_",
+                                                                                    false
+                                                                                )
+                                                                        )
                                                                 },
 
                                                             ) {
@@ -740,8 +799,7 @@ fun SchermataHome(navController: NavController) {
                         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
                     }
 
-                    if(asteCaricate){
-                        LazyVerticalGrid(
+                    LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
                             modifier = Modifier
                                 .constrainAs(listaAste) {
@@ -755,14 +813,16 @@ fun SchermataHome(navController: NavController) {
                                 var open by remember {
                                     mutableStateOf(false)
                                 }
-                                var type = asta.tipo
-                                var category = asta.categoria
+                                val type = asta.tipo
+                                val category = asta.categoria
 
                                 ElevatedCard(
                                     modifier = Modifier
                                         .height(if (!open) 230.dp else 290.dp)
                                         .padding(8.dp)
-                                        .clickable { navController.navigate("SchermataPaginaAsta") },
+                                        .clickable {
+                                            navController.currentBackStackEntry?.savedStateHandle?.set(key = "asta", value = Gson().toJson(asta))
+                                            navController.navigate("SchermataPaginaAsta") },
                                     elevation = CardDefaults.cardElevation(
                                         defaultElevation = 6.dp
                                     ),
@@ -770,9 +830,11 @@ fun SchermataHome(navController: NavController) {
                                         Column(
                                             modifier = Modifier.padding(bottom = 8.dp),
                                         ) {
-                                            Image(
-                                                painter = painterResource(id = R.drawable.defaultimage),
-                                                contentDescription = "Image",
+                                            AsyncImage(
+                                                model = asta.urlFoto,
+                                                placeholder = painterResource(id = R.drawable.defaultimage),
+                                                error = painterResource(id = R.drawable.defaultimage),
+                                                contentDescription = "Immagine dell'asta",
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .height(110.dp)
@@ -808,7 +870,7 @@ fun SchermataHome(navController: NavController) {
                                                     Modifier.size(15.dp)
                                                 )
                                                 Text(
-                                                    text = category.name,
+                                                    text = category.name.replace("_", " ", false),
                                                     fontSize = 12.sp,
                                                     overflow = TextOverflow.Ellipsis
                                                 )
@@ -845,17 +907,13 @@ fun SchermataHome(navController: NavController) {
                                                         Modifier.size(15.dp)
                                                     )
                                                     Text(
-                                                        text = if (type.name == "Inglese" || type.name == "Inversa") {
-                                                            "Prezzo Attuale " + asta.prezzoBase //prezzo ultima offerta
-                                                        } else {
-                                                            "Prezzo Base" + asta.prezzoBase
-                                                        },
+                                                        text = "Prezzo Base " + asta.prezzoBase,
                                                         fontSize = 12.sp,
                                                         overflow = TextOverflow.Ellipsis
                                                     )
 
                                                 }
-                                                if (type.name == "Inglese") {
+                                                if (type.name == "INGLESE") {
                                                     Row(
                                                         horizontalArrangement = Arrangement.Start,
                                                         modifier = Modifier
@@ -895,7 +953,7 @@ fun SchermataHome(navController: NavController) {
                                                     verticalAlignment = Alignment.CenterVertically
                                                 ) {
                                                     when (type.name) {
-                                                        "Inversa" -> {
+                                                        "INVERSA" -> {
                                                             Icon(
                                                                 painter = painterResource(id = R.drawable.baseline_calendar_month_24),
                                                                 contentDescription = "TimeLeft",
@@ -903,14 +961,14 @@ fun SchermataHome(navController: NavController) {
                                                                 tint = MaterialTheme.colorScheme.error
                                                             )
                                                             Text(
-                                                                asta.dataScadenza.toString(), //ToDo da sostituire con la data di scadenza dell'asta
+                                                                asta.dataScadenza.format(DateTimeFormatter.ofPattern("dd/MM/yy")),
                                                                 fontSize = 12.sp,
                                                                 modifier = Modifier.padding(start = 4.dp),
                                                                 color = MaterialTheme.colorScheme.error
                                                             )
                                                         }
 
-                                                        "Silenziosa" -> {
+                                                        "SILENZIOSA" -> {
                                                             Icon(
                                                                 painter = painterResource(id = R.drawable.baseline_calendar_month_24),
                                                                 contentDescription = "TimeLeft",
@@ -918,7 +976,8 @@ fun SchermataHome(navController: NavController) {
                                                                 tint = MaterialTheme.colorScheme.error
                                                             )
                                                             Text(
-                                                                "10/03/2024 22:00", //ToDo da sostituire con la data di scadenza dell'asta
+                                                                asta.dataScadenza.format(
+                                                                    DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")),
                                                                 fontSize = 12.sp,
                                                                 modifier = Modifier.padding(start = 4.dp),
                                                                 color = MaterialTheme.colorScheme.error
@@ -960,7 +1019,6 @@ fun SchermataHome(navController: NavController) {
                                 )
                             }
                         }
-                    }
 
                     NavigationBar(
                         tonalElevation = 30.dp,

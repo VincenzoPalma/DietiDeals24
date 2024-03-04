@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class NotificaController {
@@ -21,10 +23,8 @@ public class NotificaController {
     private final NotificaService notificaService;
 
     @GetMapping("/utente/notifiche")
-    public ResponseEntity<Page<Notifica>> getNotificheUtente(@RequestParam(name = "page", defaultValue = "0") @Min(0) int page,
-                                                             @RequestParam(name = "size", defaultValue = "12") @Min(1) int size) {
-        Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").ascending());
-        return ResponseEntity.ok(notificaService.findAllNotificheUtente(pageable));
+        public ResponseEntity<List<Notifica>> getNotificheUtente() {
+        return ResponseEntity.ok(notificaService.findAllNotificheUtente());
     }
 
     @DeleteMapping("/utente/notifiche")
