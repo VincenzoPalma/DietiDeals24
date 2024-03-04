@@ -78,6 +78,7 @@ import com.example.dietideals_app.model.enum.RuoloUtente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.PaginaProfiloUtenteViewModel
 import com.example.dietideals_app.viewmodel.listener.DatiUtenteListener
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
@@ -129,6 +130,10 @@ fun SchermataProfiloUtente(navController: NavController) {
         object : DatiUtenteListener {
             override fun onDataLoaded(datiUtente: DatiProfiloUtente?) {
                 datiProfiloUtente = datiUtente
+            }
+
+            override fun onDatiModificati(utente: Utente) {
+                //
             }
 
             override fun onError() {
@@ -303,8 +308,8 @@ fun SchermataProfiloUtente(navController: NavController) {
                                 contentDescription = null,
                                 modifier = Modifier
                                     .clickable {
+                                        navController.currentBackStackEntry?.savedStateHandle?.set(key = "datiProfiloUtente", value = Gson().toJson(datiProfiloUtente))
                                         navController.navigate("SchermataModificaProfilo")
-
                                     }
                                     .size(40.dp)
 

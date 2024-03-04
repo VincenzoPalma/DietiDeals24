@@ -83,5 +83,31 @@ class UtenteRepository {
         }
     }
 
+    suspend fun modificaDatiUtente(datiProfiloUtente: DatiProfiloUtente): Utente? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Utente?>()
+
+           ApiUtente.utenteService.modificaDatiUtente(datiProfiloUtente).enqueue(object :
+                Callback<Utente> {
+                override fun onResponse(
+                    call: Call<Utente>,
+                    response: Response<Utente>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<Utente>, t: Throwable) {
+                    println(t.message)
+                    deferred.complete(null)
+                }
+            })
+
+            deferred.await()
+        }
+    }
+
 
 }

@@ -99,10 +99,14 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
@@ -264,7 +268,7 @@ fun SchermataHome(navController: NavController) {
                                             CoroutineScope(Dispatchers.Main).launch {
                                                 viewModel.deleteNotifiche(listenerNotifiche)
                                             }
-                                                   },
+                                        },
                                     tint = Color.Black
                                 )
 
@@ -821,8 +825,20 @@ fun SchermataHome(navController: NavController) {
                                         .height(if (!open) 230.dp else 290.dp)
                                         .padding(8.dp)
                                         .clickable {
-                                            navController.currentBackStackEntry?.savedStateHandle?.set(key = "asta", value = Gson().toJson(asta))
-                                            navController.navigate("SchermataPaginaAsta") },
+                                            val gson = GsonBuilder()
+                                                .registerTypeAdapter(
+                                                    OffsetDateTime::class.java,
+                                                    JsonSerializer<OffsetDateTime> { src, _, _ ->
+                                                        JsonPrimitive(src.toString())
+                                                    }
+                                                )
+                                                .create()
+                                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                key = "asta",
+                                                value = gson.toJson(asta)
+                                            )
+                                            navController.navigate("SchermataPaginaAsta")
+                                        },
                                     elevation = CardDefaults.cardElevation(
                                         defaultElevation = 6.dp
                                     ),
@@ -960,12 +976,15 @@ fun SchermataHome(navController: NavController) {
                                                                 Modifier.size(15.dp),
                                                                 tint = MaterialTheme.colorScheme.error
                                                             )
-                                                            Text(
-                                                                asta.dataScadenza.format(DateTimeFormatter.ofPattern("dd/MM/yy")),
-                                                                fontSize = 12.sp,
-                                                                modifier = Modifier.padding(start = 4.dp),
-                                                                color = MaterialTheme.colorScheme.error
-                                                            )
+                                                            asta.dataScadenza?.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
+                                                                ?.let {
+                                                                    Text(
+                                                                        it,
+                                                                        fontSize = 12.sp,
+                                                                        modifier = Modifier.padding(start = 4.dp),
+                                                                        color = MaterialTheme.colorScheme.error
+                                                                    )
+                                                                }
                                                         }
 
                                                         "SILENZIOSA" -> {
@@ -975,13 +994,15 @@ fun SchermataHome(navController: NavController) {
                                                                 Modifier.size(15.dp),
                                                                 tint = MaterialTheme.colorScheme.error
                                                             )
-                                                            Text(
-                                                                asta.dataScadenza.format(
-                                                                    DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")),
-                                                                fontSize = 12.sp,
-                                                                modifier = Modifier.padding(start = 4.dp),
-                                                                color = MaterialTheme.colorScheme.error
-                                                            )
+                                                            asta.dataScadenza?.plusHours(1)?.format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm"))
+                                                                ?.let {
+                                                                    Text(
+                                                                        it,
+                                                                        fontSize = 12.sp,
+                                                                        modifier = Modifier.padding(start = 4.dp),
+                                                                        color = MaterialTheme.colorScheme.error
+                                                                    )
+                                                                }
 
                                                         }
                                                     }

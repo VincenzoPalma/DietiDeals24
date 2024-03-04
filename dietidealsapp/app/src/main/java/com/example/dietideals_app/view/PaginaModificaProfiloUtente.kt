@@ -38,6 +38,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,8 +67,18 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.Utente
+import com.example.dietideals_app.model.dto.DatiProfiloUtente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.viewmodel.PaginaModificaProfiloUtenteViewModel
+import com.example.dietideals_app.viewmodel.listener.DatiUtenteListener
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PaginaModificaProfiloUtente : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,16 +102,40 @@ class PaginaModificaProfiloUtente : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataModificaProfilo(navController: NavController) {
+    val viewModel = PaginaModificaProfiloUtenteViewModel()
+    val sitoWebFocusRequester = remember { FocusRequester() }
+    val addressFocusRequester = remember { FocusRequester() }
+    val facebookLinkFocusRequester = remember { FocusRequester() }
+    val twitterLinkFocusRequester = remember { FocusRequester() }
+    var datiProfiloUtente by remember { mutableStateOf<DatiProfiloUtente?>(null) }
+
+    LaunchedEffect(Unit) {
+       datiProfiloUtente = Gson().fromJson(navController.previousBackStackEntry?.savedStateHandle?.get<String>("datiProfiloUtente"), DatiProfiloUtente::class.java)
+    }
+
     var shortBio by remember { mutableStateOf("") }
     var sitoWeb by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var instagramLink by remember { mutableStateOf("") }
     var facebookLink by remember { mutableStateOf("") }
     var twitterLink by remember { mutableStateOf("") }
-    val sitoWebFocusRequester = remember { FocusRequester() }
-    val addressFocusRequester = remember { FocusRequester() }
-    val facebookLinkFocusRequester = remember { FocusRequester() }
-    val twitterLinkFocusRequester = remember { FocusRequester() }
+
+    val listener = remember {
+        object : DatiUtenteListener {
+            override fun onDataLoaded(datiUtente: DatiProfiloUtente?) {
+                //
+            }
+
+            override fun onDatiModificati(utente: Utente) {
+                println("dati modificati")
+            }
+
+            override fun onError() {
+                // Gestisci l'errore
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -171,9 +206,11 @@ fun SchermataModificaProfilo(navController: NavController) {
                 .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
         ) {
             // Immagine all'interno della Box circolare
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground), // Rimpiazza con la tua immagine
-                contentDescription = null,
+            AsyncImage(
+                model = datiProfiloUtente?.urlFotoProfilo,
+                placeholder = painterResource(id = R.drawable.ic_launcher_foreground),
+                error = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = "Immagine del profilo dell'utente",
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(CircleShape)
@@ -181,7 +218,7 @@ fun SchermataModificaProfilo(navController: NavController) {
 
         }
         Text(
-            text = "MARIO ROSSI",
+            text = datiProfiloUtente?.nome + " " + datiProfiloUtente?.cognome,
             modifier = Modifier
                 .constrainAs(nomeUtente)
                 {
@@ -191,10 +228,10 @@ fun SchermataModificaProfilo(navController: NavController) {
                 .fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontSize = 25.sp,
-            fontWeight = FontWeight.Bold, // Imposta il grassetto
+            fontWeight = FontWeight.Bold,
         )
         Text(
-            text = "@mariorossi",
+            text = "@" + datiProfiloUtente?.username,
             modifier = Modifier
                 .constrainAs(usernameUtente) {
                     top.linkTo(nomeUtente.bottom)
@@ -539,7 +576,16 @@ fun SchermataModificaProfilo(navController: NavController) {
 
         ) {
             ElevatedButton(
-                onClick = { navController.navigate("SchermataProfiloUtente") }
+                onClick = {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        viewModel.modificaDatiUtente(DatiProfiloUtente(shortBio, facebookLink, instagramLink, twitterLink, sitoWeb, address,
+                            datiProfiloUtente?.urlFotoProfilo,
+                            datiProfiloUtente?.username,
+                            datiProfiloUtente?.nome,
+                            datiProfiloUtente?.cognome
+                        ), listener)
+                    }
+                    navController.navigate("SchermataProfiloUtente") }
             ) {
                 Text(text = "Conferma")
 

@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -50,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -76,7 +73,6 @@ import com.google.gson.JsonDeserializer
 import kotlinx.coroutines.delay
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class PaginaAsta : ComponentActivity() {
@@ -138,7 +134,13 @@ fun SchermataPaginaAsta(navController: NavController) {
 
     LaunchedEffect(Unit) {
         val astaJson = navController.previousBackStackEntry?.savedStateHandle?.get<String>("asta")
-        astaVisualizzata = Gson().fromJson(astaJson, Asta::class.java)
+        val gson = GsonBuilder().registerTypeAdapter(
+            OffsetDateTime::class.java,
+            JsonDeserializer { json, type, jsonDeserializationContext ->
+                val text = json.getAsJsonPrimitive().asString
+                OffsetDateTime.parse(text)
+            }).create()
+        astaVisualizzata = gson.fromJson(astaJson, Asta::class.java)
     }
 
     rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -251,7 +253,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                     TextButton(
                         modifier = Modifier.padding(start = 5.dp),
                         onClick = {
-                            navController.currentBackStackEntry?.savedStateHandle?.set(key = "idUtente", value = astaVisualizzata?.proprietario?.id) //inserire id dell'utente proprietario dell'asta
+                            navController.currentBackStackEntry?.savedStateHandle?.set(key = "idUtente", value = astaVisualizzata?.proprietario?.id)
                             navController.navigate("SchermataProfiloUtente")
                         },
 
@@ -400,7 +402,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                         TipoAsta.INVERSA -> {
                             astaVisualizzata?.dataScadenza?.let {
                                 Text(
-                                    "prova",//it.format(DateTimeFormatter.ofPattern("dd/MM/yy")),
+                                    it.format(DateTimeFormatter.ofPattern("dd/MM/yy")),
                                     fontSize = 15.sp,
                                     modifier = Modifier.padding(start = 4.dp), color = Color(colorRed)
                                 )
@@ -408,13 +410,13 @@ fun SchermataPaginaAsta(navController: NavController) {
                         }
 
                         else -> {
-                                    Text(
-                                        "prova",
-                                        fontSize = 15.sp,
-                                        modifier = Modifier.padding(start = 4.dp), color = Color(colorRed)
-                                    )
-
-
+                            astaVisualizzata?.dataScadenza?.let {
+                                Text(
+                                    it.plusHours(1).format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")),
+                                    fontSize = 15.sp,
+                                    modifier = Modifier.padding(start = 4.dp), color = Color(colorRed)
+                                )
+                            }
                         }
                     }
                 }
