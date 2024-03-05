@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,12 +34,7 @@ public class OffertaController {
     }
 
     @GetMapping("/aste/{idAsta}/offerte")
-    public ResponseEntity<Page<Offerta>> getOfferte(@PathVariable UUID idAsta, @RequestParam(name = "page", defaultValue = "0") @Min(0) int page, @RequestParam(name = "size", defaultValue = "12") @Min(1) int size, @RequestParam StatoOfferta statoOfferta) {
-        Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by("creationDate").descending());
-        try {
-            return new ResponseEntity<>(offertaService.findOffertaByStato(pageable, idAsta, statoOfferta), HttpStatus.OK);
-        } catch (UnauthorizedException exception) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
+    public ResponseEntity<List<Offerta>> getOfferte(@PathVariable UUID idAsta, @RequestParam StatoOfferta statoOfferta) {
+            return new ResponseEntity<>(offertaService.findOffertaByStato(idAsta, statoOfferta), HttpStatus.OK);
     }
 }

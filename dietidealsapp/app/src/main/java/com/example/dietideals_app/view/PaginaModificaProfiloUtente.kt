@@ -78,7 +78,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PaginaModificaProfiloUtente : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,7 +109,10 @@ fun SchermataModificaProfilo(navController: NavController) {
     var datiProfiloUtente by remember { mutableStateOf<DatiProfiloUtente?>(null) }
 
     LaunchedEffect(Unit) {
-       datiProfiloUtente = Gson().fromJson(navController.previousBackStackEntry?.savedStateHandle?.get<String>("datiProfiloUtente"), DatiProfiloUtente::class.java)
+        datiProfiloUtente = Gson().fromJson(
+            navController.previousBackStackEntry?.savedStateHandle?.get<String>("datiProfiloUtente"),
+            DatiProfiloUtente::class.java
+        )
     }
 
     var shortBio by remember { mutableStateOf("") }
@@ -345,7 +347,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                         .clickable { navController.navigate(route) },
 
 
-                )
+                    )
 
                 Text(
                     text = text,
@@ -578,14 +580,23 @@ fun SchermataModificaProfilo(navController: NavController) {
             ElevatedButton(
                 onClick = {
                     CoroutineScope(Dispatchers.Main).launch {
-                        viewModel.modificaDatiUtente(DatiProfiloUtente(shortBio, facebookLink, instagramLink, twitterLink, sitoWeb, address,
-                            datiProfiloUtente?.urlFotoProfilo,
-                            datiProfiloUtente?.username,
-                            datiProfiloUtente?.nome,
-                            datiProfiloUtente?.cognome
-                        ), listener)
+                        viewModel.modificaDatiUtente(
+                            DatiProfiloUtente(
+                                shortBio,
+                                facebookLink,
+                                instagramLink,
+                                twitterLink,
+                                sitoWeb,
+                                address,
+                                datiProfiloUtente?.urlFotoProfilo,
+                                datiProfiloUtente?.username,
+                                datiProfiloUtente?.nome,
+                                datiProfiloUtente?.cognome
+                            ), listener
+                        )
                     }
-                    navController.navigate("SchermataProfiloUtente") }
+                    navController.navigate("SchermataProfiloUtente")
+                }
             ) {
                 Text(text = "Conferma")
 

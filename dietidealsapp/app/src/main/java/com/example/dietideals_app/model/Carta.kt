@@ -2,7 +2,13 @@ package com.example.dietideals_app.model
 
 import java.time.LocalDate
 
-class Carta(val numero: String, val nomeTitolare: String, val codiceCvvCvc: String, val dataScadenza: LocalDate, val utente: Utente){
+class Carta(
+    val numero: String,
+    val nomeTitolare: String,
+    val codiceCvvCvc: String,
+    val dataScadenza: LocalDate,
+    val utente: Utente
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Carta) return false

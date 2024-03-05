@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -118,28 +120,27 @@ public class OffertaService {
         return offertaRepository.findOne(spec);
     }
 
-    public Page<Offerta> findOffertaByStato(Pageable pageable, UUID idAsta, StatoOfferta statoOfferta) {
+    public List<Offerta> findOffertaByStato(UUID idAsta, StatoOfferta statoOfferta) {
         if (statoOfferta.equals(StatoOfferta.NON_VINCENTE)) {
-            return findAllByAsta(pageable, idAsta);
+            return findAllByAsta(idAsta);
         } else if (statoOfferta.equals(StatoOfferta.VINCENTE)) {
-            return findPageOffertaVincenteByAsta(pageable, idAsta);
-        } else return Page.empty();
+            return findPageOffertaVincenteByAsta(idAsta);
+        } else return Collections.emptyList();
     }
 
-    public Page<Offerta> findAllByAsta(Pageable pageable, UUID idAsta) {
-        Utente utente = utenteService.getUtenteAutenticato();
+    public List<Offerta> findAllByAsta(UUID idAsta) {
         Optional<Asta> asta = astaRepository.findById(idAsta);
-        if (asta.isPresent() && utente.getId().equals(asta.get().getProprietario().getId())) {
+        if (asta.isPresent()) {
             var spec = OffertaSpecs.hasAsta(idAsta).and(OffertaSpecs.hasStato(StatoOfferta.NON_VINCENTE));
-            return offertaRepository.findAll(spec, pageable);
+            return offertaRepository.findAll(spec);
         } else {
-            throw new UnauthorizedException("Utente non proprietario dell'asta.");
+            return Collections.emptyList();
         }
     }
 
-    public Page<Offerta> findPageOffertaVincenteByAsta(Pageable pageable, UUID idAsta) {
+    public List<Offerta> findPageOffertaVincenteByAsta(UUID idAsta) {
         var spec = OffertaSpecs.hasAsta(idAsta).and(OffertaSpecs.hasStato(StatoOfferta.VINCENTE));
-        return offertaRepository.findAll(spec, pageable);
+        return offertaRepository.findAll(spec);
     }
 
     public Optional<Offerta> findOptionalOffertaVincenteByAsta(UUID idAsta) {

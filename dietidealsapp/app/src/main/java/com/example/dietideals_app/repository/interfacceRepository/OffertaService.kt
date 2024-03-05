@@ -14,9 +14,12 @@ import java.util.UUID
 interface OffertaService {
 
     @POST("aste/{idAsta}/offerte")
-    fun saveOfferta(@Path("idAsta") idAsta: UUID, @Body prezzo: BigDecimal) : Call<Offerta>
+    fun saveOfferta(@Path("idAsta") idAsta: UUID, @Body prezzo: BigDecimal): Call<Offerta>
 
     @GET("aste/{idAsta}/offerte")
-    fun getOfferte(@Path("idAsta") idAsta: UUID, @Query("page") page: Int, @Query("size") size: Int, @Query("statoOfferta") statoOfferta: StatoOfferta)
+    fun getOfferte(
+        @Path("idAsta") idAsta: UUID,
+        @Query("statoOfferta") statoOfferta: StatoOfferta
+    ): Call<List<Offerta>>
 
 }

@@ -15,9 +15,15 @@ class SchermataHomeViewModel {
     private val astaRepostory = AstaRepository()
     private val notificaRepostory = NotificaRepository()
 
-    fun mostraAste(page : Int, nome: String?, categoriaAsta: CategoriaAsta?, tipoAsta: TipoAsta?, listener: AsteListener){
+    fun mostraAste(
+        numeroPagina: Int,
+        nome: String?,
+        categoriaAsta: CategoriaAsta?,
+        tipoAsta: TipoAsta?,
+        listener: AsteListener
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
-            val aste = astaRepostory.getAste(nome, categoriaAsta, tipoAsta)
+            val aste = astaRepostory.getAste(numeroPagina, nome, categoriaAsta, tipoAsta)
             if (aste != null) {
                 listener.onAsteLoaded(aste)
             } else {
@@ -26,7 +32,7 @@ class SchermataHomeViewModel {
         }
     }
 
-    fun mostraNotifiche(listener: NotificaListener){
+    fun mostraNotifiche(listener: NotificaListener) {
         CoroutineScope(Dispatchers.IO).launch {
             val notifiche = notificaRepostory.getNotifiche()
             if (notifiche != null) {
@@ -37,10 +43,10 @@ class SchermataHomeViewModel {
         }
     }
 
-    fun deleteNotifiche(listener: NotificaListener){
+    fun deleteNotifiche(listener: NotificaListener) {
         CoroutineScope(Dispatchers.IO).launch {
             val eliminate = notificaRepostory.deleteNotifiche()
-            if (eliminate){
+            if (eliminate) {
                 listener.onNotificheDeleted()
             } else {
                 listener.onError()

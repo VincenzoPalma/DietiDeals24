@@ -13,18 +13,18 @@ import retrofit2.Response
 
 class AstaRepository {
 
-    suspend fun getAste(nome: String?, categoria: CategoriaAsta?, tipo: TipoAsta?): List<Asta>? {
+    suspend fun getAste(numeroPagina : Int, nome: String?, categoria: CategoriaAsta?, tipo: TipoAsta?): List<Asta>? {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<List<Asta>?>()
 
-            ApiAsta.astaService.getAste(0, 12, nome, tipo, categoria).enqueue(object :
+            ApiAsta.astaService.getAste(numeroPagina, 12, nome, tipo, categoria).enqueue(object :
                 Callback<AstaList> {
                 override fun onResponse(
                     call: Call<AstaList>,
                     response: Response<AstaList>
                 ) {
                     if (response.isSuccessful) {
-                        val risultato : List<Asta>? = response.body()?.content
+                        val risultato: List<Asta>? = response.body()?.content
                         deferred.complete(risultato)
                     } else {
                         deferred.complete(null)
@@ -39,5 +39,7 @@ class AstaRepository {
             deferred.await()
         }
     }
+
+
 
 }

@@ -69,9 +69,6 @@ class PaginaDatiVenditore : ComponentActivity() {
                     val navController = rememberNavController()
 
 
-
-
-
                 }
             }
         }

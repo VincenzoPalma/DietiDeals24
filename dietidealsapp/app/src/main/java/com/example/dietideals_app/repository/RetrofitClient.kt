@@ -2,6 +2,7 @@ package com.example.dietideals_app.repository
 
 import com.example.dietideals_app.repository.interfacceRepository.AstaService
 import com.example.dietideals_app.repository.interfacceRepository.NotificaService
+import com.example.dietideals_app.repository.interfacceRepository.OffertaService
 import com.example.dietideals_app.repository.interfacceRepository.UtenteService
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -12,11 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.time.Instant
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -67,7 +64,9 @@ object RetrofitClient {
                     JsonDeserializer { json, type, jsonDeserializationContext ->
                         val text = json.getAsJsonPrimitive().asString
                         OffsetDateTime.parse(text)
-                    }).create())).build()
+                    }).create()
+            )
+            ).build()
     }
 
     val retrofitWithoutAuthorization: Retrofit by lazy { //da usare solo per la registrazione (senza autenticazione)
@@ -79,7 +78,9 @@ object RetrofitClient {
                     JsonDeserializer { json, type, jsonDeserializationContext ->
                         val text = json.getAsJsonPrimitive().asString
                         OffsetDateTime.parse(text)
-                    }).create())).build()
+                    }).create()
+            )
+            ).build()
     }
 
     object ApiRegistrazione {
@@ -91,21 +92,27 @@ object RetrofitClient {
 
 }
 
-    object ApiUtente {
-        val utenteService: UtenteService by lazy {
-            RetrofitClient.getClientWithAuthorization().create(UtenteService::class.java)
-        }
-
+object ApiUtente {
+    val utenteService: UtenteService by lazy {
+        RetrofitClient.getClientWithAuthorization().create(UtenteService::class.java)
     }
 
-    object ApiAsta {
-        val astaService: AstaService by lazy {
-            RetrofitClient.getClientWithAuthorization().create(AstaService::class.java)
-        }
+}
+
+object ApiAsta {
+    val astaService: AstaService by lazy {
+        RetrofitClient.getClientWithAuthorization().create(AstaService::class.java)
     }
+}
 
 object ApiNotifica {
     val notificaService: NotificaService by lazy {
         RetrofitClient.getClientWithAuthorization().create(NotificaService::class.java)
+    }
+}
+
+object ApiOfferta {
+    val offertaService: OffertaService by lazy {
+        RetrofitClient.getClientWithAuthorization().create(OffertaService::class.java)
     }
 }

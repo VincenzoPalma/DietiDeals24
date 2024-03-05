@@ -82,6 +82,8 @@ fun SchermataGestioneAste(navController: NavController) {
     val colorRed = 0xFF9B0404
     val selectedTabIndex = remember { mutableIntStateOf(0) }
     val tabNames = listOf("ASTE ATTIVE", "ASTE CONCLUSE", "ASTE SEGUITE", "ASTE VINTE")
+
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()

@@ -89,11 +89,23 @@ class PaginaRegistrazioneViewModel {
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    fun checkFields(email : String, password: String, confermaPassword: String, nome: String, cognome: String, username: String, state: DatePickerState, isRegistrazioneTerzeParti: Boolean): Boolean {
+    fun checkFields(
+        email: String,
+        password: String,
+        confermaPassword: String,
+        nome: String,
+        cognome: String,
+        username: String,
+        state: DatePickerState,
+        isRegistrazioneTerzeParti: Boolean
+    ): Boolean {
         // Verifica qui tutti i campi e restituisci true solo se sono tutti compilati correttamente
         return isEmailValid(email) &&
                 isUsernameValid(username) &&
-                (isRegistrazioneTerzeParti || (isPasswordValid(password) && isPasswordMatching(password, confermaPassword))) &&
+                (isRegistrazioneTerzeParti || (isPasswordValid(password) && isPasswordMatching(
+                    password,
+                    confermaPassword
+                ))) &&
                 isNomeValid(nome) &&
                 isCognomeValid(cognome) &&
                 isUserAdult(state.selectedDateMillis)
@@ -115,8 +127,15 @@ class PaginaRegistrazioneViewModel {
         return iban.length == 27 && iban.matches(Regex("[A-Za-z0-9]+"))
     }
 
-    fun checkFieldsDatiVenditore(nomeTitolare: String, codiceBicSwift: String, partitaIva: String, iban: String): Boolean {
-        return isValidNomeTitolare(nomeTitolare) && isValidCodiceBicSwift(codiceBicSwift) && isValidIban(iban) && isValidPartitaIva(partitaIva)
+    fun checkFieldsDatiVenditore(
+        nomeTitolare: String,
+        codiceBicSwift: String,
+        partitaIva: String,
+        iban: String
+    ): Boolean {
+        return isValidNomeTitolare(nomeTitolare) && isValidCodiceBicSwift(codiceBicSwift) && isValidIban(
+            iban
+        ) && isValidPartitaIva(partitaIva)
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -133,7 +152,7 @@ class PaginaRegistrazioneViewModel {
         }
     }
 
-    suspend fun doesEmailExist(email: String) : Boolean {
+    suspend fun doesEmailExist(email: String): Boolean {
         val utente = utenteRepository.getUtenteByEmail(email)
         return utente != null
     }

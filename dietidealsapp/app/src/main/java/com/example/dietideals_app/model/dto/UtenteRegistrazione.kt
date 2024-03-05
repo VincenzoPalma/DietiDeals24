@@ -15,5 +15,4 @@ class UtenteRegistrazione(
     val urlDocumentoIdentita: String?,
     val urlFotoProfilo: String?,
     val contoCorrente: ContoCorrente?
-) {
-}
+)

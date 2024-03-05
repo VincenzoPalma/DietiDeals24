@@ -1,9 +1,16 @@
 package com.example.dietideals_app.model
 
 import com.example.dietideals_app.model.enum.StatoOfferta
-import java.util.Currency
+import java.math.BigDecimal
+import java.time.OffsetDateTime
 
-class Offerta (val prezzo : Currency, val stato : StatoOfferta, val utente: Utente, val asta: Asta){
+class Offerta(
+    val prezzo: BigDecimal,
+    val stato: StatoOfferta,
+    val utente: Utente,
+    val asta: Asta,
+    val creationDate: OffsetDateTime
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Offerta) return false

@@ -1,6 +1,6 @@
 package com.example.dietideals_app.model
 
-class Notifica(val contenuto : String, val utente: Utente, val asta: Asta) {
+class Notifica(val contenuto: String, val utente: Utente, val asta: Asta) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

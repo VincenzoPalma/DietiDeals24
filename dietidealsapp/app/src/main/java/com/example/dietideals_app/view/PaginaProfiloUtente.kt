@@ -50,7 +50,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -71,18 +70,14 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import coil.transform.CircleCropTransformation
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Utente
 import com.example.dietideals_app.model.dto.DatiProfiloUtente
-import com.example.dietideals_app.model.enum.RuoloUtente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.PaginaProfiloUtenteViewModel
 import com.example.dietideals_app.viewmodel.listener.DatiUtenteListener
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import java.io.File
-import java.time.LocalDate
 import java.util.UUID
 
 
@@ -283,7 +278,6 @@ fun SchermataProfiloUtente(navController: NavController) {
                                     if (previousDestination == "SchermataPaginaAsta") {
                                         navController.popBackStack()
                                     } else {
-
                                         scope.launch {
                                             drawerState.apply {
                                                 if (isClosed) open() else close()
@@ -309,7 +303,10 @@ fun SchermataProfiloUtente(navController: NavController) {
                                 contentDescription = null,
                                 modifier = Modifier
                                     .clickable {
-                                        navController.currentBackStackEntry?.savedStateHandle?.set(key = "datiProfiloUtente", value = Gson().toJson(datiProfiloUtente))
+                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                            key = "datiProfiloUtente",
+                                            value = Gson().toJson(datiProfiloUtente)
+                                        )
                                         navController.navigate("SchermataModificaProfilo")
                                     }
                                     .size(40.dp)
@@ -386,9 +383,9 @@ fun SchermataProfiloUtente(navController: NavController) {
                     fontWeight = FontWeight.Bold
                 )
 
-            //SE E NULL CREA UN TESTO VUOTO ALTRIMENTO LO METTO, non riusciva giustamente a metteren null come testo e impazziva
+                //SE E NULL CREA UN TESTO VUOTO ALTRIMENTO LO METTO, non riusciva giustamente a metteren null come testo e impazziva
                 Text(
-                    text = ((if(datiProfiloUtente?.descrizione == null) "" else datiProfiloUtente!!.descrizione).toString()),
+                    text = ((if (datiProfiloUtente?.descrizione == null) "" else datiProfiloUtente!!.descrizione).toString()),
                     modifier = Modifier
                         .constrainAs(shortBioUtente)
                         {
@@ -428,15 +425,13 @@ fun SchermataProfiloUtente(navController: NavController) {
                     val text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = if(datiProfiloUtente?.sitoWeb == null) Color.Gray else MaterialTheme.colorScheme.primary,
+                                color = if (datiProfiloUtente?.sitoWeb == null) Color.Gray else MaterialTheme.colorScheme.primary,
                                 fontSize = 20.sp
                             )
                         ) {
-                            if(datiProfiloUtente?.sitoWeb == null){
+                            if (datiProfiloUtente?.sitoWeb == null) {
                                 append("Non disponibile")
-                            }
-                            else
-                            {
+                            } else {
                                 append(datiProfiloUtente?.sitoWeb)
                                 addStringAnnotation("URL", "https://www.example.com", 0, length)
 
@@ -450,13 +445,15 @@ fun SchermataProfiloUtente(navController: NavController) {
                     ClickableText(
                         text = text,
                         modifier = Modifier.padding(8.dp),
-                        onClick = { offset -> if(datiProfiloUtente?.sitoWeb == null){
-                            text.getStringAnnotations("URL", offset, offset)
-                                .firstOrNull()?.let { annotation ->
-                                    annotation.item
-                                    val intent = Intent(Intent.ACTION_VIEW, null)
-                                    ContextCompat.startActivity(context, intent, null)
-                                }}
+                        onClick = { offset ->
+                            if (datiProfiloUtente?.sitoWeb == null) {
+                                text.getStringAnnotations("URL", offset, offset)
+                                    .firstOrNull()?.let { annotation ->
+                                        annotation.item
+                                        val intent = Intent(Intent.ACTION_VIEW, null)
+                                        ContextCompat.startActivity(context, intent, null)
+                                    }
+                            }
                         },
                         style = MaterialTheme.typography.bodyLarge
                     )

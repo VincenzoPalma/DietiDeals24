@@ -54,7 +54,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
@@ -62,17 +61,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
-import com.example.dietideals_app.viewmodel.PaginaAutenticazioneViewModel
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.ui.theme.titleCustomFont
+import com.example.dietideals_app.viewmodel.PaginaAutenticazioneViewModel
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
-import com.facebook.FacebookSdk
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import com.facebook.login.widget.LoginButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -84,7 +81,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-    private val facebookCallbackManager = CallbackManager.Factory.create();
+    private val facebookCallbackManager = CallbackManager.Factory.create()
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         FacebookUtil.callbackManager.onActivityResult(requestCode, resultCode, data)
@@ -137,7 +134,8 @@ class MainActivity : ComponentActivity() {
                         composable("SchermataRegistrazione") { SchermataRegistrazione(navController = navController) }
                         composable("SchermataHome") { SchermataHome(navController = navController) }
                         composable("SchermataProfiloUtente") {
-                            SchermataProfiloUtente(navController = navController) }
+                            SchermataProfiloUtente(navController = navController)
+                        }
                         composable("SchermataModificaProfilo") {
                             SchermataModificaProfilo(
                                 navController = navController
@@ -170,7 +168,8 @@ object FacebookUtil {
 @Composable
 
 fun SchermataAutenticazione(navController: NavController, activity: Activity) {
-    val presenter = PaginaAutenticazioneViewModel() // Istanza del presenter per la gestione dell'autenticazione
+    val presenter =
+        PaginaAutenticazioneViewModel() // Istanza del presenter per la gestione dell'autenticazione
     var email by remember { mutableStateOf("") } // Variabile per memorizzare l'email
     val firebaseAuth: FirebaseAuth = Firebase.auth
     val oAuthGitHubProvider = OAuthProvider.newBuilder("github.com")
@@ -289,7 +288,14 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
 
         // Text field password
         OutlinedTextField(
-            supportingText = { Text(text = if(loginFailed) "Utente non trovato" else "", color = MaterialTheme.colorScheme.error,modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)},
+            supportingText = {
+                Text(
+                    text = if (loginFailed) "Utente non trovato" else "",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            },
             value = password,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
             shape = RoundedCornerShape(15.dp),
@@ -444,7 +450,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
         }
 
         @Composable
-        fun IconWithText(iconId: Int, text: String, funzioneAutenticazione: () -> Unit)    {
+        fun IconWithText(iconId: Int, text: String, funzioneAutenticazione: () -> Unit) {
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -493,12 +499,13 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
             }
         }
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .constrainAs(sociaText)
-            {
-                top.linkTo(accessButton.bottom, margin = 16.dp)
-            }, horizontalArrangement = Arrangement.Center
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(sociaText)
+                {
+                    top.linkTo(accessButton.bottom, margin = 16.dp)
+                }, horizontalArrangement = Arrangement.Center
         ) {
             Text(text = "Oppure accedi con", textAlign = TextAlign.Center, color = Color.Gray)
 

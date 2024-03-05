@@ -1,7 +1,6 @@
 package com.example.dietideals_app.repository
 
 import com.example.dietideals_app.model.Notifica
-import com.example.dietideals_app.model.list.NotificaList
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,7 +21,7 @@ class NotificaRepository {
                     response: Response<List<Notifica>>
                 ) {
                     if (response.isSuccessful) {
-                        val risultato : List<Notifica>? = response.body()
+                        val risultato: List<Notifica>? = response.body()
                         deferred.complete(risultato)
                     } else {
                         deferred.complete(null)

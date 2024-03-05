@@ -6,7 +6,6 @@ import com.example.dietideals_app.model.dto.UtenteRegistrazione
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okio.Buffer
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,7 +38,10 @@ class UtenteRepository {
     suspend fun createUtente(datiRegistrazione: UtenteRegistrazione, idFirebase: String?): Utente? {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<Utente?>()
-            RetrofitClient.ApiRegistrazione.utenteService.createUtente(datiRegistrazione, idFirebase).enqueue(object :
+            RetrofitClient.ApiRegistrazione.utenteService.createUtente(
+                datiRegistrazione,
+                idFirebase
+            ).enqueue(object :
                 Callback<Utente> {
                 override fun onResponse(
                     call: Call<Utente>,
@@ -52,6 +54,7 @@ class UtenteRepository {
                         deferred.complete(null)
                     }
                 }
+
                 override fun onFailure(call: Call<Utente>, t: Throwable) {
                     deferred.complete(null)
                 }
@@ -87,7 +90,7 @@ class UtenteRepository {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<Utente?>()
 
-           ApiUtente.utenteService.modificaDatiUtente(datiProfiloUtente).enqueue(object :
+            ApiUtente.utenteService.modificaDatiUtente(datiProfiloUtente).enqueue(object :
                 Callback<Utente> {
                 override fun onResponse(
                     call: Call<Utente>,
@@ -109,5 +112,27 @@ class UtenteRepository {
         }
     }
 
+    suspend fun getUtenteByIdAuth(idAuth: String): Utente? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Utente?>()
+            ApiUtente.utenteService.getUtenteByIdAuth(idAuth).enqueue(object :
+                Callback<Utente> {
+                override fun onResponse(
+                    call: Call<Utente>,
+                    response: Response<Utente>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<Utente>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
 
 }

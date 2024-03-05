@@ -15,14 +15,28 @@ import retrofit2.http.Query
 interface AstaService {
 
     @POST("utente/aste")
-    fun saveAsta(@Body creaAsta: CreaAsta) : Call<Asta>
+    fun saveAsta(@Body creaAsta: CreaAsta): Call<Asta>
 
     @GET("aste")
-    fun getAste(@Query("page") page: Int, @Query("size") size: Int, @Query("nome") nome: String?, @Query("tipo") tipo: TipoAsta?, @Query("categoria") categoria: CategoriaAsta?): Call<AstaList>
+    fun getAste(
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("nome") nome: String?,
+        @Query("tipo") tipo: TipoAsta?,
+        @Query("categoria") categoria: CategoriaAsta?
+    ): Call<AstaList>
 
     @GET("utente/aste")
-    fun getAsteUtente(@Query("page") page: Int, @Query("size") size: Int, @Query("stato") statoAsta: StatoAsta?): Call<List<Asta>>
+    fun getAsteUtente(
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("stato") statoAsta: StatoAsta?
+    ): Call<List<Asta>>
 
     @GET("utente/offerte/asta")
-    fun getAstePartecipate(@Query("page") page: Int, @Query("size") size: Int, @Query("vinta") vinta: Boolean?): Call<List<Asta>>
+    fun getAstePartecipate(
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("vinta") vinta: Boolean?
+    ): Call<List<Asta>>
 }

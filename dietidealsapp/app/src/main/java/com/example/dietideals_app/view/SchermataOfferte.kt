@@ -99,12 +99,6 @@ fun SchermataOfferte(navController: NavController) {
     var isDialogVisible by remember { mutableStateOf(false) }
 
 
-
-
-
-
-
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -146,7 +140,7 @@ fun SchermataOfferte(navController: NavController) {
                     contentDescription = null,
                     modifier = Modifier
                         .size(35.dp)
-                        .clickable { navController.navigate("SchermataPaginaAsta") }
+                        .clickable { navController.popBackStack() }
                 )
             }, colors = TopAppBarColors(
                 containerColor = (MaterialTheme.colorScheme.primary),

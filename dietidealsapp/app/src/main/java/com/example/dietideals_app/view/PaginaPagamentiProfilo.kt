@@ -522,7 +522,8 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     )
                                 }, modifier = Modifier
                                     .align(Alignment.CenterStart)
-                                    .offset(-80.dp))
+                                    .offset(-80.dp)
+                            )
 
                         }
                     )

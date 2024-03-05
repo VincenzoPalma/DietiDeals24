@@ -15,15 +15,21 @@ import java.util.UUID
 interface UtenteService {
 
     @POST("registrazione")
-    fun createUtente(@Body datiRegistrazione: UtenteRegistrazione, @Query("idFirebase") idFirebase: String?): Call<Utente>
+    fun createUtente(
+        @Body datiRegistrazione: UtenteRegistrazione,
+        @Query("idFirebase") idFirebase: String?
+    ): Call<Utente>
 
     @GET("registrazione/esisteEmail/{email}")
-    fun getUtenteByEmail(@Path("email") email : String): Call<Utente>
+    fun getUtenteByEmail(@Path("email") email: String): Call<Utente>
 
     @PUT("utente/modificaDatiUtente")
     fun modificaDatiUtente(@Body datiProfiloUtente: DatiProfiloUtente): Call<Utente>
 
     @GET("utente/datiUtente")
     fun getDatiUtente(@Query("idUtente") idUtente: UUID?): Call<DatiProfiloUtente>
+
+    @GET("utente/idUtente/{idAuth}")
+    fun getUtenteByIdAuth(@Path("idAuth") idAuth: String): Call<Utente>
 
 }

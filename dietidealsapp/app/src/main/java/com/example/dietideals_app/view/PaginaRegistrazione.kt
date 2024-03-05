@@ -88,7 +88,6 @@ import com.example.dietideals_app.viewmodel.PaginaRegistrazioneViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -121,7 +120,8 @@ class RegistrazioneActivity : ComponentActivity() {
 @Composable
 
 fun SchermataRegistrazione(navController: NavController) {
-    val background = painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
+    val background =
+        painterResource(id = R.drawable.sfondo3) // Variabile per memorizzare l'immagine di sfondo.
 
 // Variabili per memorizzare le informazioni dell'utente.
     var username by remember { mutableStateOf("") } // Username
@@ -207,17 +207,17 @@ fun SchermataRegistrazione(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.width(5.dp))  // Aggiunge uno spazio tra l'icona e il testo
                     Text(
-                        text = if(isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
+                        text = if (isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
                         color = Color.White,
                         fontFamily = titleCustomFont,
                         textAlign = TextAlign.Center,
-                        fontSize = if(isRegistrazioneTerzeParti) 25.sp else 30.sp,
+                        fontSize = if (isRegistrazioneTerzeParti) 25.sp else 30.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
 
 
-                if (isRegistrazioneTerzeParti){
+                if (isRegistrazioneTerzeParti) {
                     email = firebaseAuth.currentUser?.email.toString()
                     username = firebaseAuth.currentUser?.displayName.toString()
                     isValidEmail = viewModel.isEmailValid(email)
@@ -227,15 +227,20 @@ fun SchermataRegistrazione(navController: NavController) {
 // Text Field E-mail
                 OutlinedTextField(
                     readOnly = isRegistrazioneTerzeParti,
-                    supportingText = { Text(text = if (emailExists) "E-mail non disponibile" else "", color = MaterialTheme.colorScheme.error)},
+                    supportingText = {
+                        Text(
+                            text = if (emailExists) "E-mail non disponibile" else "",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    },
                     label = {
-                    Text(
-                        "E-mail",
-                        color = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(
-                            0xFF9B0404
-                        ) else Color.Black,
-                    )
-                },
+                        Text(
+                            "E-mail",
+                            color = if (isValidEmail) Color(0xFF0EA639) else if (!isValidEmail && email.isNotEmpty()) Color(
+                                0xFF9B0404
+                            ) else Color.Black,
+                        )
+                    },
                     shape = RoundedCornerShape(15.dp),
                     value = email,
                     onValueChange = {
@@ -593,12 +598,21 @@ fun SchermataRegistrazione(navController: NavController) {
                     onClick = {
                         CoroutineScope(Dispatchers.Main).launch {
                             emailExists = viewModel.doesEmailExist(email)
-                            if(!emailExists){
+                            if (!emailExists) {
                                 currentPage.intValue = 1
                             }
                         }
                     },
-                    enabled = viewModel.checkFields(email, password, confermaPassword, nome, cognome, username, state, isRegistrazioneTerzeParti),
+                    enabled = viewModel.checkFields(
+                        email,
+                        password,
+                        confermaPassword,
+                        nome,
+                        cognome,
+                        username,
+                        state,
+                        isRegistrazioneTerzeParti
+                    ),
                     modifier = Modifier// Posiziona il pulsante in basso a destra
                         .padding(16.dp)
                         .constrainAs(bottoneAvanti) {
@@ -694,11 +708,11 @@ fun SchermataRegistrazione(navController: NavController) {
 
                     // Testo titolo
                     Text(
-                        text = if(isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
+                        text = if (isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
                         color = Color.White,
                         fontFamily = titleCustomFont,
                         textAlign = TextAlign.Center,
-                        fontSize = if(isRegistrazioneTerzeParti) 25.sp else 30.sp,
+                        fontSize = if (isRegistrazioneTerzeParti) 25.sp else 30.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -825,11 +839,11 @@ fun SchermataRegistrazione(navController: NavController) {
 
                     // Testo titolo
                     Text(
-                        text = if(isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
+                        text = if (isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
                         color = Color.White,
                         fontFamily = titleCustomFont,
                         textAlign = TextAlign.Center,
-                        fontSize = if(isRegistrazioneTerzeParti) 25.sp else 30.sp,
+                        fontSize = if (isRegistrazioneTerzeParti) 25.sp else 30.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -898,29 +912,60 @@ fun SchermataRegistrazione(navController: NavController) {
                     TextButton(
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                    var downloadUrl: String? = null;
-                                    if (selectedImageUri != null) {
-                                        val immagineProfiloRef = storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
-                                        selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
-                                        immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
-                                            // Ottieni l'URL di download dell'immagine
-                                            downloadUrl = uri.toString()
-                                        }.addOnFailureListener { exception ->
-                                            // Gestisci eventuali errori nell'ottenere l'URL di download
-                                            println("Errore durante il recupero dell'URL di download: $exception")
-                                        }
+                                var downloadUrl: String? = null
+                                if (selectedImageUri != null) {
+                                    val immagineProfiloRef =
+                                        storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
+                                    selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
+                                    immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
+                                        // Ottieni l'URL di download dell'immagine
+                                        downloadUrl = uri.toString()
+                                    }.addOnFailureListener { exception ->
+                                        // Gestisci eventuali errori nell'ottenere l'URL di download
+                                        println("Errore durante il recupero dell'URL di download: $exception")
                                     }
+                                }
                                 delay(500)
                                 if (isRegistrazioneTerzeParti) {
-                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, null, null, null, downloadUrl, null),
-                                        firebaseAuth.currentUser?.uid)
+                                    viewModel.registraUtente(
+                                        UtenteRegistrazione(
+                                            username,
+                                            RuoloUtente.COMPRATORE,
+                                            nome,
+                                            cognome,
+                                            viewModel.convertMillisToDate(state.selectedDateMillis!!)
+                                                .toString(),
+                                            email,
+                                            null,
+                                            null,
+                                            null,
+                                            downloadUrl,
+                                            null
+                                        ),
+                                        firebaseAuth.currentUser?.uid
+                                    )
 
                                 } else {
-                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.COMPRATORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, null, null, downloadUrl, null), null)
+                                    viewModel.registraUtente(
+                                        UtenteRegistrazione(
+                                            username,
+                                            RuoloUtente.COMPRATORE,
+                                            nome,
+                                            cognome,
+                                            viewModel.convertMillisToDate(state.selectedDateMillis!!)
+                                                .toString(),
+                                            email,
+                                            password,
+                                            null,
+                                            null,
+                                            downloadUrl,
+                                            null
+                                        ), null
+                                    )
                                 }
-                            isDialogVisible.value = true
-                        }
-                            },
+                                isDialogVisible.value = true
+                            }
+                        },
                         // Aggiungi un margine inferiore
 
 
@@ -1137,9 +1182,10 @@ fun SchermataRegistrazione(navController: NavController) {
                 )
                 OutlinedTextField(
                     value = nomeTitolare,
-                    onValueChange = { nomeTitolare = it
+                    onValueChange = {
+                        nomeTitolare = it
                         isNomeTitolareValid = viewModel.isValidNomeTitolare(it)
-                                    },
+                    },
                     label = {
                         Text(
                             "Nome Titolare",
@@ -1337,12 +1383,18 @@ fun SchermataRegistrazione(navController: NavController) {
 
                     // Bottone Conferma
                     ElevatedButton(
-                        enabled = viewModel.checkFieldsDatiVenditore(nomeTitolare, codiceBicSwift, partitaIva, iban),
+                        enabled = viewModel.checkFieldsDatiVenditore(
+                            nomeTitolare,
+                            codiceBicSwift,
+                            partitaIva,
+                            iban
+                        ),
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                var downloadUrl: String? = null;
+                                var downloadUrl: String? = null
                                 if (selectedImageUri != null) {
-                                    val immagineProfiloRef = storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
+                                    val immagineProfiloRef =
+                                        storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
                                     selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
                                     immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
                                         // Ottieni l'URL di download dell'immagine
@@ -1354,17 +1406,46 @@ fun SchermataRegistrazione(navController: NavController) {
                                 }
                                 delay(500)
                                 if (isRegistrazioneTerzeParti) {
-                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, null, partitaIva, null, downloadUrl, ContoCorrente(nomeTitolare, codiceBicSwift, iban)),
+                                    viewModel.registraUtente(
+                                        UtenteRegistrazione(
+                                            username,
+                                            RuoloUtente.VENDITORE,
+                                            nome,
+                                            cognome,
+                                            viewModel.convertMillisToDate(state.selectedDateMillis!!)
+                                                .toString(),
+                                            email,
+                                            null,
+                                            partitaIva,
+                                            null,
+                                            downloadUrl,
+                                            ContoCorrente(nomeTitolare, codiceBicSwift, iban)
+                                        ),
                                         firebaseAuth.currentUser?.uid
                                     )
 
                                 } else {
-                                    viewModel.registraUtente(UtenteRegistrazione(username, RuoloUtente.VENDITORE, nome, cognome, viewModel.convertMillisToDate(state.selectedDateMillis!!).toString(), email, password, partitaIva, null, downloadUrl, ContoCorrente(nomeTitolare, codiceBicSwift, iban)), null)
+                                    viewModel.registraUtente(
+                                        UtenteRegistrazione(
+                                            username,
+                                            RuoloUtente.VENDITORE,
+                                            nome,
+                                            cognome,
+                                            viewModel.convertMillisToDate(state.selectedDateMillis!!)
+                                                .toString(),
+                                            email,
+                                            password,
+                                            partitaIva,
+                                            null,
+                                            downloadUrl,
+                                            ContoCorrente(nomeTitolare, codiceBicSwift, iban)
+                                        ), null
+                                    )
                                 }
                                 isDialogVisible.value = true
-                        }
-                            },
-                        ) {
+                            }
+                        },
+                    ) {
                         Text(
                             text = "CONFERMA",
                             fontSize = 12.sp,

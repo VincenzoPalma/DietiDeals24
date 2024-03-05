@@ -11,11 +11,11 @@ import retrofit2.http.PUT
 interface ContoCorrenteService {
 
     @POST("utente/contoCorrente")
-    fun saveContoCorrente(@Body creaContoCorrente: CreaContoCorrente) : Call<ContoCorrente>
+    fun saveContoCorrente(@Body creaContoCorrente: CreaContoCorrente): Call<ContoCorrente>
 
     @PUT("contoCorrente")
-    fun modifyContoCorrente(@Body contoCorrente: ContoCorrente) : Call<ContoCorrente>
+    fun modifyContoCorrente(@Body contoCorrente: ContoCorrente): Call<ContoCorrente>
 
     @GET("utente/contoCorrente")
-    fun getContoCorrente() : Call<ContoCorrente>
+    fun getContoCorrente(): Call<ContoCorrente>
 }
