@@ -125,7 +125,7 @@ fun SchermataPaginaAsta(navController: NavController) {
     val colorRed = 0xFF9B0404
     val context = LocalContext.current
     val currentPage = remember { mutableIntStateOf(0) }
-    var openDialog = remember { mutableStateOf(false) }
+    val openDialog = remember { mutableStateOf(false) }
     var offerta by remember { mutableStateOf("") }
     var astaVisualizzata by remember { mutableStateOf<Asta?>(null) }
     var offertaVincente by remember { mutableStateOf<Offerta?>(null) }

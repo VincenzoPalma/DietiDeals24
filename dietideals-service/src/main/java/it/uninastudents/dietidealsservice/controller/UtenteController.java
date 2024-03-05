@@ -49,4 +49,9 @@ public class UtenteController {
             return ResponseEntity.ok().build();
         }
     }
+
+    @GetMapping("/utente/idUtente/{idAuth}")
+    public ResponseEntity<Utente> getUtenteByIdAuth(@PathVariable(name = "idAuth") String idAuth) {
+            return ResponseEntity.ok(utenteService.findUtenteByIdAuth(idAuth));
+    }
 }

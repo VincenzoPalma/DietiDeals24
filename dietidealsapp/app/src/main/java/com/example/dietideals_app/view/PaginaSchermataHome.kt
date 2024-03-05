@@ -159,6 +159,22 @@ fun SchermataHome(navController: NavController) {
                 }
             }
 
+            override fun onAsteAttiveUtenteLoaded(aste: List<Asta>) {
+                //
+            }
+
+            override fun onAsteTerminateUtenteLoaded(aste: List<Asta>) {
+                //
+            }
+
+            override fun onAsteSeguiteUtenteLoaded(aste: List<Asta>) {
+                //
+            }
+
+            override fun onAsteVinteUtenteLoaded(aste: List<Asta>) {
+                //
+            }
+
             override fun onError() {
                 println("Impossibile trovare le aste")
             }

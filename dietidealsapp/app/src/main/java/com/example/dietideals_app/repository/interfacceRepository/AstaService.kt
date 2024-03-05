@@ -31,12 +31,12 @@ interface AstaService {
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("stato") statoAsta: StatoAsta?
-    ): Call<List<Asta>>
+    ): Call<AstaList>
 
     @GET("utente/offerte/asta")
     fun getAstePartecipate(
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("vinta") vinta: Boolean?
-    ): Call<List<Asta>>
+    ): Call<AstaList>
 }

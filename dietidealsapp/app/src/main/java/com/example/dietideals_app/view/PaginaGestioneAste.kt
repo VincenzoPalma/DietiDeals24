@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,12 +36,19 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,8 +58,13 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.Asta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.viewmodel.PaginaGestioneAsteViewModel
+import com.example.dietideals_app.viewmodel.listener.AsteListener
+import java.time.format.DateTimeFormatter
 
 class PaginaGestioneAste : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,11 +90,71 @@ class PaginaGestioneAste : ComponentActivity() {
 @Composable
 fun SchermataGestioneAste(navController: NavController) {
 
-
+    val viewModel = PaginaGestioneAsteViewModel()
     val colorGreen = 0xFF0EA639
     val colorRed = 0xFF9B0404
     val selectedTabIndex = remember { mutableIntStateOf(0) }
     val tabNames = listOf("ASTE ATTIVE", "ASTE CONCLUSE", "ASTE SEGUITE", "ASTE VINTE")
+    var asteAttive by remember { mutableStateOf<List<Asta>>(emptyList()) }
+    var numeroPaginaAsteAttive by remember { mutableIntStateOf(0) }
+    var asteTerminate by remember { mutableStateOf<List<Asta>>(emptyList()) }
+    var numeroPaginaAsteTerminate by remember { mutableIntStateOf(0) }
+    var asteSeguite by remember { mutableStateOf<List<Asta>>(emptyList()) }
+    var numeroPaginaAsteSeguite by remember { mutableIntStateOf(0) }
+    var asteVinte by remember { mutableStateOf<List<Asta>>(emptyList()) }
+    var numeroPaginaAsteVinte by remember { mutableIntStateOf(0) }
+
+    val listenerAste = remember {
+        object : AsteListener {
+            override fun onAsteLoaded(aste: List<Asta>) {
+                //
+            }
+
+            override fun onAsteAttiveUtenteLoaded(aste: List<Asta>) {
+                asteAttive = if (asteAttive.isEmpty() || numeroPaginaAsteAttive == 0) {
+                    aste
+                } else {
+                    val newAsteAttive = asteAttive.toMutableList()
+                    newAsteAttive.addAll(aste)
+                    newAsteAttive.toList()
+                }
+            }
+
+            override fun onAsteTerminateUtenteLoaded(aste: List<Asta>) {
+                asteTerminate = if (asteTerminate.isEmpty() || numeroPaginaAsteTerminate == 0) {
+                    aste
+                } else {
+                    val newAsteTerminate = asteTerminate.toMutableList()
+                    newAsteTerminate.addAll(aste)
+                    newAsteTerminate.toList()
+                }
+            }
+
+            override fun onAsteSeguiteUtenteLoaded(aste: List<Asta>) {
+                asteSeguite = if (asteSeguite.isEmpty() || numeroPaginaAsteSeguite == 0) {
+                    aste
+                } else {
+                    val newAsteSeguite = asteSeguite.toMutableList()
+                    newAsteSeguite.addAll(aste)
+                    newAsteSeguite.toList()
+                }
+            }
+
+            override fun onAsteVinteUtenteLoaded(aste: List<Asta>) {
+                asteVinte = if (asteVinte.isEmpty() || numeroPaginaAsteVinte == 0) {
+                    aste
+                } else {
+                    val newAsteVinte = asteVinte.toMutableList()
+                    newAsteVinte.addAll(aste)
+                    newAsteVinte.toList()
+                }
+            }
+
+            override fun onError() {
+                println("Impossibile trovare le aste")
+            }
+        }
+    }
 
 
     ConstraintLayout(
@@ -167,7 +240,7 @@ fun SchermataGestioneAste(navController: NavController) {
                 }
             }
             @Composable
-            fun ProductDetails(size: Int) {
+            fun ProductDetails(aste : List<Asta>) {
                 LazyColumn(
                     modifier = Modifier
 
@@ -177,7 +250,8 @@ fun SchermataGestioneAste(navController: NavController) {
 
 
                 ) {
-                    items(size) { index ->
+                    items(aste.size) { index ->
+                        val asta = aste[index]
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -204,12 +278,13 @@ fun SchermataGestioneAste(navController: NavController) {
                                     ) {
                                         Column {
                                             // Immagine
-                                            Image(
-                                                painter = painterResource(id = R.drawable.defaultimage),
-                                                contentDescription = "Image",
+                                            AsyncImage(
+                                                model = asta.urlFoto,
+                                                placeholder = painterResource(id = R.drawable.defaultimage),
+                                                error = painterResource(id = R.drawable.defaultimage),
+                                                contentDescription = "Immagine dell'asta",
                                                 modifier = Modifier
                                                     .size(150.dp)
-
                                             )
                                         }
                                         VerticalDivider()
@@ -217,7 +292,7 @@ fun SchermataGestioneAste(navController: NavController) {
                                         Column {
                                             // Titolo in grassetto
                                             Text(
-                                                text = "SCARPE NIKE",
+                                                text = asta.nome,
                                                 color = Color.Black,
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 10.sp,
@@ -316,7 +391,7 @@ fun SchermataGestioneAste(navController: NavController) {
 
                                                 )
                                             Text(
-                                                text = "Categoria: Abbigliamento",
+                                                text = "Categoria: " + asta.categoria.name.replace("_", " ", false).lowercase().replaceFirstChar { it.uppercase() },
                                                 color = Color.Black,
                                                 fontSize = 10.sp,
 
@@ -326,14 +401,15 @@ fun SchermataGestioneAste(navController: NavController) {
 
                                             if ((selectedTabIndex.intValue % 2) != 0) {
                                                 Text(
-                                                    text = "Conclusa il 08/11/23",
+                                                    text = "Conclusa il " + asta.dataScadenza?.format(
+                                                        DateTimeFormatter.ofPattern("dd/MM/yy")), //solo se non inglese
                                                     color = Color(colorRed),
                                                     fontSize = 10.sp,
 
                                                     )
                                             } else {
                                                 Text(
-                                                    text = "Tempo rimanente : 2 Giorni",
+                                                    text = "Scade il " + asta.dataScadenza?.format(DateTimeFormatter.ofPattern("dd/MM/yy")), //solo se non inglese
                                                     color = Color.Black,
                                                     fontSize = 10.sp,
 
@@ -362,22 +438,37 @@ fun SchermataGestioneAste(navController: NavController) {
             // Contenuto della scheda selezionata
             when (selectedTabIndex.intValue) {
                 0 -> {
-                    ProductDetails(4)
-
+                    LaunchedEffect(Unit) {
+                        numeroPaginaAsteAttive = 0
+                        viewModel.getAsteUtenteAttive(numeroPaginaAsteAttive, listenerAste)
+                    }
+                    ProductDetails(asteAttive)
                 }
 
 
                 1 -> {
-                    ProductDetails(2)
+                    LaunchedEffect(Unit) {
+                        numeroPaginaAsteTerminate = 0
+                        viewModel.getAsteUtenteTerminate(numeroPaginaAsteTerminate, listenerAste)
+                    }
+                    ProductDetails(asteTerminate)
 
                 }
 
                 2 -> {
-                    ProductDetails(3)
+                    LaunchedEffect(Unit) {
+                        numeroPaginaAsteSeguite = 0
+                        viewModel.getAsteUtenteSeguite(numeroPaginaAsteSeguite, listenerAste)
+                    }
+                    ProductDetails(asteSeguite)
                 }
 
                 3 -> {
-                    ProductDetails(1)
+                    LaunchedEffect(Unit) {
+                        numeroPaginaAsteVinte = 0
+                        viewModel.getAsteUtenteVinte(numeroPaginaAsteAttive, listenerAste)
+                    }
+                    ProductDetails(asteVinte)
                 }
             }
         }

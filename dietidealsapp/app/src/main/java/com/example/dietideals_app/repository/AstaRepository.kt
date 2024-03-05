@@ -2,6 +2,7 @@ package com.example.dietideals_app.repository
 
 import com.example.dietideals_app.model.Asta
 import com.example.dietideals_app.model.enum.CategoriaAsta
+import com.example.dietideals_app.model.enum.StatoAsta
 import com.example.dietideals_app.model.enum.TipoAsta
 import com.example.dietideals_app.model.list.AstaList
 import kotlinx.coroutines.CompletableDeferred
@@ -40,6 +41,58 @@ class AstaRepository {
         }
     }
 
+    suspend fun getAsteUtente(numeroPagina : Int, stato: StatoAsta?): List<Asta>? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<List<Asta>?>()
 
+            ApiAsta.astaService.getAsteUtente(numeroPagina, 12, stato).enqueue(object :
+                Callback<AstaList> {
+                    override fun onResponse(
+                    call: Call<AstaList>,
+                    response: Response<AstaList>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato: List<Asta>? = response.body()?.content
+                        deferred.complete(risultato)
+                    } else {
+                        deferred.complete(null)
+                    }
+                }
+
+                override fun onFailure(call: Call<AstaList>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+
+            deferred.await()
+        }
+    }
+
+    suspend fun getAstePartecipateUtente(numeroPagina : Int, vinta: Boolean): List<Asta>? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<List<Asta>?>()
+
+            ApiAsta.astaService.getAstePartecipate(numeroPagina, 12, vinta).enqueue(object :
+                Callback<AstaList> {
+                override fun onResponse(
+                    call: Call<AstaList>,
+                    response: Response<AstaList>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato: List<Asta>? = response.body()?.content
+                        deferred.complete(risultato)
+                    } else {
+                        deferred.complete(null)
+                    }
+                }
+
+                override fun onFailure(call: Call<AstaList>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+
+            deferred.await()
+        }
+    }
 
 }
