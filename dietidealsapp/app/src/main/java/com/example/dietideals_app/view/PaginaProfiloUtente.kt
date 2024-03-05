@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -328,18 +329,19 @@ fun SchermataProfiloUtente(navController: NavController) {
                             top.linkTo(parent.top, margin = 70.dp)
                         }
                         .size(80.dp)
-                        .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
+                        .background(color = Color.White, shape = CircleShape)
                 ) {
                     // Immagine all'interno della Box circolare
                     //sistemare l'immagine in modo che copra l'intero cerchio
                     AsyncImage(
                         model = datiProfiloUtente?.urlFotoProfilo,
-                        placeholder = painterResource(id = R.drawable.ic_launcher_foreground),
-                        error = painterResource(id = R.drawable.ic_launcher_foreground),
+                        placeholder = painterResource(id = com.facebook.login.R.drawable.com_facebook_profile_picture_blank_portrait),
+                        error = painterResource(id = com.facebook.login.R.drawable.com_facebook_profile_picture_blank_portrait),
                         contentDescription = "Immagine del profilo dell'utente",
                         modifier = Modifier
                             .fillMaxSize()
-                            .clip(CircleShape)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
                     )
 
                 }
@@ -426,12 +428,21 @@ fun SchermataProfiloUtente(navController: NavController) {
                     val text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = MaterialTheme.colorScheme.primary,
+                                color = if(datiProfiloUtente?.sitoWeb == null) Color.Gray else MaterialTheme.colorScheme.primary,
                                 fontSize = 20.sp
                             )
                         ) {
-                            append(datiProfiloUtente?.sitoWeb)
-                            addStringAnnotation("URL", "https://www.example.com", 0, length)
+                            if(datiProfiloUtente?.sitoWeb == null){
+                                append("Non disponibile")
+                            }
+                            else
+                            {
+                                append(datiProfiloUtente?.sitoWeb)
+                                addStringAnnotation("URL", "https://www.example.com", 0, length)
+
+                            }
+
+
                         }
                     }
                     Spacer(modifier = Modifier.width(7.dp))
@@ -439,13 +450,13 @@ fun SchermataProfiloUtente(navController: NavController) {
                     ClickableText(
                         text = text,
                         modifier = Modifier.padding(8.dp),
-                        onClick = { offset ->
+                        onClick = { offset -> if(datiProfiloUtente?.sitoWeb == null){
                             text.getStringAnnotations("URL", offset, offset)
                                 .firstOrNull()?.let { annotation ->
                                     annotation.item
                                     val intent = Intent(Intent.ACTION_VIEW, null)
                                     ContextCompat.startActivity(context, intent, null)
-                                }
+                                }}
                         },
                         style = MaterialTheme.typography.bodyLarge
                     )

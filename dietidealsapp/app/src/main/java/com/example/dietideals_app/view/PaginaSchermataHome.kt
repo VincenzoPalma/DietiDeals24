@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -289,12 +291,11 @@ fun SchermataHome(navController: NavController) {
                                                 .padding(bottom = 16.dp)
                                         ) {
                                             // Riquadro per ogni elemento della lista
-                                            OutlinedCard(
+                                            ElevatedCard(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .height(100.dp)
                                                     .padding(2.dp),
-                                                border = BorderStroke(1.dp, Color.Black),
 
                                                 ) {
                                                 Row(
@@ -310,6 +311,7 @@ fun SchermataHome(navController: NavController) {
                                                         textAlign = TextAlign.Left,
                                                         modifier = Modifier
                                                             .padding(4.dp)
+                                                            .width(200.dp)
                                                     )
                                                     VerticalDivider()
                                                     Column {
@@ -321,6 +323,8 @@ fun SchermataHome(navController: NavController) {
                                                             contentDescription = "Immagine dell'asta nella notifica",
                                                             modifier = Modifier
                                                                 .size(100.dp)
+                                                                .width(100.dp)
+
                                                         )
                                                     }
                                                 }
@@ -976,12 +980,16 @@ fun SchermataHome(navController: NavController) {
                                                                 Modifier.size(15.dp),
                                                                 tint = MaterialTheme.colorScheme.error
                                                             )
-                                                            asta.dataScadenza?.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
+                                                            asta.dataScadenza?.format(
+                                                                DateTimeFormatter.ofPattern("dd/MM/yy")
+                                                            )
                                                                 ?.let {
                                                                     Text(
                                                                         it,
                                                                         fontSize = 12.sp,
-                                                                        modifier = Modifier.padding(start = 4.dp),
+                                                                        modifier = Modifier.padding(
+                                                                            start = 4.dp
+                                                                        ),
                                                                         color = MaterialTheme.colorScheme.error
                                                                     )
                                                                 }
@@ -994,12 +1002,16 @@ fun SchermataHome(navController: NavController) {
                                                                 Modifier.size(15.dp),
                                                                 tint = MaterialTheme.colorScheme.error
                                                             )
-                                                            asta.dataScadenza?.plusHours(1)?.format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm"))
+                                                            asta.dataScadenza?.plusHours(1)?.format(
+                                                                DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")
+                                                            )
                                                                 ?.let {
                                                                     Text(
                                                                         it,
                                                                         fontSize = 12.sp,
-                                                                        modifier = Modifier.padding(start = 4.dp),
+                                                                        modifier = Modifier.padding(
+                                                                            start = 4.dp
+                                                                        ),
                                                                         color = MaterialTheme.colorScheme.error
                                                                     )
                                                                 }
@@ -1032,7 +1044,29 @@ fun SchermataHome(navController: NavController) {
                                     }
                                 )
                             }
-                            item {
+                                item {Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .wrapContentWidth(),
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            ElevatedButton(
+                                                onClick = {
+                                                    // Codice per caricare ulteriori aste
+                                                    // Aggiungi logicamente altri elementi alla tua lista di asteVisualizzate
+                                                }
+                                            ) {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.baseline_refresh_24),
+                                                    contentDescription = "LoadMore"
+                                                )
+                                                Text(text = "Carica Altre")
+                                            }
+                                        }
+
+
+                            }
+                        item {
                                 Spacer(
                                     modifier = Modifier
                                         .fillMaxWidth()

@@ -207,11 +207,11 @@ fun SchermataRegistrazione(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.width(5.dp))  // Aggiunge uno spazio tra l'icona e il testo
                     Text(
-                        text = "REGISTRAZIONE",
+                        text = if(isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
                         color = Color.White,
                         fontFamily = titleCustomFont,
                         textAlign = TextAlign.Center,
-                        fontSize = 30.sp,
+                        fontSize = if(isRegistrazioneTerzeParti) 25.sp else 30.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -358,20 +358,20 @@ fun SchermataRegistrazione(navController: NavController) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_lock_24),
                             contentDescription = null,
-                            tint = if (isValidPassword && matchedPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                            tint = if (isValidPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && !isValidPassword) Color(
                                 0xFF9B0404
                             ) else Color.Gray,
                         )
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = if (isValidPassword && matchedPassword) Color(
+                        unfocusedBorderColor = if (isValidPassword) Color(
                             0xFF0EA639
-                        ) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                        ) else if (password.isNotEmpty() && (!isValidPassword)) Color(
                             0xFF9B0404
                         ) else Color.Gray,
-                        focusedBorderColor = if (isValidPassword && matchedPassword) Color(
+                        focusedBorderColor = if (matchedPassword) Color(
                             0xFF0EA639
-                        ) else if (password.isNotEmpty() && (!matchedPassword || !isValidPassword)) Color(
+                        ) else if (password.isNotEmpty() && (!isValidPassword)) Color(
                             0xFF9B0404
                         ) else Color.Gray,
                     ),
@@ -694,11 +694,11 @@ fun SchermataRegistrazione(navController: NavController) {
 
                     // Testo titolo
                     Text(
-                        text = "REGISTRAZIONE",
+                        text = if(isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
                         color = Color.White,
                         fontFamily = titleCustomFont,
                         textAlign = TextAlign.Center,
-                        fontSize = 30.sp,
+                        fontSize = if(isRegistrazioneTerzeParti) 25.sp else 30.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -825,11 +825,11 @@ fun SchermataRegistrazione(navController: NavController) {
 
                     // Testo titolo
                     Text(
-                        text = "REGISTRAZIONE",
+                        text = if(isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
                         color = Color.White,
                         fontFamily = titleCustomFont,
                         textAlign = TextAlign.Center,
-                        fontSize = 30.sp,
+                        fontSize = if(isRegistrazioneTerzeParti) 25.sp else 30.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
