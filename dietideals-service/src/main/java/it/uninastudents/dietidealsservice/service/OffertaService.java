@@ -172,17 +172,6 @@ public class OffertaService {
             offerta.get().setStato(stato);
             if (stato.equals(StatoOfferta.VINCENTE) && offerta.get().getAsta().getTipo().equals(TipoAsta.SILENZIOSA))
             {
-                try {
-                    //non entra
-                    for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.anyJobGroup())) {
-                        JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                        List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
-                        System.out.println("jop:" + jobDetail.getKey().getName());
-                    }
-                } catch (SchedulerException e) {
-                    e.printStackTrace();
-                }
-
                 modificaTriggerJobTermineAsta("termineAstaJob_" + offerta.get().getAsta().getId().toString(), "termineAsta", TriggerBuilder.newTrigger()
                         .withIdentity("termineAstaTrigger_" + offerta.get().getAsta().getId().toString())
                         .startNow().build());
