@@ -34,4 +34,27 @@ class OffertaRepository {
             deferred.await()
         }
     }
+
+    suspend fun modificaStatoOfferta(idOfferta: UUID, statoOfferta: StatoOfferta): Offerta? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Offerta?>()
+            ApiOfferta.offertaService.modificaStatoOfferta(idOfferta, statoOfferta).enqueue(object :
+                Callback<Offerta> {
+                override fun onResponse(
+                    call: Call<Offerta>,
+                    response: Response<Offerta>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<Offerta>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
 }
