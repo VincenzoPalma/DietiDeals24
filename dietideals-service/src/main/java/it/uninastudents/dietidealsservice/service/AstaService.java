@@ -34,7 +34,7 @@ public class AstaService {
     private final Scheduler scheduler;
     private final ObjectMapper objectMapper;
 
-    public void scheduleScadenzaAsta(Asta asta) throws SchedulerException, JsonProcessingException {
+    public void schedulerScadenzaAsta(Asta asta) throws SchedulerException, JsonProcessingException {
         String astaJson = objectMapper.writeValueAsString(asta);
         JobDetail jobDetail = JobBuilder.newJob(TermineAstaJob.class)
                 .withIdentity("termineAstaJob_" + asta.getId().toString(), "termineAsta")
@@ -67,7 +67,7 @@ public class AstaService {
                 asta.setProprietario(utente);
                 utente.getAste().add(asta);
                 asta = repository.save(asta);
-                scheduleScadenzaAsta(asta);
+                schedulerScadenzaAsta(asta);
                 return asta;
             }
         }

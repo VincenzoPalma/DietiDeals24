@@ -66,6 +66,7 @@ import coil.compose.AsyncImage
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Asta
 import com.example.dietideals_app.model.Offerta
+import com.example.dietideals_app.model.enum.StatoAsta
 import com.example.dietideals_app.model.enum.TipoAsta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.PaginaAstaViewModel
@@ -213,7 +214,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                     contentDescription = null,
                     modifier = Modifier
                         .size(35.dp)
-                        .clickable { navController.navigate("SchermataHome") }
+                        .clickable { navController.popBackStack() }
                 )
             }, colors = TopAppBarColors(
                 containerColor = (MaterialTheme.colorScheme.primary),
@@ -434,39 +435,41 @@ fun SchermataPaginaAsta(navController: NavController) {
                         contentDescription = null
                     )
                     Text(
-                        if (astaVisualizzata?.tipo == TipoAsta.INGLESE) "Tempo rimanente: " else {
+                        if(astaVisualizzata?.stato == StatoAsta.TERMINATA) {"Terminata"} else if (astaVisualizzata?.tipo == TipoAsta.INGLESE) "Tempo rimanente: " else {
                             "Data di scadenza"
                         }, fontSize = 15.sp, color = Color(colorRed)
                     )
-                    when (astaVisualizzata?.tipo) {
-                        TipoAsta.INGLESE -> {
+                    if (astaVisualizzata?.stato != StatoAsta.TERMINATA){
+                        when (astaVisualizzata?.tipo) {
+                            TipoAsta.INGLESE -> {
                                 Text(
                                     formatTime(timeLeft),
                                     fontSize = 15.sp,
                                     modifier = Modifier.padding(start = 4.dp), color = Color(colorRed)
                                 )
-                        }
-
-                        TipoAsta.INVERSA -> {
-                            astaVisualizzata?.dataScadenza?.let {
-                                Text(
-                                    it.format(DateTimeFormatter.ofPattern("dd/MM/yy")),
-                                    fontSize = 15.sp,
-                                    modifier = Modifier.padding(start = 4.dp),
-                                    color = Color(colorRed)
-                                )
                             }
-                        }
 
-                        else -> {
-                            astaVisualizzata?.dataScadenza?.let {
-                                Text(
-                                    it.plusHours(1)
-                                        .format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")),
-                                    fontSize = 15.sp,
-                                    modifier = Modifier.padding(start = 4.dp),
-                                    color = Color(colorRed)
-                                )
+                            TipoAsta.INVERSA -> {
+                                astaVisualizzata?.dataScadenza?.let {
+                                    Text(
+                                        it.format(DateTimeFormatter.ofPattern("dd/MM/yy")),
+                                        fontSize = 15.sp,
+                                        modifier = Modifier.padding(start = 4.dp),
+                                        color = Color(colorRed)
+                                    )
+                                }
+                            }
+
+                            else -> {
+                                astaVisualizzata?.dataScadenza?.let {
+                                    Text(
+                                        it.plusHours(1)
+                                            .format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")),
+                                        fontSize = 15.sp,
+                                        modifier = Modifier.padding(start = 4.dp),
+                                        color = Color(colorRed)
+                                    )
+                                }
                             }
                         }
                     }
@@ -480,7 +483,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     ElevatedButton(
-                        enabled = !astaTerminata && (((astaVisualizzata?.tipo != TipoAsta.SILENZIOSA && !isUtenteProprietario)
+                        enabled = (astaVisualizzata?.stato == StatoAsta.ATTIVA) && (((astaVisualizzata?.tipo != TipoAsta.SILENZIOSA && !isUtenteProprietario)
                                 && (astaVisualizzata?.tipo != TipoAsta.SILENZIOSA && idUtenteCorrente != offertaVincente?.utente?.id))
                                 || (astaVisualizzata?.tipo == TipoAsta.SILENZIOSA && !utenteHasOfferta)),
                         colors = ButtonColors(
@@ -491,6 +494,10 @@ fun SchermataPaginaAsta(navController: NavController) {
                     ), onClick = {
                         if (astaVisualizzata?.tipo != TipoAsta.SILENZIOSA) openDialog.value = true
                         else {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                key = "idAsta",
+                                value = astaVisualizzata?.id.toString()
+                            )
                             navController.navigate("SchermataOfferte")
                         }
                     }) {

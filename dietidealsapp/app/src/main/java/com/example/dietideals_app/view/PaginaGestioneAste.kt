@@ -61,9 +61,14 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Asta
+import com.example.dietideals_app.model.enum.TipoAsta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.PaginaGestioneAsteViewModel
 import com.example.dietideals_app.viewmodel.listener.AsteListener
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializer
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 class PaginaGestioneAste : ComponentActivity() {
@@ -243,12 +248,8 @@ fun SchermataGestioneAste(navController: NavController) {
             fun ProductDetails(aste : List<Asta>) {
                 LazyColumn(
                     modifier = Modifier
-
-
                         .fillMaxSize()
                         .padding(16.dp)
-
-
                 ) {
                     items(aste.size) { index ->
                         val asta = aste[index]
@@ -264,6 +265,19 @@ fun SchermataGestioneAste(navController: NavController) {
                                 // Riquadro per ogni elemento della lista
                                 ElevatedCard(
                                     modifier = Modifier
+                                        .clickable { val gson = GsonBuilder()
+                                            .registerTypeAdapter(
+                                                OffsetDateTime::class.java,
+                                                JsonSerializer<OffsetDateTime> { src, _, _ ->
+                                                    JsonPrimitive(src.toString())
+                                                }
+                                            )
+                                            .create()
+                                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                key = "asta",
+                                                value = gson.toJson(asta)
+                                            )
+                                            navController.navigate("SchermataPaginaAsta") }
                                         .weight(1f)
                                         .height(150.dp)
                                         .padding(2.dp),
@@ -300,9 +314,9 @@ fun SchermataGestioneAste(navController: NavController) {
                                                 )
 
                                             //TAB ASTE ATTIVE
-                                            if (selectedTabIndex.intValue == 0) {
+                                            if (selectedTabIndex.intValue == 0 || selectedTabIndex.intValue == 2) {
                                                 Text(
-                                                    text = "Offerta Iniziale",
+                                                    text = "Prezzo base",
                                                     color = Color.Black,
                                                     fontSize = 10.sp,
 
@@ -311,7 +325,7 @@ fun SchermataGestioneAste(navController: NavController) {
 
 
                                             ///TAB ASTE CONCLUSE
-                                            if (selectedTabIndex.intValue == 1) {
+                                            if (selectedTabIndex.intValue == 1 || selectedTabIndex.intValue == 3) {
                                                 Text(
                                                     text = "Venduto per",
                                                     color = Color.Black,
@@ -320,31 +334,7 @@ fun SchermataGestioneAste(navController: NavController) {
                                                     )
 
                                             }
-                                            //TAB ASTE SEGUITE
-                                            /*
-                                            if(offerta NON rifiutata){
-                                            Text(
-                                                    text = "Offerta Attuale",
-                                                    color = Color.Black,
-                                                    fontSize = 10.sp,
 
-                                                    )
-
-                                            }
-                                            else{
-                                            Text(
-                                                    text = "La Tua Offerta",
-                                                    color = Color.Black,
-                                                    fontSize = 10.sp,
-
-                                                    )
-                                            }
-                                            *
-                                            *
-                                            *
-                                            *
-                                            *
-                                            * */
 
                                             //TAB ASTE VINTE
                                             if (selectedTabIndex.intValue == 3) {
@@ -356,36 +346,11 @@ fun SchermataGestioneAste(navController: NavController) {
                                                     )
 
                                             }
-                                            //TAB ASTE SEGUITE
-                                            /*
-                                            if(offerta NON rifiutata){
-                                            Text(
-                                                text = "€100,00",
-                                                color = Color(colorGreen),
-                                                fontSize = 10.sp,
-
-                                                )
-
-                                            }
-                                            else{
-                                            Text(
-                                                text = "€100,00 RIFIUTATA",
-                                                color = Color(colorRed),
-                                                fontSize = 10.sp,
-
-                                                )
-                                            }
-                                            *
-                                            *
-                                            *
-                                            *
-                                            *
-                                            * */
 
 
                                             // Prezzo in verde
                                             Text(
-                                                text = "€100,00",
+                                                text = asta.prezzoBase.toString(),
                                                 color = Color(colorGreen),
                                                 fontSize = 10.sp,
 
@@ -401,15 +366,15 @@ fun SchermataGestioneAste(navController: NavController) {
 
                                             if ((selectedTabIndex.intValue % 2) != 0) {
                                                 Text(
-                                                    text = "Conclusa il " + asta.dataScadenza?.format(
-                                                        DateTimeFormatter.ofPattern("dd/MM/yy")), //solo se non inglese
+                                                    text = if(asta.tipo != TipoAsta.INGLESE) {"Conclusa il " + asta.dataScadenza?.format(
+                                                        DateTimeFormatter.ofPattern("dd/MM/yy"))} else {"Conclusa"},
                                                     color = Color(colorRed),
                                                     fontSize = 10.sp,
 
                                                     )
                                             } else {
                                                 Text(
-                                                    text = "Scade il " + asta.dataScadenza?.format(DateTimeFormatter.ofPattern("dd/MM/yy")), //solo se non inglese
+                                                    text = if (asta.tipo != TipoAsta.INGLESE) {"Scade il " + asta.dataScadenza?.format(DateTimeFormatter.ofPattern("dd/MM/yy"))} else {"Intervallo offerta : " + asta.intervalloTempoOfferta},
                                                     color = Color.Black,
                                                     fontSize = 10.sp,
 

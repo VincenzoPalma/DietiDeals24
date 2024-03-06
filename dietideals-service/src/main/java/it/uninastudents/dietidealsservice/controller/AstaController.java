@@ -63,4 +63,5 @@ public class AstaController {
         Pageable pageable = ControllerUtils.pageableBuilder(page, size, Sort.by(CRITERIO_SORT).ascending());
         return new ResponseEntity<>(astaService.getAsteACuiUtenteHaPartecipato(pageable, vinta), HttpStatus.OK);
     }
+
 }

@@ -26,4 +26,8 @@ public class OffertaSpecs {
     public static Specification<Offerta> hasStato(StatoOfferta target) {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("stato"), target));
     }
+
+    public static Specification<Offerta> hasId(UUID target) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), target));
+    }
 }

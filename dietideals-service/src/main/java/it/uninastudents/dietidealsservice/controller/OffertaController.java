@@ -1,17 +1,11 @@
 package it.uninastudents.dietidealsservice.controller;
 
-import it.uninastudents.dietidealsservice.exceptions.UnauthorizedException;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoOfferta;
 import it.uninastudents.dietidealsservice.service.OffertaService;
-import it.uninastudents.dietidealsservice.utils.ControllerUtils;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.quartz.SchedulerException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +29,13 @@ public class OffertaController {
 
     @GetMapping("/aste/{idAsta}/offerte")
     public ResponseEntity<List<Offerta>> getOfferte(@PathVariable UUID idAsta, @RequestParam StatoOfferta statoOfferta) {
-            return new ResponseEntity<>(offertaService.findOffertaByStato(idAsta, statoOfferta), HttpStatus.OK);
+        return new ResponseEntity<>(offertaService.findOffertaByStato(idAsta, statoOfferta), HttpStatus.OK);
     }
+
+    @PutMapping("/aste/{idOfferta}")
+    public ResponseEntity<Offerta> modificaStatoOfferta(@PathVariable UUID idOfferta, @RequestParam StatoOfferta statoOfferta) throws SchedulerException {
+        Offerta offertaModificata = offertaService.modificaStatoOfferta(idOfferta, statoOfferta);
+        return ResponseEntity.created(URI.create("/asta/%s".formatted(idOfferta.toString()))).body(offertaModificata);
+    }
+
 }

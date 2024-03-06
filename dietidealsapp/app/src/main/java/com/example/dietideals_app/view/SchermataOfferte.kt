@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
@@ -42,6 +43,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -63,8 +66,16 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.Offerta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.viewmodel.PaginaOfferteViewModel
+import com.example.dietideals_app.viewmodel.listener.OffertaListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 class PaginaOfferte : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,13 +102,35 @@ class PaginaOfferte : ComponentActivity() {
 @Composable
 fun SchermataOfferte(navController: NavController) {
 
+    val viewModel = PaginaOfferteViewModel()
     val homeIcon = R.drawable.baseline_home_24
     val gestisciAste = R.drawable.line_chart_svgrepo_com
     val creaAsta = R.drawable.hand_money_cash_hold_svgrepo_com
     val account = R.drawable.baseline_manage_accounts_24
     val colorGreen = 0xFF0EA639
     var isDialogVisible by remember { mutableStateOf(false) }
+    var listaOfferteVisualizzate by remember { mutableStateOf<List<Offerta>>(emptyList()) }
 
+    val listenerOfferta = remember {
+        object : OffertaListener {
+            override fun onOffertaVincenteLoaded(offerta: Offerta) {
+                //
+            }
+
+            override fun onOfferteLoaded(offerte: List<Offerta>) {
+                listaOfferteVisualizzate = offerte
+            }
+
+            override fun onError() {
+                println("Impossibile trovare l'offerta.")
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val idAsta = navController.previousBackStackEntry?.savedStateHandle?.get<String>("idAsta")
+        viewModel.paginaAstaViewModel.getOfferte(UUID.fromString(idAsta), listenerOfferta)
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -152,6 +185,7 @@ fun SchermataOfferte(navController: NavController) {
             actions = {
             }
         )
+
         @Composable
         fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
             Column(
@@ -200,7 +234,7 @@ fun SchermataOfferte(navController: NavController) {
             onSwipeRight: () -> Unit,
             content: @Composable () -> Unit
         ) {
-            var offsetX by remember { mutableStateOf(0f) }
+            var offsetX by remember { mutableFloatStateOf(0f) }
 
             val animatableOffset = remember { androidx.compose.animation.core.Animatable(0f) }
             val offsetState by animateFloatAsState(
@@ -251,29 +285,30 @@ fun SchermataOfferte(navController: NavController) {
                 .padding(16.dp)
         )
         {
-            items(righeVisualizzate.size) { index ->
+            items(listaOfferteVisualizzate.size) { index ->
                 // Utilizza l'indice per accedere all'elemento corrispondente della lista dei dati
-
-
+                val offerta = listaOfferteVisualizzate[index]
                 if (index in righeVisualizzate) {
-                    val nome = nomi[index]
-                    val prezzo = prezzi[index]
+                    val nome = offerta.utente.username
+                    val prezzo = offerta.prezzo
                     SwipeableRow(
                         onSwipeLeft = {
                             // Rimuovi la riga dalla lista delle righe visualizzate quando si fa clic su RIFIUTA
-                            righeVisualizzate.removeAt(index)
-                            nomi.removeAt(index)
-                            prezzi.removeAt(index)
-                            // Aggiusta gli indici delle righe visualizzate dopo la rimozione
-                            for (i in index until righeVisualizzate.size) {
-                                righeVisualizzate[i] -= 1
+                            val newOfferteVisualizzate = listaOfferteVisualizzate.toMutableList()
+                            newOfferteVisualizzate.removeAt(index)
+                            newOfferteVisualizzate.toList()
+                            listaOfferteVisualizzate = newOfferteVisualizzate
+                            CoroutineScope(Dispatchers.Main).launch {
+                                viewModel.makeOffertaRifiutata(offerta.id)
                             }
-                            // Azione da eseguire quando viene effettuato uno swipe verso sinistra
                         },
                         onSwipeRight = {
-                            nomeSelezionato = nomi[index]
-                            prezzoSelezionato = prezzi[index]
+                            nomeSelezionato = offerta.utente.username
+                            prezzoSelezionato = offerta.prezzo.toString()
                             isDialogVisible = true
+                            CoroutineScope(Dispatchers.Main).launch {
+                                viewModel.makeOffertaVincente(offerta.id)
+                            }
                             // Azione da eseguire quando viene effettuato uno swipe verso destra
                         }
                     ) {
@@ -299,12 +334,15 @@ fun SchermataOfferte(navController: NavController) {
                                             .fillMaxHeight()
                                             .padding(start = 10.dp)// Applica la forma circolare
                                     ) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.user_image), // Sostituisci con il tuo ID di immagine
-                                            contentDescription = null, // Descrizione del contenuto opzionale
-                                            modifier = Modifier.fillMaxSize(), // Riempie completamente lo spazio della Box
-                                            // Scala l'immagine per adattarla alla Box, ritagliando l'eventuale eccesso
+                                        AsyncImage( //ci torniamo
+                                            model = offerta.utente.immagineProfilo,
+                                            placeholder = painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
+                                            error = painterResource(id = com.facebook.R.drawable.com_facebook_close),
+                                            contentDescription = "Immagine dell'utente",
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Crop
                                         )
+
                                     }
                                 }
 
@@ -323,7 +361,7 @@ fun SchermataOfferte(navController: NavController) {
                                     ) {
                                         Text(text = "OFFERTA : ")
                                         Text(
-                                            text = prezzo,
+                                            text = prezzo.toString(),
                                             color = MaterialTheme.colorScheme.primary
                                         )
                                     }
@@ -335,12 +373,12 @@ fun SchermataOfferte(navController: NavController) {
                                         ElevatedButton(
                                             onClick = {
                                                 // Rimuovi la riga dalla lista delle righe visualizzate quando si fa clic su RIFIUTA
-                                                righeVisualizzate.removeAt(index)
-                                                nomi.removeAt(index)
-                                                prezzi.removeAt(index)
-                                                // Aggiusta gli indici delle righe visualizzate dopo la rimozione
-                                                for (i in index until righeVisualizzate.size) {
-                                                    righeVisualizzate[i] -= 1
+                                                val newOfferteVisualizzate = listaOfferteVisualizzate.toMutableList()
+                                                newOfferteVisualizzate.removeAt(index)
+                                                newOfferteVisualizzate.toList()
+                                                listaOfferteVisualizzate = newOfferteVisualizzate
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    viewModel.makeOffertaRifiutata(offerta.id)
                                                 }
                                             },
                                             colors = ButtonColors(
@@ -355,9 +393,12 @@ fun SchermataOfferte(navController: NavController) {
                                         Spacer(modifier = Modifier.width(4.dp))
                                         ElevatedButton(
                                             onClick = {
-                                                nomeSelezionato = nomi[index]
-                                                prezzoSelezionato = prezzi[index]
+                                                nomeSelezionato = offerta.utente.username
+                                                prezzoSelezionato = offerta.prezzo.toString()
                                                 isDialogVisible = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    viewModel.makeOffertaVincente(offerta.id)
+                                                }
                                             },
                                             colors = ButtonColors(
                                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -465,7 +506,7 @@ fun SchermataOfferte(navController: NavController) {
                         Text(
                             text = "OFFERTA ACCETTATA!\n\n" +
                                     "HAI ACCETTATO L'OFFERTA DI " + nomeSelezionato +
-                                    "PER " + prezzoSelezionato,
+                                    " PER " + prezzoSelezionato,
                             textAlign = TextAlign.Center
                         )
                         TextButton(onClick = {

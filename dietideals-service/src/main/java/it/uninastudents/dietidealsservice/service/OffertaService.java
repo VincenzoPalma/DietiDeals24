@@ -1,6 +1,5 @@
 package it.uninastudents.dietidealsservice.service;
 
-import it.uninastudents.dietidealsservice.exceptions.UnauthorizedException;
 import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.Notifica;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
@@ -14,8 +13,7 @@ import it.uninastudents.dietidealsservice.repository.specs.OffertaSpecs;
 import it.uninastudents.dietidealsservice.utils.NotificaUtils;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -165,5 +163,33 @@ public class OffertaService {
             return nuovaOfferta.getPrezzo().compareTo(offertaVincente.getPrezzo()) <= 0;
         }
         return false;
+    }
+
+    public Offerta modificaStatoOfferta(UUID idOfferta, StatoOfferta stato) throws SchedulerException {
+        var spec = OffertaSpecs.hasId(idOfferta);
+        Optional<Offerta> offerta = offertaRepository.findOne(spec);
+        if (offerta.isPresent()){
+            offerta.get().setStato(stato);
+            if (stato.equals(StatoOfferta.VINCENTE) && offerta.get().getAsta().getTipo().equals(TipoAsta.SILENZIOSA))
+            {
+                try {
+                    //non entra
+                    for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.anyJobGroup())) {
+                        JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                        List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+                        System.out.println("jop:" + jobDetail.getKey().getName());
+                    }
+                } catch (SchedulerException e) {
+                    e.printStackTrace();
+                }
+
+                modificaTriggerJobTermineAsta("termineAstaJob_" + offerta.get().getAsta().getId().toString(), "termineAsta", TriggerBuilder.newTrigger()
+                        .withIdentity("termineAstaTrigger_" + offerta.get().getAsta().getId().toString())
+                        .startNow().build());
+            }
+            return offertaRepository.save(offerta.get());
+        } else {
+            return null;
+        }
     }
 }
