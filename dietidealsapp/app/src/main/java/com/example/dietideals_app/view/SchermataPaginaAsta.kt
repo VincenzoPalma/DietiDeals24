@@ -3,9 +3,7 @@ package com.example.dietideals_app.view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,10 +14,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ButtonColors
@@ -48,13 +48,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,16 +69,17 @@ import com.example.dietideals_app.model.enum.StatoAsta
 import com.example.dietideals_app.model.enum.TipoAsta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.PaginaAstaViewModel
-import com.example.dietideals_app.viewmodel.listener.AsteListener
 import com.example.dietideals_app.viewmodel.listener.OffertaListener
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -127,7 +127,7 @@ fun SchermataPaginaAsta(navController: NavController) {
     val context = LocalContext.current
     val currentPage = remember { mutableIntStateOf(0) }
     val openDialog = remember { mutableStateOf(false) }
-    var offerta by remember { mutableStateOf("") }
+    var offerta by remember { mutableStateOf<BigDecimal>(BigDecimal.ZERO) }
     var astaVisualizzata by remember { mutableStateOf<Asta?>(null) }
     var offertaVincente by remember { mutableStateOf<Offerta?>(null) }
     var astaTerminata by remember { mutableStateOf(false) }
@@ -135,6 +135,7 @@ fun SchermataPaginaAsta(navController: NavController) {
     var isUtenteProprietario by remember { mutableStateOf(false) }
     var utenteHasOfferta by remember { mutableStateOf(false) }
     var listaOfferte by remember { mutableStateOf<List<Offerta>?>(emptyList()) }
+    var tempoRimanenteMillisecondi by remember { mutableLongStateOf(0L) }
 
     val listenerOfferta = remember {
         object : OffertaListener {
@@ -173,6 +174,7 @@ fun SchermataPaginaAsta(navController: NavController) {
             astaVisualizzata?.id?.let { viewModel.getOfferte(it, listenerOfferta) }
         }
     }
+
 
 
     ConstraintLayout(
@@ -260,6 +262,8 @@ fun SchermataPaginaAsta(navController: NavController) {
                                     bottomEnd = 16.dp
                                 )
                             )
+                            .fillMaxWidth()
+                            .height(250.dp)
                     )
 
                 }
@@ -395,24 +399,25 @@ fun SchermataPaginaAsta(navController: NavController) {
                             fontSize = 15.sp
                         )
                     }
+
                     LaunchedEffect(Unit) {
-
                         //tempo rimanente = orario di scadenza - orario attuale | orario di scadenza = orario creazione (asta o offerta) + intervallo tempo offerta
-                        val orarioScadenza: OffsetDateTime = if (offertaVincente == null) {
-                            astaVisualizzata?.intervalloTempoOfferta?.toLong()
-                                ?.let { astaVisualizzata!!.creationDate.plusMinutes(it) }!!
-                        } else {
-                            astaVisualizzata?.intervalloTempoOfferta?.toLong()
-                                ?.let { offertaVincente!!.creationDate.plusMinutes(it) }!!
-                        }
-                        val tempoRimanente =
-                            orarioScadenza.minusHours(LocalDateTime.now().hour.toLong())
-                                .minusMinutes(LocalDateTime.now().minute.toLong())
-                                .minusSeconds(LocalDateTime.now().second.toLong()).toLocalTime()
+                        delay(200)
+                            val orarioScadenza: OffsetDateTime = if (offertaVincente == null) {
+                                astaVisualizzata?.intervalloTempoOfferta?.toLong()
+                                    ?.let { astaVisualizzata!!.creationDate.plusMinutes(it) }!!
+                            } else {
+                                astaVisualizzata?.intervalloTempoOfferta?.toLong()
+                                    ?.let { offertaVincente!!.creationDate.plusMinutes(it) }!!
+                            }
+                            val tempoRimanente =
+                                orarioScadenza.minusHours(LocalDateTime.now().hour.toLong())
+                                    .minusMinutes(LocalDateTime.now().minute.toLong())
+                                    .minusSeconds(LocalDateTime.now().second.toLong()).toLocalTime()
 
-                        val totalTimeInMillis = TimeUnit.SECONDS.toMillis(tempoRimanente.toSecondOfDay().toLong())
-                        if (totalTimeInMillis > 0) {
-                            timeLeft = totalTimeInMillis
+                            tempoRimanenteMillisecondi = TimeUnit.SECONDS.toMillis(tempoRimanente.toSecondOfDay().toLong())
+                        if (tempoRimanenteMillisecondi > 0) {
+                            timeLeft = tempoRimanenteMillisecondi
                             timerRunning = true
                             while (timeLeft != 0L && timerRunning) {
                                 delay(1000)
@@ -423,6 +428,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                         }
                     }
                 }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -492,7 +498,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                         disabledContentColor = Color.Black,
                         disabledContainerColor = Color.LightGray
                     ), onClick = {
-                        if (astaVisualizzata?.tipo != TipoAsta.SILENZIOSA) openDialog.value = true
+                        if (!isUtenteProprietario) openDialog.value = true
                         else {
                             navController.currentBackStackEntry?.savedStateHandle?.set(
                                 key = "idAsta",
@@ -524,7 +530,6 @@ fun SchermataPaginaAsta(navController: NavController) {
                     ) {
                         ElevatedCard(
                             modifier = Modifier
-
                                 .border(1.dp, Color.Black, shape = RoundedCornerShape(8.dp)),
                             content = {
                                 Row {
@@ -561,8 +566,17 @@ fun SchermataPaginaAsta(navController: NavController) {
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
                                     OutlinedTextField(
-                                        value = offerta,
-                                        onValueChange = { offerta = it },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        value = offerta.toString(),
+                                        onValueChange = {
+                                            try {
+                                                if (it.toBigDecimal() > BigDecimal.ZERO){
+                                                    offerta = it.toBigDecimal()
+                                                }
+                                            } catch (ex: NumberFormatException) {
+                                                offerta = BigDecimal.ZERO
+                                            }
+                                        },
                                         singleLine = true
                                     )
                                 }
@@ -574,11 +588,17 @@ fun SchermataPaginaAsta(navController: NavController) {
                                         .padding(16.dp)
                                         .fillMaxWidth()
                                 ) {
-                                    ElevatedButton(colors = ButtonColors(
+                                    ElevatedButton(
+                                        enabled = offerta != BigDecimal.ZERO && (astaVisualizzata?.tipo == TipoAsta.SILENZIOSA && offerta >= astaVisualizzata?.prezzoBase) ||
+                                                (astaVisualizzata?.tipo == TipoAsta.INVERSA && offerta <= astaVisualizzata?.prezzoBase) ||
+                                                (astaVisualizzata?.tipo == TipoAsta.INGLESE && (
+                                                        (offertaVincente != null && offerta >= offertaVincente?.prezzo?.plus(astaVisualizzata?.sogliaRialzo!!)) ||
+                                                                (offertaVincente == null && offerta >= astaVisualizzata?.prezzoBase?.plus(astaVisualizzata?.sogliaRialzo!!)))),
+                                        colors = ButtonColors(
                                         containerColor = MaterialTheme.colorScheme.primary,
                                         contentColor = Color.White,
-                                        disabledContentColor = Color.Gray,
-                                        disabledContainerColor = Color.Gray
+                                        disabledContentColor = Color.Black,
+                                        disabledContainerColor = Color.LightGray
                                     ), onClick = { currentPage.intValue = 1 }) {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Icon(
@@ -615,6 +635,13 @@ fun SchermataPaginaAsta(navController: NavController) {
                             TextButton(
                                 onClick = {
                                     currentPage.intValue = 2
+                                    astaVisualizzata?.id?.let {
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            viewModel.inserisciOfferta(
+                                                it,
+                                                offerta)
+                                        }
+                                    }
                                 }
 
 
@@ -641,7 +668,13 @@ fun SchermataPaginaAsta(navController: NavController) {
 
                 2 -> {
                     AlertDialog(
-                        onDismissRequest = { openDialog.value = false },
+                        onDismissRequest = { openDialog.value = false
+                            if (astaVisualizzata?.tipo == TipoAsta.INGLESE){
+                                timeLeft = tempoRimanenteMillisecondi
+                            }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                astaVisualizzata?.id?.let { viewModel.getOffertaVincente(it, listenerOfferta) }
+                            }},
                         title = {
                             Text(
                                 text = "CONGRATUALZIONI",
@@ -661,6 +694,16 @@ fun SchermataPaginaAsta(navController: NavController) {
                                     onClick = {
                                         currentPage.intValue = 0
                                         openDialog.value = false
+                                        if (astaVisualizzata?.tipo == TipoAsta.INGLESE){
+                                            timeLeft = tempoRimanenteMillisecondi
+                                        }
+                                        if(astaVisualizzata?.tipo == TipoAsta.INVERSA || astaVisualizzata?.tipo == TipoAsta.INGLESE){
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                astaVisualizzata?.id?.let { viewModel.getOffertaVincente(it, listenerOfferta) }
+                                            }
+                                        } else {
+                                            utenteHasOfferta = true
+                                        }
                                     }
 
 

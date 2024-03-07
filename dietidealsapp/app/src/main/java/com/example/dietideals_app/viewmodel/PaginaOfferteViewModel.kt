@@ -5,6 +5,7 @@ import com.example.dietideals_app.repository.OffertaRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.util.UUID
 
 class PaginaOfferteViewModel {
@@ -23,4 +24,5 @@ class PaginaOfferteViewModel {
             offertaRepository.modificaStatoOfferta(idOfferta, StatoOfferta.RIFIUTATA)
         }
     }
+
 }

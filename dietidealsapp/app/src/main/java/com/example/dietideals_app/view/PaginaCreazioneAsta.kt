@@ -1,9 +1,12 @@
 package com.example.dietideals_app.view
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,6 +62,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -76,8 +80,25 @@ import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.dto.CreaAsta
+import com.example.dietideals_app.model.enum.CategoriaAsta
+import com.example.dietideals_app.model.enum.TipoAsta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.viewmodel.PagineCreazioneAstaViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.Date
 
 class PaginaCreazioneAsta : ComponentActivity() {
@@ -104,39 +125,39 @@ class PaginaCreazioneAsta : ComponentActivity() {
 @Composable
 fun SchermataCreazioneAsta(navController: NavController) {
 
+    val viewModel = PagineCreazioneAstaViewModel()
     var isDialogVisible by remember { mutableStateOf(false) }
     var isConfirmDialogVisible by remember { mutableStateOf(false) }
     val categorie = arrayOf(
-        "Elettronica",
-        "Informatica",
-        "Giocattoli",
-        "Alimentari",
-        "Servizi",
-        "Arredamento",
-        "Auto e Moto",
-        "Libri",
-        "Abbigliamento",
-        "Attrezzi ed utensili",
-        "Bellezza",
-        "Musica",
-        "Arte"
+        "ELETTRONICA",
+        "INFORMATICA",
+        "GIOCATTOLI",
+        "ALIMENTARI",
+        "SERVIZI",
+        "ARREDAMENTO",
+        "AUTO_E_MOTO",
+        "LIBRI",
+        "ABBIGLIAMENTO",
+        "ATTREZZI_E_UTENSILI",
+        "BELLEZZA",
+        "MUSICA_E_ARTE"
     )
     val colorGreen = 0xFF0EA639
     val colorRed = 0xFF9B0404
+    val storage = Firebase.storage
+    val storageRef = storage.reference
     val defaultImage = painterResource(id = R.drawable.defaultimage)
     val selectedTabIndex = remember { mutableIntStateOf(0) }
     val tabNames = listOf("All'inglese", "Silenziosa", "Inversa")
     var nomeAsta by remember { mutableStateOf("") }
-    var sogliaRialzo by remember { mutableStateOf("10") }
-
-
+    var sogliaRialzo by remember { mutableStateOf<BigDecimal>(BigDecimal.TEN) }
     var oreIntervallo by remember { mutableStateOf("1") }
     val ore = minOf(maxOf(oreIntervallo.toIntOrNull() ?: 0, 0), 3)
     oreIntervallo = ore.toString()
     val oreIntervalloFocusRequested = remember { FocusRequester() }
     var minutiIntervallo by remember { mutableStateOf("0") }
     val minutiIntervalloFocusRequested = remember { FocusRequester() }
-    var prezzo by remember { mutableStateOf("") }
+    var prezzo by remember { mutableStateOf<BigDecimal>(BigDecimal.ZERO) }
     var descrizione by remember { mutableStateOf("") }
     val prezzoFocusrequested = remember { FocusRequester() }
     val descrizioneFocusRequested = remember { FocusRequester() }
@@ -145,18 +166,15 @@ fun SchermataCreazioneAsta(navController: NavController) {
     val state = rememberDatePickerState()
     val timeState = rememberTimePickerState(11, 30, true)
     val openTimeDialog = remember { mutableStateOf(false) }
-    var selectedHour by remember { mutableIntStateOf(0) }
-    var selectedMinute by remember { mutableIntStateOf(0) }
-    var prezzoMassimo by remember { mutableStateOf("") }
-
-
-    var categoriaSelezionata by remember {
-        mutableStateOf("Seleziona Categoria")
+    var selectedHour by remember { mutableIntStateOf(24) }
+    var selectedMinute by remember { mutableIntStateOf(60) }
+    var downloadUrl: String? by remember { mutableStateOf(null) }
+    var categoriaSelezionata by remember { mutableStateOf<CategoriaAsta?>(null)
     }
 
     var alertDialog by remember { mutableStateOf(false) }
 
-    /* LocalContext.current as ComponentActivity
+     LocalContext.current as ComponentActivity
      var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
      // Definisci il contratto per l'activity result
      val getContent = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -165,26 +183,65 @@ fun SchermataCreazioneAsta(navController: NavController) {
          uri?.let {
              selectedImageUri = it
          }
-     }*/
+     }
+
+    fun isScadenzaValid() : Boolean {
+        if (selectedTabIndex.intValue == 1) {
+            return if (LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).isEqual(LocalDate.now().plusDays(1))){
+                if (selectedHour > LocalTime.now().hour + 1){
+                    true
+                } else if (selectedHour == LocalTime.now().hour + 1){
+                    selectedMinute >= LocalTime.now().minute
+                } else {
+                    false
+                }
+            } else if(LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).isAfter(LocalDate.now().plusDays(1))) {
+                true
+            } else {
+                //data passata o attuale
+                false
+            }
+        } else if (selectedTabIndex.intValue == 2) {
+            return LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).isAfter(LocalDate.now().plusDays(1))
+        }
+
+        return false
+    }
+
+    fun caricaImmagineAsta() {
+        CoroutineScope(Dispatchers.Main).launch {
+            if (selectedImageUri != null) {
+                val immagineAstaRef =
+                    storageRef.child("ImmaginiAsta/${selectedImageUri?.lastPathSegment}")
+                selectedImageUri?.let { immagineAstaRef.putFile(it).await() }
+                immagineAstaRef.downloadUrl.addOnSuccessListener { uri ->
+                    // Ottieni l'URL di download dell'immagine
+                    downloadUrl = uri.toString()
+                }.addOnFailureListener { exception ->
+                    println("Errore durante il recupero dell'URL di download: $exception")
+                }
+            }
+        }
+    }
 
     fun reset() {
         nomeAsta = ""
-        sogliaRialzo = "10"
+        sogliaRialzo = BigDecimal.TEN
         oreIntervallo = "1"
         minutiIntervallo = "0"
-        prezzo = ""
+        prezzo = BigDecimal.ZERO
         descrizione = ""
-        selectedHour = 0
-        selectedMinute = 0
-        categoriaSelezionata = "Seleziona Categoria"
-        prezzoMassimo = ""
+        selectedHour = 24
+        selectedMinute = 60
+        categoriaSelezionata = null
+        state.selectedDateMillis = null
 
     }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (background, topBar, contenuto, tab) = createRefs()
+        val (background, topBar, tab) = createRefs()
         Box(
             modifier = Modifier
                 .constrainAs(background) {
@@ -375,11 +432,15 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
 
-                                    OutlinedTextField(value = prezzo,
-                                        onValueChange = { prezzo = it },
-                                        keyboardOptions = KeyboardOptions.Default.copy(
-                                            imeAction = ImeAction.Next
-                                        ),
+                                    OutlinedTextField(value = prezzo.toString(),
+                                        onValueChange = {
+                                            prezzo = try {
+                                                it.toBigDecimal()
+                                            } catch (ex: NumberFormatException) {
+                                                BigDecimal.ZERO
+                                            }
+                                                        },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         keyboardActions = KeyboardActions(
                                             onNext = { prezzoFocusrequested.requestFocus() }
                                         ),
@@ -410,7 +471,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     )
 
                                     ElevatedButton(onClick = { isDialogVisible = true }) {
-                                        Text(text = categoriaSelezionata)
+                                        (if (categoriaSelezionata == null) {"Seleziona Categoria"} else {categoriaSelezionata?.name?.replace("_", " ")})?.let { Text(text = it) }
                                     }
 
                                 }
@@ -437,6 +498,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
+                                        enabled = descrizione.isNotEmpty() && nomeAsta.isNotEmpty() && prezzo > BigDecimal.ZERO && categoriaSelezionata != null,
                                         onClick = { currentPage.intValue = 1 }, modifier = Modifier
                                             .offset(y = 500.dp)
                                             .padding(8.dp)
@@ -461,7 +523,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     text = "DETTAGLI OPZIONALI",
                                     fontSize = 25.sp,
                                     textAlign = TextAlign.Center,
-                                    fontWeight = FontWeight.Bold, // Imposta il testo in grassetto
+                                    fontWeight = FontWeight.Bold,
                                     modifier = Modifier.fillMaxWidth()
                                 )
                                 Row(
@@ -475,17 +537,9 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         Image(
                                             painter = defaultImage,
                                             contentDescription = null,
-                                            modifier = Modifier.matchParentSize()
-                                        )
-                                        Icon(
-                                            imageVector = Icons.Default.Edit,
-                                            contentDescription = "Edit",
-                                            tint = Color.Black,
                                             modifier = Modifier
-                                                .size(48.dp)
-                                                .align(Alignment.Center)
-                                                .shadow(15.dp)
-                                                .clickable {  /*getContent.launch("image/*") */*/ }
+                                                .matchParentSize()
+                                                .clickable { getContent.launch("image/*") }
                                         )
                                     }
 
@@ -511,19 +565,21 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         text = "Soglia di rialzo € ",
                                         fontSize = 25.sp,
 
-                                        fontWeight = FontWeight.Bold, // Imposta il testo in grassetto
+                                        fontWeight = FontWeight.Bold,
                                     )
                                     OutlinedTextField(
-                                        value = sogliaRialzo,
+                                        value = sogliaRialzo.toString(),
                                         onValueChange = {
-                                            if ((it.toIntOrNull() ?: 0) >= 10) {
-                                                sogliaRialzo = it
+                                            try {
+                                                if (it.toBigDecimal() > BigDecimal.ZERO){
+                                                    sogliaRialzo = it.toBigDecimal()
+                                                }
+                                            } catch (ex: NumberFormatException) {
+                                                sogliaRialzo = BigDecimal.TEN
                                             }
                                         },
-                                        keyboardOptions = KeyboardOptions.Default.copy(
-                                            imeAction = ImeAction.Next,
-                                            keyboardType = KeyboardType.Number // Imposta la tastiera numerica
-                                        ),
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        singleLine = true,
                                         keyboardActions = KeyboardActions(
                                             onNext = { oreIntervalloFocusRequested.requestFocus() }
                                         ),
@@ -566,7 +622,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         value = oreIntervallo,
                                         onValueChange = {
                                             oreIntervallo = it.take(1)
-                                            if (it.isDigitsOnly() && it.toInt() in 0..3) {
+                                            if (it.isDigitsOnly() && it.toIntOrNull() in 0..3) {
                                                 oreIntervallo = it
 
                                             }
@@ -601,9 +657,9 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         val minuti = minOf(
                                             maxOf(
                                                 minOf(
-                                                    minutiIntervallo.toIntOrNull() ?: 0, 60
+                                                    minutiIntervallo.toIntOrNull() ?: 0, 59
                                                 ), 30
-                                            ), 60
+                                            ), 59
                                         )
                                         minutiIntervallo = minuti.toString()
                                     }
@@ -615,10 +671,12 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
                                     OutlinedTextField(
                                         value = minutiIntervallo, onValueChange = {
-                                            minutiIntervallo = it.take(2)
-                                            if (it.isDigitsOnly() && it.toInt() in 0..60) {
-                                                minutiIntervallo = it
-
+                                            try {
+                                                if (it.isDigitsOnly() && it.toInt() in 0..59) {
+                                                    minutiIntervallo = it.take(2)
+                                                }
+                                            } catch (ex: NumberFormatException) {
+                                                minutiIntervallo = ""
                                             }
                                         },
                                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -649,7 +707,20 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
-                                        onClick = { isConfirmDialogVisible = true },
+                                        enabled = minutiIntervallo.isNotEmpty(),
+                                        onClick = {
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                caricaImmagineAsta()
+                                                delay(1500)
+                                                categoriaSelezionata?.let {
+                                                        CreaAsta(nomeAsta, descrizione, null, prezzo, sogliaRialzo, (oreIntervallo.toInt()*60) + minutiIntervallo.toInt(),
+                                                            it, TipoAsta.INGLESE,
+                                                            downloadUrl)
+
+                                                }?.let { viewModel.inserisciAsta(it) }
+                                            }
+                                            isConfirmDialogVisible = true
+                                                  },
                                         modifier = Modifier
                                             .offset(y = 500.dp)
                                             .padding(8.dp)
@@ -671,11 +742,6 @@ fun SchermataCreazioneAsta(navController: NavController) {
                 1 -> {
                     val prezzoBaseFocusRequested = remember { FocusRequester() }
                     val dataScadenzaFocusRequested = remember { FocusRequester() }
-
-
-
-
-
 
                     when (currentPage.intValue) {
                         0 -> {
@@ -725,11 +791,16 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
 
-                                    OutlinedTextField(value = prezzo,
-                                        onValueChange = { prezzo = it },
-                                        keyboardOptions = KeyboardOptions.Default.copy(
-                                            imeAction = ImeAction.Next
-                                        ),
+                                    OutlinedTextField(
+                                        value = prezzo.toString(),
+                                        onValueChange = {
+                                            prezzo = try {
+                                                it.toBigDecimal()
+                                            } catch (ex: NumberFormatException) {
+                                                BigDecimal.ZERO
+                                            }
+                                        },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         keyboardActions = KeyboardActions(
                                             onNext = { prezzoBaseFocusRequested.requestFocus() }
                                         ),
@@ -759,7 +830,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
                                     ElevatedButton(onClick = { isDialogVisible = true }) {
-                                        Text(text = categoriaSelezionata)
+                                        (if (categoriaSelezionata == null) {"Seleziona Categoria"} else {categoriaSelezionata?.name?.replace("_", " ")})?.let { Text(text = it) }
                                     }
 
                                 }
@@ -823,13 +894,14 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     ) {
                                         Text(
                                             text =
-                                            if (selectedHour == 0 && selectedMinute == 0) "__ : __" else {
+                                            if (selectedHour == 24 && selectedMinute == 60) "__ : __" else {
                                                 "$selectedHour : $selectedMinute"
                                             }
                                         )
                                     }
 
                                 }
+
                                 OutlinedTextField(
                                     value = descrizione,
                                     onValueChange = { descrizione = it },
@@ -848,6 +920,10 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
+                                        enabled = nomeAsta.isNotEmpty() && prezzo > BigDecimal.ZERO && categoriaSelezionata != null && descrizione.isNotEmpty()
+                                                && state.selectedDateMillis != null
+                                                && isScadenzaValid()
+                                                && selectedHour != 24 && selectedMinute != 60,
                                         onClick = { currentPage.intValue = 1 },
                                         modifier = Modifier
                                             .offset(y = 500.dp)
@@ -890,17 +966,9 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         Image(
                                             painter = defaultImage,
                                             contentDescription = null,
-                                            modifier = Modifier.matchParentSize()
-                                        )
-                                        Icon(
-                                            imageVector = Icons.Default.Edit,
-                                            contentDescription = "Edit",
-                                            tint = Color.Black,
                                             modifier = Modifier
-                                                .size(48.dp)
-                                                .align(Alignment.Center)
-                                                .shadow(15.dp)
-                                                .clickable {  /*getContent.launch("image/*") */*/ }
+                                                .matchParentSize()
+                                                .clickable { getContent.launch("image/*") }
                                         )
                                     }
                                 }
@@ -909,7 +977,16 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
-                                        onClick = { isConfirmDialogVisible = true },
+                                        onClick = {
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                caricaImmagineAsta()
+                                                delay(1500)
+                                                categoriaSelezionata?.let {
+                                                        CreaAsta(nomeAsta, descrizione, LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).toString() + "T" + selectedHour + ":" + selectedMinute + ":" + "00+00:00", prezzo, null, null,
+                                                            it, TipoAsta.SILENZIOSA, downloadUrl)
+                                                }?.let { viewModel.inserisciAsta(it) }
+                                            }
+                                            isConfirmDialogVisible = true },
                                         modifier = Modifier
                                             .offset(y = 500.dp)
                                             .padding(8.dp)
@@ -980,11 +1057,15 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
 
-                                    OutlinedTextField(value = prezzo,
-                                        onValueChange = { prezzo = it },
-                                        keyboardOptions = KeyboardOptions.Default.copy(
-                                            imeAction = ImeAction.Next
-                                        ),
+                                    OutlinedTextField(value = prezzo.toString(),
+                                        onValueChange = {
+                                            prezzo = try {
+                                                it.toBigDecimal()
+                                            } catch (ex: NumberFormatException) {
+                                                BigDecimal.ZERO
+                                            }
+                                        },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         keyboardActions = KeyboardActions(
                                             onNext = { descrizioneFocusRequested.requestFocus() }
                                         ),
@@ -1014,7 +1095,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         fontSize = 20.sp
                                     )
                                     ElevatedButton(onClick = { isDialogVisible = true }) {
-                                        Text(text = categoriaSelezionata)
+                                        (if (categoriaSelezionata == null) {"Seleziona Categoria"} else {categoriaSelezionata?.name?.replace("_", " ")})?.let { Text(text = it) }
                                     }
 
                                 }
@@ -1071,6 +1152,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
+                                        enabled = nomeAsta.isNotEmpty() && prezzo > BigDecimal.ZERO && state.selectedDateMillis != null && isScadenzaValid(),
                                         onClick = { currentPage.intValue = 1 },
                                         modifier = Modifier
                                             .offset(y = 500.dp)
@@ -1111,16 +1193,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                             painter = defaultImage,
                                             contentDescription = null,
                                             modifier = Modifier.matchParentSize()
-                                        )
-                                        Icon(
-                                            imageVector = Icons.Default.Edit,
-                                            contentDescription = "Edit",
-                                            tint = Color.Black,
-                                            modifier = Modifier
-                                                .size(48.dp)
-                                                .align(Alignment.Center)
-                                                .shadow(15.dp)
-                                                .clickable {  /*getContent.launch("image/*") */*/ }
+                                                .clickable {  getContent.launch("image/*") }
                                         )
                                     }
                                 }
@@ -1129,7 +1202,15 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
-                                        onClick = { isConfirmDialogVisible = true },
+                                        onClick = { CoroutineScope(Dispatchers.Main).launch {
+                                            caricaImmagineAsta()
+                                            delay(1500)
+                                            categoriaSelezionata?.let {
+                                                CreaAsta(nomeAsta, "descrizione", LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).toString() + "T" + LocalTime.now().hour + ":" + LocalTime.now().minute + ":" + "00+00:00", prezzo, null, null,
+                                                    it, TipoAsta.INVERSA, downloadUrl)
+                                            }?.let { viewModel.inserisciAsta(it) }
+                                        }
+                                            isConfirmDialogVisible = true  },
                                         modifier = Modifier
                                             .offset(y = 500.dp)
                                             .padding(8.dp)
@@ -1180,12 +1261,12 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                             .fillMaxWidth()
                                             .clickable {
                                                 categoriaSelezionata =
-                                                    categorie[index]
+                                                    CategoriaAsta.valueOf(categorie[index])
                                                 isDialogVisible = false
                                             },
                                     ) {
                                         Text(
-                                            text = categorie[index],
+                                            text = categorie[index].replace("_", " "),
                                             modifier = Modifier.fillMaxWidth(),
                                             textAlign = TextAlign.Center
                                         )
@@ -1218,7 +1299,8 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     "POTRAI VEDERE LA TUA ASTA IN ASTE ATTIVE",
                             textAlign = TextAlign.Center
                         )
-                        TextButton(onClick = { isConfirmDialogVisible = false }) {
+                        TextButton(onClick = { isConfirmDialogVisible = false
+                        navController.navigate("SchermataHome")}) {
                             Text(text = "OK", fontSize = 20.sp)
 
                         }

@@ -202,7 +202,6 @@ fun SchermataHome(navController: NavController) {
         viewModel.mostraNotifiche(listenerNotifiche)
     }
 
-
     var checkInglese by remember { mutableStateOf(false) }
     var checkInversa by remember { mutableStateOf(false) }
     var checkSilenziosa by remember { mutableStateOf(false) }
@@ -984,18 +983,6 @@ fun SchermataHome(navController: NavController) {
                                                         text = asta.sogliaRialzo.toString(),
                                                         fontSize = 12.sp,
                                                         overflow = TextOverflow.Ellipsis
-                                                    )
-                                                    Icon(
-                                                        painter = painterResource(id = R.drawable.baseline_access_time_filled_24),
-                                                        contentDescription = "SogliaRialzo",
-                                                        Modifier.size(15.dp),
-                                                        tint = MaterialTheme.colorScheme.error
-                                                    )
-                                                    Text(
-                                                        formatTime(timeLeft),
-                                                        fontSize = 12.sp,
-                                                        modifier = Modifier.padding(start = 4.dp),
-                                                        color = MaterialTheme.colorScheme.error
                                                     )
                                                 }
                                             }

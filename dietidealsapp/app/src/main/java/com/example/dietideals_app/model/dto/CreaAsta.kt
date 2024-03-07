@@ -9,10 +9,11 @@ import java.time.OffsetDateTime
 class CreaAsta(
     val nome: String?,
     val descrizione: String?,
-    val dataScadenza: OffsetDateTime?,
+    val dataScadenza: String?,
     val prezzoBase: BigDecimal?,
     val sogliaRialzo: BigDecimal?,
     val intervalloTempoOfferta: Int?,
     val categoria: CategoriaAsta,
-    val tipo: TipoAsta
+    val tipo: TipoAsta,
+    val urlFoto: String?
 )

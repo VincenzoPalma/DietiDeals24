@@ -7,6 +7,7 @@ import com.example.dietideals_app.viewmodel.listener.OffertaListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.util.UUID
 
 class PaginaAstaViewModel {
@@ -38,5 +39,11 @@ class PaginaAstaViewModel {
     suspend fun getIdUtenteFromIdAuth(idAuth: String) : UUID? {
         val utente = utenteRepository.getUtenteByIdAuth(idAuth)
         return utente?.id
+    }
+
+    fun inserisciOfferta(astaId: UUID, prezzo: BigDecimal) {
+        CoroutineScope(Dispatchers.IO).launch {
+            offertaRepository.saveOfferta(astaId, prezzo)
+        }
     }
 }

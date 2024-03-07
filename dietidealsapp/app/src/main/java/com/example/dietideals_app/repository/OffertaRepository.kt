@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.math.BigDecimal
 import java.util.UUID
 
 class OffertaRepository {
@@ -51,6 +52,31 @@ class OffertaRepository {
                 }
 
                 override fun onFailure(call: Call<Offerta>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
+
+    suspend fun saveOfferta(astaId: UUID, prezzo: BigDecimal): Offerta? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Offerta?>()
+            ApiOfferta.offertaService.saveOfferta(astaId, prezzo).enqueue(object :
+                Callback<Offerta?> {
+                override fun onResponse(
+                    call: Call<Offerta?>,
+                    response: Response<Offerta?>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        if (risultato != null) {
+                            deferred.complete(risultato)
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<Offerta?>, t: Throwable) {
                     deferred.complete(null)
                 }
             })

@@ -1,6 +1,7 @@
 package com.example.dietideals_app.repository
 
 import com.example.dietideals_app.model.Asta
+import com.example.dietideals_app.model.dto.CreaAsta
 import com.example.dietideals_app.model.enum.CategoriaAsta
 import com.example.dietideals_app.model.enum.StatoAsta
 import com.example.dietideals_app.model.enum.TipoAsta
@@ -87,6 +88,34 @@ class AstaRepository {
                 }
 
                 override fun onFailure(call: Call<AstaList>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+
+            deferred.await()
+        }
+    }
+
+    suspend fun saveAsta(creaAsta: CreaAsta): Asta? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Asta?>()
+
+            ApiAsta.astaService.saveAsta(creaAsta).enqueue(object :
+                Callback<Asta> {
+                override fun onResponse(
+                    call: Call<Asta>,
+                    response: Response<Asta>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    } else {
+                        deferred.complete(null)
+                    }
+                }
+
+                override fun onFailure(call: Call<Asta>, t: Throwable) {
+                    println(t.message)
                     deferred.complete(null)
                 }
             })

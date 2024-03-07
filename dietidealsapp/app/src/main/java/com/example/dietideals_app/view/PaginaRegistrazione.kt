@@ -132,6 +132,7 @@ fun SchermataRegistrazione(navController: NavController) {
     var cognome by remember { mutableStateOf("") } // Cognome dell'utente
     var passwordVisibile by remember { mutableStateOf(false) } // Variabile per tenere traccia della visibilità della password.
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
 
     val passwordFocusRequester =
         remember { FocusRequester() } // Richiede il focus per l'input della password.
@@ -1089,14 +1090,13 @@ fun SchermataRegistrazione(navController: NavController) {
                     Spacer(modifier = Modifier.width(8.dp))
 
                     LocalContext.current as ComponentActivity
-                    var selectedDocument by remember { mutableStateOf<Uri?>(null) }
                     // Definisci il contratto per l'activity result
                     val getContent =
                         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
                             // Gestisci l'URI dell'immagine selezionata
                             // Puoi eseguire ulteriori operazioni qui, come caricare l'immagine
                             uri?.let {
-                                selectedDocument = it
+                                selectedFileUri = it
                             }
                         }
 
@@ -1104,10 +1104,12 @@ fun SchermataRegistrazione(navController: NavController) {
 
 
                     ElevatedButton(
-                        onClick = { getContent.launch("application/pdf") },
+                        onClick = { getContent.launch("application/pdf")
+
+                                  },
                     ) {
                         Text(
-                            text = if (selectedDocument == null) "CARICA" else "CARICATO",
+                            text = if (selectedFileUri == null) "CARICA" else "CARICATO",
                             fontSize = 10.sp,
                         )
                     }
@@ -1391,14 +1393,26 @@ fun SchermataRegistrazione(navController: NavController) {
                         ),
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                var downloadUrl: String? = null
+                                var imageDownloadUrl: String? = null
+                                var fileDownloadUrl: String? = null
                                 if (selectedImageUri != null) {
                                     val immagineProfiloRef =
                                         storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
                                     selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
                                     immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
                                         // Ottieni l'URL di download dell'immagine
-                                        downloadUrl = uri.toString()
+                                        imageDownloadUrl = uri.toString()
+                                    }.addOnFailureListener { exception ->
+                                        // Gestisci eventuali errori nell'ottenere l'URL di download
+                                        println("Errore durante il recupero dell'URL di download: $exception")
+                                    }
+                                }
+                                if (selectedFileUri != null) {
+                                    val documentoVenditoreRef =
+                                        storageRef.child("DocumentiVenditore/${selectedFileUri?.lastPathSegment}")
+                                    selectedFileUri?.let { documentoVenditoreRef.putFile(it).await() }
+                                    documentoVenditoreRef.downloadUrl.addOnSuccessListener { uri ->
+                                        fileDownloadUrl = uri.toString()
                                     }.addOnFailureListener { exception ->
                                         // Gestisci eventuali errori nell'ottenere l'URL di download
                                         println("Errore durante il recupero dell'URL di download: $exception")
@@ -1417,8 +1431,8 @@ fun SchermataRegistrazione(navController: NavController) {
                                             email,
                                             null,
                                             partitaIva,
-                                            null,
-                                            downloadUrl,
+                                            fileDownloadUrl,
+                                            imageDownloadUrl,
                                             ContoCorrente(nomeTitolare, codiceBicSwift, iban)
                                         ),
                                         firebaseAuth.currentUser?.uid
@@ -1436,8 +1450,8 @@ fun SchermataRegistrazione(navController: NavController) {
                                             email,
                                             password,
                                             partitaIva,
-                                            null,
-                                            downloadUrl,
+                                            fileDownloadUrl,
+                                            imageDownloadUrl,
                                             ContoCorrente(nomeTitolare, codiceBicSwift, iban)
                                         ), null
                                     )
