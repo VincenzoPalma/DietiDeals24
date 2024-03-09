@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.UUID;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UtenteSpecs {
 
@@ -14,6 +16,10 @@ public class UtenteSpecs {
 
     public static Specification<Utente> hasIdAuth(String target) {
         return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("idAuth"), target)) : none();
+    }
+
+    public static Specification<Utente> hasId(UUID target) {
+        return target != null ? ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), target)) : none();
     }
 
     public static Specification<Utente> hasEmail(String target) {

@@ -1,7 +1,6 @@
 package com.example.dietideals_app.view
 
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,7 +41,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -66,9 +67,19 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Carta
+import com.example.dietideals_app.model.dto.CreaCarta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.viewmodel.PaginaPagamentiViewModel
+import com.example.dietideals_app.viewmodel.listener.CartaListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
+import java.util.Locale
 
 class PaginaPagamentiProfilo : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,29 +104,56 @@ class PaginaPagamentiProfilo : ComponentActivity() {
 @Composable
 fun SchermataPagamentiProfilo(navController: NavController) {
 
+    val viewModel = PaginaPagamentiViewModel()
     var nomeTitolare by remember { mutableStateOf("") }
     var numeroCarta by remember { mutableStateOf("") }
-    var cvc by remember { mutableStateOf("") }
+    var codiceCvvCvc by remember { mutableStateOf("") }
     val numeroCartaFocusrequested = remember { FocusRequester() }
     val dataScadenzaFocusRequested = remember { FocusRequester() }
     val cvcFocusRequested = remember { FocusRequester() }
-
+    var selectedIndex by remember { mutableIntStateOf(-1) }
     var isDialogVisible by remember { mutableStateOf(false) }
     var deleteAlertDialog by remember { mutableStateOf(false) }
     val state = rememberDatePickerState()
     val openDialog = remember { mutableStateOf(false) }
-    val listaCarte = mutableListOf<Carta>()
-    var size = 4
+    var listaCarte by remember { mutableStateOf<List<Carta>>(emptyList()) }
+
+    val listener = remember {
+        object : CartaListener {
+            override fun onCarteLoaded(carte: List<Carta>) {
+                listaCarte = carte
+            }
+
+            override fun onCartaSaved(carta: Carta) {
+                val newListaCarte = listaCarte.toMutableList()
+                newListaCarte.add(carta)
+                listaCarte = newListaCarte.toList()
+            }
+
+            override fun onCartaDeleted() {
+                //
+            }
+
+            override fun onError() {
+                println("Impossibile trovare le carte")
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.mostraCarte(listener)
+    }
 
     fun pulisciCampi() {
         nomeTitolare = ""
         numeroCarta = ""
-        cvc = ""
+        codiceCvvCvc = ""
         state.selectedDateMillis = null
     }
 
     fun checkField(): Boolean {
-        return nomeTitolare.isNotEmpty() && numeroCarta.isNotEmpty() && cvc.isNotEmpty() && state.selectedDateMillis != null
+        return nomeTitolare.isNotEmpty() && numeroCarta.isNotEmpty() && codiceCvvCvc.isNotEmpty() && state.selectedDateMillis != null
+                && LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).isAfter(LocalDate.now())
     }
 
     fun isNumeroCartaValid(): Boolean {
@@ -125,7 +163,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
     fun isCvcValid(): Boolean {
         // Controllo se il numero di carta ha una lunghezza valida
-        return cvc.length == 3
+        return codiceCvvCvc.length == 3
     }
     ConstraintLayout(
         modifier = Modifier
@@ -181,8 +219,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                 }
             )
-            var cardList by remember { mutableStateOf(List(size) { it }) }
-            var selectedIndex by remember { mutableStateOf(-1) }
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2), // Imposta due colonne
@@ -192,27 +228,22 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                     .padding(16.dp)
             ) {
                 // Visualizza tutte le Box esistenti
-                items(cardList.size) { index ->
+                items(listaCarte.size) { index ->
+                    val carta = listaCarte[index]
                     ElevatedCard(
                         modifier = Modifier
                             .padding(8.dp)
-
                             .height(200.dp)
                             .background(Color.White),
-
-
                         ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-
                             ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
-
                                 horizontalArrangement = Arrangement.End
-
                             ) {
                                 Icon(painter = painterResource(id = R.drawable.trash_svgrepo_com),
                                     contentDescription = "deleteCard",
@@ -220,8 +251,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                         .clickable {
                                             selectedIndex = index
                                             deleteAlertDialog = true
-
-
                                         }
                                         .padding(6.dp))
 
@@ -238,7 +267,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                             // Titolo
                             Text(
-                                text = "Carta Mastercard\nMario Rossi\n **** 4902",
+                                text = if (carta.numero.first() == '5') {"Mastercard\n"} else {"Visa\n"} + carta.nomeTitolare + "\n" + "**** " + carta.numero.substring(12),
                                 color = Color.Black,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp,
@@ -252,7 +281,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                 }
 
 
-                // Aggiunge l'elemento per aggiungere altre Box
                 item {
                     ElevatedCard(
                         modifier = Modifier
@@ -369,9 +397,8 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
 
 
-                            @SuppressLint("SimpleDateFormat")
                             fun convertMillisToDate(millis: Long): String {
-                                val formatter = SimpleDateFormat("MM/yyyy")
+                                val formatter = SimpleDateFormat("MM/yyyy", Locale.ITALIAN)
                                 return formatter.format(Date(millis))
                             }
 
@@ -389,15 +416,12 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                             state.selectedDateMillis!!
                                         ),
                                         modifier = Modifier
-
                                             .focusRequester(dataScadenzaFocusRequested)
-
-
                                     )
                                     Spacer(modifier = Modifier.width(70.dp))
                                     OutlinedTextField(
-                                        value = cvc, onValueChange = {
-                                            cvc = it
+                                        value = codiceCvvCvc, onValueChange = {
+                                            codiceCvvCvc = it
                                             isCvcValid()
                                         },
                                         shape = RoundedCornerShape(15.dp),
@@ -410,10 +434,10 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                         colors = OutlinedTextFieldDefaults.colors(
                                             unfocusedBorderColor = if (isCvcValid()) Color(
                                                 0xFF0EA639
-                                            ) else if (!isCvcValid() && cvc.isNotEmpty()) Color(
+                                            ) else if (!isCvcValid() && codiceCvvCvc.isNotEmpty()) Color(
                                                 0xFF9B0404
                                             ) else Color.Gray,
-                                            focusedBorderColor = if (isCvcValid()) Color(0xFF0EA639) else if (!isCvcValid() && cvc.isNotEmpty()) Color(
+                                            focusedBorderColor = if (isCvcValid()) Color(0xFF0EA639) else if (!isCvcValid() && codiceCvvCvc.isNotEmpty()) Color(
                                                 0xFF9B0404
                                             ) else Color.Gray,
                                         )
@@ -438,13 +462,17 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                                 TextButton(
                                     onClick = {
-                                        size++
-                                        isDialogVisible = false
-
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                           /* viewModel.salvaCarta(CreaCarta(numeroCarta, nomeTitolare, codiceCvvCvc,
+                                                LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!!
+                                                        / (24 * 60 * 60 * 1000)).toString() + "T" + LocalTime.now().hour + ":" + LocalTime.now().minute + ":" + "00+00:00"),
+                                                listener) */
+                                            isDialogVisible = false
+                                        }
                                     },
-                                    enabled = true //checkField()
+                                    enabled = checkField()
                                 ) {
-                                    Text("OK")
+                                    Text("CONFERMA")
                                 }
                             }
                             if (openDialog.value) {
@@ -454,9 +482,8 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     TextButton(onClick = {
                                         cvcFocusRequested.requestFocus()
                                         openDialog.value = false
-
                                     }) {
-                                        Text("OK")
+                                        Text("CONFERMA")
                                     }
                                 }, dismissButton = {
                                     TextButton(onClick = {
@@ -498,8 +525,10 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                         onDismissRequest = { deleteAlertDialog = false }, confirmButton = {
                             TextButton(
                                 onClick = {
-                                    cardList = cardList.toMutableList().apply {
-                                        removeAt(selectedIndex)
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        viewModel.deleteCarta(listaCarte[selectedIndex].id ,listener)
+                                        delay(300)
+                                        viewModel.mostraCarte(listener)
                                         deleteAlertDialog = false
                                     }
                                 }, modifier = Modifier.align(Alignment.CenterEnd),
@@ -509,10 +538,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                         dismissButton = {
                             TextButton(
                                 onClick = {
-                                    cardList = cardList.toMutableList().apply {
-                                        removeAt(selectedIndex)
-                                        deleteAlertDialog = false
-                                    }
+                                    deleteAlertDialog = false
                                 },
                                 content = {
                                     Text(
@@ -522,7 +548,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     )
                                 }, modifier = Modifier
                                     .align(Alignment.CenterStart)
-                                    .offset(-80.dp)
+                                    .offset((-80).dp)
                             )
 
                         }

@@ -3,6 +3,7 @@ package it.uninastudents.dietidealsservice.controller;
 import it.uninastudents.dietidealsservice.model.dto.DatiProfiloUtente;
 import it.uninastudents.dietidealsservice.model.dto.UtenteRegistrazione;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
+import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
 import it.uninastudents.dietidealsservice.service.UtenteService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -53,5 +54,10 @@ public class UtenteController {
     @GetMapping("/utente/idUtente/{idAuth}")
     public ResponseEntity<Utente> getUtenteByIdAuth(@PathVariable(name = "idAuth") String idAuth) {
             return ResponseEntity.ok(utenteService.findUtenteByIdAuth(idAuth));
+    }
+
+    @GetMapping("/utente/ruolo")
+    public ResponseEntity<RuoloUtente> getRuoloUtente() {
+        return ResponseEntity.ok(utenteService.getRuoloUtente());
     }
 }

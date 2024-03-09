@@ -1,12 +1,13 @@
 package com.example.dietideals_app.model
 
-import java.time.LocalDate
+import java.util.UUID
 
 class Carta(
+    val id: UUID,
     val numero: String,
     val nomeTitolare: String,
     val codiceCvvCvc: String,
-    val dataScadenza: LocalDate,
+    val dataScadenza: String,
     val utente: Utente
 ) {
     override fun equals(other: Any?): Boolean {

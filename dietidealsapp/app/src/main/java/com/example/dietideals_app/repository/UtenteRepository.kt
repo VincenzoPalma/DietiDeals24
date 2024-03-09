@@ -3,6 +3,7 @@ package com.example.dietideals_app.repository
 import com.example.dietideals_app.model.Utente
 import com.example.dietideals_app.model.dto.DatiProfiloUtente
 import com.example.dietideals_app.model.dto.UtenteRegistrazione
+import com.example.dietideals_app.model.enum.RuoloUtente
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -103,7 +104,6 @@ class UtenteRepository {
                 }
 
                 override fun onFailure(call: Call<Utente>, t: Throwable) {
-                    println(t.message)
                     deferred.complete(null)
                 }
             })
@@ -128,6 +128,29 @@ class UtenteRepository {
                 }
 
                 override fun onFailure(call: Call<Utente>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
+
+    suspend fun getRuoloUtente(): RuoloUtente? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<RuoloUtente?>()
+            ApiUtente.utenteService.getRuoloUtente().enqueue(object :
+                Callback<RuoloUtente> {
+                override fun onResponse(
+                    call: Call<RuoloUtente>,
+                    response: Response<RuoloUtente>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<RuoloUtente>, t: Throwable) {
                     deferred.complete(null)
                 }
             })

@@ -18,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,13 +41,13 @@ public class UtenteService {
         //inserimento utente nel db
         Utente utente = null;
         try {
-        if (utenteRegistrazione.getContoCorrente() == null){
-            utenteRegistrazione.setRuolo(RuoloUtente.COMPRATORE);
-        } else {
-            utenteRegistrazione.setRuolo(RuoloUtente.VENDITORE);
-        }
-        utente = utenteMapper.utenteRegistrazioneToUtente(utenteRegistrazione);
-        utente.setContoCorrente(null);
+            if (utenteRegistrazione.getContoCorrente() == null) {
+                utenteRegistrazione.setRuolo(RuoloUtente.COMPRATORE);
+            } else {
+                utenteRegistrazione.setRuolo(RuoloUtente.VENDITORE);
+            }
+            utente = utenteMapper.utenteRegistrazioneToUtente(utenteRegistrazione);
+            utente.setContoCorrente(null);
             utente = utenteRepository.save(utente);
             ContoCorrente nuovoContoCorrente = contoCorrenteMapper.creaContoCorrenteToContoCorrente(utenteRegistrazione.getContoCorrente());
             if (nuovoContoCorrente != null && utente.getRuolo().equals(RuoloUtente.VENDITORE)) {
@@ -57,20 +56,20 @@ public class UtenteService {
                 utente.setContoCorrente(nuovoContoCorrente);
                 utente = utenteRepository.save(utente);
             }
-        //registrazione utente
-        if (idFireBase == null) {
-            UserRecord.CreateRequest request = new UserRecord.CreateRequest()
-                    .setEmail(utenteRegistrazione.getEmail())
-                    .setPassword(utenteRegistrazione.getPassword())
-                    .setDisplayName(utenteRegistrazione.getUsername());
-            if (utenteRegistrazione.getUrlFotoProfilo() != null) {
-                request.setPhotoUrl(utenteRegistrazione.getUrlFotoProfilo());
+            //registrazione utente
+            if (idFireBase == null) {
+                UserRecord.CreateRequest request = new UserRecord.CreateRequest()
+                        .setEmail(utenteRegistrazione.getEmail())
+                        .setPassword(utenteRegistrazione.getPassword())
+                        .setDisplayName(utenteRegistrazione.getUsername());
+                if (utenteRegistrazione.getUrlFotoProfilo() != null) {
+                    request.setPhotoUrl(utenteRegistrazione.getUrlFotoProfilo());
+                }
+                UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
+                utente.setIdAuth(userRecord.getUid());
+            } else {
+                utente.setIdAuth(idFireBase);
             }
-            UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
-            utente.setIdAuth(userRecord.getUid());
-        } else {
-            utente.setIdAuth(idFireBase);
-        }
             utente = utenteRepository.save(utente);
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
@@ -99,20 +98,26 @@ public class UtenteService {
 
     public Utente modificaDatiUtente(DatiProfiloUtente datiProfiloUtente) {
         Utente utente = getUtenteAutenticato();
-        utente.setDescrizione(Objects.requireNonNullElse(datiProfiloUtente.getDescrizione(), utente.getDescrizione()));
-        utente.setFacebook(Objects.requireNonNullElse(datiProfiloUtente.getFacebook(), utente.getFacebook()));
-        utente.setTwitter(Objects.requireNonNullElse(datiProfiloUtente.getTwitter(), utente.getTwitter()));
-        utente.setInstagram(Objects.requireNonNullElse(datiProfiloUtente.getInstagram(), utente.getInstagram()));
-        utente.setIndirizzo(Objects.requireNonNullElse(datiProfiloUtente.getIndirizzo(), utente.getIndirizzo()));
-        utente.setSitoWeb(Objects.requireNonNullElse(datiProfiloUtente.getSitoWeb(), utente.getSitoWeb()));
-        utente.setUrlFotoProfilo(Objects.requireNonNullElse(datiProfiloUtente.getUrlFotoProfilo(), utente.getUrlFotoProfilo()));
+        utente.setDescrizione(datiProfiloUtente.getDescrizione());
+        utente.setFacebook(datiProfiloUtente.getFacebook());
+        utente.setTwitter(datiProfiloUtente.getTwitter());
+        utente.setInstagram(datiProfiloUtente.getInstagram());
+        utente.setIndirizzo(datiProfiloUtente.getIndirizzo());
+        utente.setSitoWeb(datiProfiloUtente.getSitoWeb());
+        utente.setUrlFotoProfilo(datiProfiloUtente.getUrlFotoProfilo());
         return utenteRepository.save(utente);
     }
 
-    public Utente getUtenteByEmail(String email){
+    public Utente getUtenteByEmail(String email) {
         var spec = UtenteSpecs.hasEmail(email);
         Optional<Utente> result = utenteRepository.findOne(spec);
         return result.orElse(null);
     }
 
+    public RuoloUtente getRuoloUtente() {
+        Utente utente = getUtenteAutenticato();
+        var spec = UtenteSpecs.hasId(utente.getId());
+        Optional<Utente> risultato = utenteRepository.findOne(spec);
+        return risultato.map(Utente::getRuolo).orElse(null);
+    }
 }

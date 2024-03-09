@@ -16,7 +16,7 @@ interface CartaService {
     fun saveCarta(@Body creaCarta: CreaCarta): Call<Carta>
 
     @DELETE("carte/{idCarta}")
-    fun deleteCarta(@Path("idCarta") idCarta: UUID): Call<Void>
+    fun deleteCarta(@Path("idCarta") idCarta: UUID): Call<Unit>
 
     @GET("utente/carte")
     fun getCarteUtente(): Call<List<Carta>>

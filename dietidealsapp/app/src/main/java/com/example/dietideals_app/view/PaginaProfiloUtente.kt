@@ -2,7 +2,9 @@ package com.example.dietideals_app.view
 
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -146,6 +148,14 @@ fun SchermataProfiloUtente(navController: NavController) {
         } else {
             viewModel.visualizzaDatiUtente(UUID.fromString(uuidString), listener)
         }
+    }
+
+    val openUrlLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        // Handle the result if needed
+    }
+    fun openUrl(url : String?) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://$url"))
+        openUrlLauncher.launch(intent)
     }
 
     ModalNavigationDrawer(
@@ -328,8 +338,6 @@ fun SchermataProfiloUtente(navController: NavController) {
                         .size(80.dp)
                         .background(color = Color.White, shape = CircleShape)
                 ) {
-                    // Immagine all'interno della Box circolare
-                    //sistemare l'immagine in modo che copra l'intero cerchio
                     AsyncImage(
                         model = datiProfiloUtente?.urlFotoProfilo,
                         placeholder = painterResource(id = com.facebook.login.R.drawable.com_facebook_profile_picture_blank_portrait),
@@ -353,7 +361,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold, // Imposta il grassetto
+                    fontWeight = FontWeight.Bold,
                 )
                 Text(
                     text = "@" + datiProfiloUtente?.username,
@@ -365,7 +373,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
-                    color = Color.Gray// Imposta il grassetto
+                    color = Color.Gray
                 )
                 Text(
                     text = "Short Bio:",
@@ -383,7 +391,6 @@ fun SchermataProfiloUtente(navController: NavController) {
                     fontWeight = FontWeight.Bold
                 )
 
-                //SE E NULL CREA UN TESTO VUOTO ALTRIMENTO LO METTO, non riusciva giustamente a metteren null come testo e impazziva
                 Text(
                     text = ((if (datiProfiloUtente?.descrizione == null) "" else datiProfiloUtente!!.descrizione).toString()),
                     modifier = Modifier
@@ -395,9 +402,9 @@ fun SchermataProfiloUtente(navController: NavController) {
                         .fillMaxWidth(),
                     textAlign = TextAlign.Left,
                     fontSize = 20.sp,
-                    color = Color.Black,// Imposta il grassetto
-                    maxLines = 6, // Imposta il numero massimo di righe
-                    overflow = TextOverflow.Ellipsis// Aggiunge tre puntini alla fine del testo se viene troncato
+                    color = Color.Black,
+                    maxLines = 6,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Row(
@@ -418,9 +425,6 @@ fun SchermataProfiloUtente(navController: NavController) {
                     )
                     val context = LocalContext.current
 
-                    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                        // Handle the result if needed
-                    }
 
                     val text = buildAnnotatedString {
                         withStyle(
@@ -445,24 +449,21 @@ fun SchermataProfiloUtente(navController: NavController) {
                     ClickableText(
                         text = text,
                         modifier = Modifier.padding(8.dp),
-                        onClick = { offset ->
-                            if (datiProfiloUtente?.sitoWeb == null) {
-                                text.getStringAnnotations("URL", offset, offset)
-                                    .firstOrNull()?.let { annotation ->
-                                        annotation.item
-                                        val intent = Intent(Intent.ACTION_VIEW, null)
-                                        ContextCompat.startActivity(context, intent, null)
-                                    }
+                        onClick = { if (datiProfiloUtente?.sitoWeb != null) {
+                            try {
+                                openUrl(datiProfiloUtente?.sitoWeb)
+                            } catch (_: ActivityNotFoundException) {
+                                //
                             }
+                        }
                         },
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
 
 
-
-                @Composable
-                fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
+                    @Composable
+                fun IconWithText(iconId: Int, text: String, url: String?, prefix: String, color: Color) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(2.dp)
@@ -472,7 +473,11 @@ fun SchermataProfiloUtente(navController: NavController) {
                             contentDescription = null,
                             modifier = Modifier
                                 .size(30.dp)
-                                .clickable { navController.navigate(route) }
+                                .clickable {
+                                    if (url != null) {
+                                        openUrl(prefix + url)
+                                    }
+                                }
 
                         )
 
@@ -502,7 +507,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     IconWithText(
                         iconId = R.drawable.instagramicon,
                         text = "Instagram",
-                        "", Color.Black
+                        datiProfiloUtente?.instagram + "/", "www.instagram.com/",Color.Black
 
                     )
                     Spacer(
@@ -513,7 +518,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     IconWithText(
                         iconId = R.drawable.facebookicon,
                         text = "Facebook",
-                        "", Color.Black
+                        datiProfiloUtente?.facebook, "www.facebook.com/", Color.Black
                     )
                     Spacer(
                         modifier = Modifier
@@ -523,7 +528,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     IconWithText(
                         iconId = R.drawable.twittericon,
                         text = "Twitter",
-                        "", Color.Black
+                        datiProfiloUtente?.twitter, "twitter.com/", Color.Black
                     )
                     Spacer(
                         modifier = Modifier
@@ -654,437 +659,6 @@ fun SchermataProfiloUtente(navController: NavController) {
         }
     )
 }
-
-/*@SuppressLint("SuspiciousIndentation")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SchermataUtente(navController: NavController) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-
-    val upgradeIcon = painterResource(id = R.drawable.baseline_upgrade_24)
-    val accountIcon = painterResource(id = R.drawable.baseline_account_circle_24)
-    val menuIcon = painterResource(id = R.drawable.baseline_menu_24)
-    val logoutIcon = painterResource(id = R.drawable.baseline_logout_24)
-    val paymentIcon = painterResource(id = R.drawable.baseline_attach_money_24)
-    val profilePicture = painterResource(id = R.drawable.ic_launcher_foreground)
-    val homeIcon = R.drawable.baseline_home_24
-    val gestisciAste = R.drawable.line_chart_svgrepo_com
-    val creaAsta = R.drawable.hand_money_cash_hold_svgrepo_com
-    val account = R.drawable.baseline_manage_accounts_24
-    val colorGreen = 0xFF0EA639
-
-    val utente = Utente(
-        "mrossi",
-        "Mario",
-        "Rossi",
-        LocalDate.of(1990, 5, 15),
-        "12345678999",
-        File("path/file"),
-        File("path/file"),
-        null,
-        mutableSetOf(),
-        mutableSetOf(),
-        mutableSetOf(),
-        mutableSetOf(),
-        RuoloUtente.COMPRATORE,
-        null,/*"Sono Mario Rossi, un appassionato venditore di aste con una vasta esperienza nel settore." +
-                " Offro una selezione di oggetti unici e preziosi, curando ogni dettaglio delle mie aste per garantire esperienze indimenticabili ai miei acquirenti." +
-                "Conosco il valore degli oggetti che metto all'asta e mi impegno a offrire un servizio clienti impeccabile." + "Sono qui per fornire autenticità, qualità e emozioni nel mondo delle aste.",
-        */
-        "www.marione.com",
-        "Via Roma, 123, 00100, Roma, Italia",
-        "instagram",
-        "facebook",
-        "twitter"
-    )
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        val (bottomBar, background, topBar, immagineProfilo, nomeUtente, usernameUtente, shortBioLabel, shortBioUtente, sitoWebUtente, social, indirizzoUtente) = createRefs()
-        Box(
-            modifier = Modifier
-                .constrainAs(background) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                    width = Dimension.fillToConstraints
-                    height = Dimension.fillToConstraints
-                }
-                .background(Color.White)
-        ) {}
-        TopAppBar(modifier = Modifier.constrainAs(topBar)
-        {
-            top.linkTo(parent.top)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-
-        }, title = {
-            Text(
-                text = "PROFILO",
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                fontWeight = FontWeight.Bold, // Imposta il grassetto
-                fontSize = 40.sp
-            ) // Imposta la dimensione del testo)
-        },
-            navigationIcon = {
-                Icon(
-                    painter = menuIcon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clickable {
-                            scope.launch {
-                                drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
-                            }
-                            // Azione da eseguire quando si clicca sull'icona di navigazione
-                        }
-                        .size(35.dp)
-                )
-            }, colors = TopAppBarColors(
-                containerColor = (MaterialTheme.colorScheme.primary),
-                navigationIconContentColor = Color.White,
-                titleContentColor = Color.White,
-                actionIconContentColor = Color.White,
-                scrolledContainerColor = Color.White
-            ),
-            actions = {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_brush_24),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clickable {
-                            navController.navigate("SchermataModificaProfilo")
-
-                        }
-                        .size(40.dp)
-
-                )
-            }
-        )
-        val screenWidth = LocalDensity.current.run {
-            LocalConfiguration.current.screenWidthDp.dp
-        }
-        Box(
-            modifier = Modifier
-                .offset(x = (screenWidth / 2) - 40.dp)
-                .constrainAs(immagineProfilo)
-                {
-                    top.linkTo(parent.top, margin = 70.dp)
-                }
-                .size(80.dp)
-                .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
-        ) {
-            // Immagine all'interno della Box circolare
-            Image(
-                painter = profilePicture, // Rimpiazza con la tua immagine
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(CircleShape)
-            )
-
-        }
-        Text(
-            text = "MARIO ROSSI",
-            modifier = Modifier
-                .constrainAs(nomeUtente)
-                {
-                    top.linkTo(immagineProfilo.bottom)
-                }
-
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold, // Imposta il grassetto
-        )
-        Text(
-            text = "@" + utente.username,
-            modifier = Modifier
-                .constrainAs(usernameUtente) {
-                    top.linkTo(nomeUtente.bottom)
-                }
-
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp,
-            color = Color.Gray// Imposta il grassetto
-        )
-        Text(
-            text = "Short Bio:",
-            modifier = Modifier
-                .constrainAs(shortBioLabel)
-                {
-                    top.linkTo(usernameUtente.bottom)
-                }
-
-                .padding(8.dp)
-                .fillMaxWidth(),
-            textAlign = TextAlign.Left,
-            fontSize = 20.sp,
-            color = Color.Black,
-            fontWeight = FontWeight.Bold
-        )
-        utente.descrizione?.let {
-            Text(
-                text = it,
-                modifier = Modifier
-                    .constrainAs(shortBioUtente)
-                    {
-                        top.linkTo(shortBioLabel.bottom)
-                    }
-                    .padding(8.dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Left,
-                fontSize = 20.sp,
-                color = Color.Black,// Imposta il grassetto
-                maxLines = 6, // Imposta il numero massimo di righe
-                overflow = TextOverflow.Ellipsis// Aggiunge tre puntini alla fine del testo se viene troncato
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(sitoWebUtente) {
-                    top.linkTo(shortBioUtente.bottom)
-                }
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Sito Web:",
-                textAlign = TextAlign.Left,
-                fontSize = 20.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold
-            )
-            val context = LocalContext.current
-
-            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                // Handle the result if needed
-            }
-
-            val text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 20.sp
-                    )
-                ) {
-                    append(utente.sitoWeb)
-                    addStringAnnotation("URL", "https://www.example.com", 0, length)
-                }
-            }
-            Spacer(modifier = Modifier.width(7.dp))
-
-            ClickableText(
-                text = text,
-                modifier = Modifier.padding(8.dp),
-                onClick = { offset ->
-                    text.getStringAnnotations("URL", offset, offset)
-                        .firstOrNull()?.let { annotation ->
-                            annotation.item
-                            val intent = Intent(Intent.ACTION_VIEW, null)
-                            ContextCompat.startActivity(context, intent, null)
-                        }
-                },
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-
-
-
-        @Composable
-        fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(2.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = iconId),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clickable { navController.navigate(route) }
-
-                )
-
-                Text(
-                    text = text,
-                    fontSize = 15.sp,
-                    color = color
-                )//
-            }
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(social)
-                {
-                    top.linkTo(sitoWebUtente.bottom)
-                }
-
-
-        ) {
-            Spacer(
-                modifier = Modifier
-                    .width(20.dp)
-
-            )
-            IconWithText(
-                iconId = R.drawable.instagramicon,
-                text = "Instagram",
-                "", Color.Black
-
-            )
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-            IconWithText(
-                iconId = R.drawable.facebookicon,
-                text = "Facebook",
-                "", Color.Black
-            )
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-            IconWithText(
-                iconId = R.drawable.twittericon,
-                text = "Twitter",
-                "", Color.Black
-            )
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(indirizzoUtente)
-                {
-                    top.linkTo(social.bottom)
-                }
-
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Indirizzo:",
-                textAlign = TextAlign.Left,
-                fontSize = 20.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.width(10.dp))
-            utente.indirizzo?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier.weight(1f),
-                    fontSize = 15.sp,
-                    color = Color.Black,
-
-                    )
-            }
-
-
-        }
-        NavigationBar(
-            tonalElevation = 30.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)// Add a black border
-                .constrainAs(bottomBar)
-                {
-                    bottom.linkTo(parent.bottom)
-                },
-            content = {
-                NavigationBarItem(
-                    label = { Text(text = "Home") },
-                    selected = false,
-                    onClick = {
-                        navController.navigate("SchermataHome") {
-                            popUpTo(navController.graph.startDestinationId) {
-                                inclusive = false
-                            }
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.homeicon),
-                            contentDescription = "Home"
-                        )
-                    }
-                )
-                NavigationBarItem(
-                    label = { Text(text = "Gestisci") },
-                    selected = false,
-                    onClick = {
-                        navController.navigate("SchermataGestioneAste") {
-                            popUpTo("SchermataGestioneAste") {
-                                inclusive = false
-                            }
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.gestisci_icon),
-                            contentDescription = "Gestione Aste"
-                        )
-                    }
-                )
-                NavigationBarItem(
-                    label = { Text(text = "Crea Asta") },
-                    selected = false,
-                    onClick = {
-                        navController.navigate("SchermataCreazioneAsta") {
-                            popUpTo("SchermataCreazioneAsta") {
-                                inclusive = false
-                            }
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.crea_asta_icon),
-                            contentDescription = "Crea Asta"
-                        )
-                    }
-                )
-                NavigationBarItem(
-                    label = { Text(text = "Profilo") },
-                    selected = true,
-                    onClick = {
-                        navController.navigate("SchermataProfiloUtente") {
-                            popUpTo("SchermataProfiloUtente") {
-                                inclusive = false
-                            }
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.usericon),
-                            contentDescription = "ProfiloUtente"
-                        )
-                    }
-                )
-
-            }
-        )
-    }
-} */
 
 
 @Preview(showBackground = true)

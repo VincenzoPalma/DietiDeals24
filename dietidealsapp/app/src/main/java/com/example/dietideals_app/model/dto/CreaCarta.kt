@@ -7,5 +7,5 @@ class CreaCarta(
     val numero: String?,
     val nomeTitolare: String?,
     val codiceCvvCvc: String?,
-    val dataScadenza: OffsetDateTime?
+    val dataScadenza: String?
 )

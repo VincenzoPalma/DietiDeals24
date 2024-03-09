@@ -2,6 +2,7 @@ package com.example.dietideals_app.view
 
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -49,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -74,10 +76,14 @@ import com.example.dietideals_app.model.dto.DatiProfiloUtente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.PaginaModificaProfiloUtenteViewModel
 import com.example.dietideals_app.viewmodel.listener.DatiUtenteListener
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class PaginaModificaProfiloUtente : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,23 +110,31 @@ fun SchermataModificaProfilo(navController: NavController) {
     val viewModel = PaginaModificaProfiloUtenteViewModel()
     val sitoWebFocusRequester = remember { FocusRequester() }
     val addressFocusRequester = remember { FocusRequester() }
+    val storage = Firebase.storage
+    val storageRef = storage.reference
     val facebookLinkFocusRequester = remember { FocusRequester() }
     val twitterLinkFocusRequester = remember { FocusRequester() }
     var datiProfiloUtente by remember { mutableStateOf<DatiProfiloUtente?>(null) }
-
-    LaunchedEffect(Unit) {
-        datiProfiloUtente = Gson().fromJson(
-            navController.previousBackStackEntry?.savedStateHandle?.get<String>("datiProfiloUtente"),
-            DatiProfiloUtente::class.java
-        )
-    }
-
     var shortBio by remember { mutableStateOf("") }
     var sitoWeb by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var instagramLink by remember { mutableStateOf("") }
     var facebookLink by remember { mutableStateOf("") }
     var twitterLink by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    LaunchedEffect(Unit) {
+        datiProfiloUtente = Gson().fromJson(
+            navController.previousBackStackEntry?.savedStateHandle?.get<String>("datiProfiloUtente"),
+            DatiProfiloUtente::class.java
+        )
+        shortBio = if (datiProfiloUtente?.descrizione == null) "" else datiProfiloUtente!!.descrizione.toString()
+        sitoWeb = if (datiProfiloUtente?.sitoWeb == null) "" else datiProfiloUtente!!.sitoWeb.toString()
+        address = if (datiProfiloUtente?.indirizzo == null) "" else datiProfiloUtente!!.indirizzo.toString()
+        instagramLink = if (datiProfiloUtente?.instagram == null) "" else datiProfiloUtente!!.instagram.toString()
+        facebookLink = if (datiProfiloUtente?.facebook == null) "" else datiProfiloUtente!!.facebook.toString()
+        twitterLink = if (datiProfiloUtente?.twitter == null) "" else datiProfiloUtente!!.twitter.toString()
+    }
 
     val listener = remember {
         object : DatiUtenteListener {
@@ -129,7 +143,7 @@ fun SchermataModificaProfilo(navController: NavController) {
             }
 
             override fun onDatiModificati(utente: Utente) {
-                println("dati modificati")
+                //
             }
 
             override fun onError() {
@@ -197,6 +211,14 @@ fun SchermataModificaProfilo(navController: NavController) {
         val screenWidth = LocalDensity.current.run {
             LocalConfiguration.current.screenWidthDp.dp
         }
+
+        LocalContext.current as ComponentActivity
+        val getContent =
+            rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+                uri?.let {
+                    selectedImageUri = it
+                }
+            }
         Box(
             modifier = Modifier
                 .offset(x = (screenWidth / 2) - 40.dp)
@@ -207,15 +229,17 @@ fun SchermataModificaProfilo(navController: NavController) {
                 .size(80.dp)
                 .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
         ) {
-            // Immagine all'interno della Box circolare
+
             AsyncImage(
-                model = datiProfiloUtente?.urlFotoProfilo,
-                placeholder = painterResource(id = R.drawable.ic_launcher_foreground),
-                error = painterResource(id = R.drawable.ic_launcher_foreground),
+                model = if (selectedImageUri == null) { datiProfiloUtente?.urlFotoProfilo } else { selectedImageUri },
+                placeholder = painterResource(id = com.facebook.login.R.drawable.com_facebook_profile_picture_blank_portrait),
+                error = painterResource(id = com.facebook.login.R.drawable.com_facebook_profile_picture_blank_portrait),
                 contentDescription = "Immagine del profilo dell'utente",
                 modifier = Modifier
+                    .clickable { getContent.launch("image/*") }
                     .fillMaxSize()
-                    .clip(CircleShape)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
 
         }
@@ -262,7 +286,8 @@ fun SchermataModificaProfilo(navController: NavController) {
         )
 
         //.offset(y = 235.dp)
-        OutlinedTextField(value = shortBio, onValueChange = { shortBio = it },
+        OutlinedTextField(value = shortBio,
+            onValueChange = { shortBio = it },
             shape = RoundedCornerShape(15.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
@@ -334,7 +359,7 @@ fun SchermataModificaProfilo(navController: NavController) {
 
 
         @Composable
-        fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
+        fun IconWithText(iconId: Int, text: String, color: Color) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(2.dp)
@@ -344,9 +369,6 @@ fun SchermataModificaProfilo(navController: NavController) {
                     contentDescription = null,
                     modifier = Modifier
                         .size(30.dp)
-                        .clickable { navController.navigate(route) },
-
-
                     )
 
                 Text(
@@ -376,7 +398,6 @@ fun SchermataModificaProfilo(navController: NavController) {
             IconWithText(
                 iconId = R.drawable.instagramicon,
                 text = "Instagram",
-                "",
                 Color.Black
             )
             Spacer(
@@ -387,7 +408,7 @@ fun SchermataModificaProfilo(navController: NavController) {
             IconWithText(
                 iconId = R.drawable.facebookicon,
                 text = "Facebook",
-                "", Color.Black
+                Color.Black
             )
             Spacer(
                 modifier = Modifier
@@ -397,7 +418,7 @@ fun SchermataModificaProfilo(navController: NavController) {
             IconWithText(
                 iconId = R.drawable.twittericon,
                 text = "Twitter",
-                "", Color.Black
+                Color.Black
             )
             Spacer(
                 modifier = Modifier
@@ -439,9 +460,11 @@ fun SchermataModificaProfilo(navController: NavController) {
 
                                 )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Icon(
+                            Image(
                                 painter = painterResource(id = R.drawable.instagramicon),
-                                contentDescription = "iconaInstagram"
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(30.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             OutlinedTextField(value = instagramLink,
@@ -451,7 +474,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                                     imeAction = ImeAction.Next
                                 ),
                                 modifier = Modifier
-                                    .height(20.dp),
+                                    .height(50.dp),
                                 keyboardActions = KeyboardActions(
                                     onNext = { facebookLinkFocusRequester.requestFocus() }
                                 ))
@@ -467,9 +490,11 @@ fun SchermataModificaProfilo(navController: NavController) {
 
                                 )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Icon(
+                            Image(
                                 painter = painterResource(id = R.drawable.facebookicon),
-                                contentDescription = "iconaFacebook"
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(30.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             OutlinedTextField(value = facebookLink,
@@ -479,7 +504,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                                     imeAction = ImeAction.Next
                                 ),
                                 modifier = Modifier
-                                    .height(20.dp)
+                                    .height(50.dp)
                                     .focusRequester(facebookLinkFocusRequester),
                                 keyboardActions = KeyboardActions(
                                     onNext = { twitterLinkFocusRequester.requestFocus() }
@@ -496,9 +521,11 @@ fun SchermataModificaProfilo(navController: NavController) {
 
                                 )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Icon(
+                            Image(
                                 painter = painterResource(id = R.drawable.twittericon),
-                                contentDescription = "iconaInstagram"
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(30.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             OutlinedTextField(
@@ -508,7 +535,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                                     imeAction = ImeAction.Done
                                 ),
                                 modifier = Modifier
-                                    .height(20.dp)
+                                    .height(50.dp)
                                     .focusRequester(twitterLinkFocusRequester),
                             )
                         }
@@ -580,22 +607,34 @@ fun SchermataModificaProfilo(navController: NavController) {
             ElevatedButton(
                 onClick = {
                     CoroutineScope(Dispatchers.Main).launch {
+                        var downloadUrl: String? = null
+                        if (selectedImageUri != null) {
+                            val immagineProfiloRef = storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
+                            selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
+                            immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
+                                downloadUrl = uri.toString()
+                            }.addOnFailureListener { exception ->
+                                println("Errore durante il recupero dell'URL di download: $exception")
+                            }
+                        }
+                        delay(500)
                         viewModel.modificaDatiUtente(
                             DatiProfiloUtente(
-                                shortBio,
-                                facebookLink,
-                                instagramLink,
-                                twitterLink,
-                                sitoWeb,
-                                address,
-                                datiProfiloUtente?.urlFotoProfilo,
+                                shortBio.ifEmpty { null },
+                                facebookLink.ifEmpty { null },
+                                instagramLink.ifEmpty { null },
+                                twitterLink.ifEmpty { null },
+                                sitoWeb.ifEmpty { null },
+                                address.ifEmpty { null },
+                                if (downloadUrl == null) datiProfiloUtente?.urlFotoProfilo else downloadUrl,
                                 datiProfiloUtente?.username,
                                 datiProfiloUtente?.nome,
                                 datiProfiloUtente?.cognome
                             ), listener
                         )
+                        delay(800)
+                        navController.popBackStack()
                     }
-                    navController.navigate("SchermataProfiloUtente")
                 }
             ) {
                 Text(text = "Conferma")

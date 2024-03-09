@@ -27,8 +27,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
@@ -51,6 +49,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,7 +57,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -94,12 +92,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import java.util.Date
+import java.util.Locale
 
 class PaginaCreazioneAsta : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -147,7 +143,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
     val storage = Firebase.storage
     val storageRef = storage.reference
     val defaultImage = painterResource(id = R.drawable.defaultimage)
-    val selectedTabIndex = remember { mutableIntStateOf(0) }
+    val selectedTabIndex = remember { mutableIntStateOf(2) }
     val tabNames = listOf("All'inglese", "Silenziosa", "Inversa")
     var nomeAsta by remember { mutableStateOf("") }
     var sogliaRialzo by remember { mutableStateOf<BigDecimal>(BigDecimal.TEN) }
@@ -169,10 +165,13 @@ fun SchermataCreazioneAsta(navController: NavController) {
     var selectedHour by remember { mutableIntStateOf(24) }
     var selectedMinute by remember { mutableIntStateOf(60) }
     var downloadUrl: String? by remember { mutableStateOf(null) }
-    var categoriaSelezionata by remember { mutableStateOf<CategoriaAsta?>(null)
-    }
-
+    var categoriaSelezionata by remember { mutableStateOf<CategoriaAsta?>(null) }
+    var isUtenteVenditore by remember { mutableStateOf(false) }
     var alertDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        isUtenteVenditore = viewModel.isUtenteVenditore()
+    }
 
      LocalContext.current as ComponentActivity
      var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -204,7 +203,6 @@ fun SchermataCreazioneAsta(navController: NavController) {
         } else if (selectedTabIndex.intValue == 2) {
             return LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).isAfter(LocalDate.now().plusDays(1))
         }
-
         return false
     }
 
@@ -296,6 +294,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
         )
 
         var tabSelezionata by remember { mutableIntStateOf(0) }
+
         Column(
             modifier = Modifier
                 .constrainAs(tab)
@@ -312,14 +311,16 @@ fun SchermataCreazioneAsta(navController: NavController) {
                 // Itera attraverso le schede e le aggiunge a TabRow
                 for (index in tabNames.indices) {
                     Tab(
+                        enabled = ((index == 0 || index == 1) && isUtenteVenditore) || (index == 2),
                         selected = selectedTabIndex.intValue == index,
                         onClick = {
-                            tabSelezionata = index
                             alertDialog = true
+                            tabSelezionata = index
                         },
-                        // Puoi personalizzare l'aspetto delle schede qui, ad esempio aggiungendo icone, testo, etc.
                         text = {
-                            Text(text = tabNames[index], fontSize = 15.sp)
+                            Text(text = tabNames[index], fontSize = 15.sp,
+                                color = if ((index == 0 || index == 1) && isUtenteVenditore || (index == 2)) {Color(colorGreen)} else {Color.LightGray}
+                            )
                         }
                     )
                     if (alertDialog) {
@@ -341,9 +342,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         selectedTabIndex.intValue = tabSelezionata
                                         currentPage.intValue = 0
                                         reset()
-                                        // Qui gestisci l'azione quando l'utente conferma l'operazione
-                                        alertDialog =
-                                            false // Imposta la variabile alertDialog su false per chiudere l'AlertDialog
+                                        alertDialog = false
                                     }, modifier = Modifier.padding(end = 36.dp)
                                 ) {
                                     Text(text = "Continua", fontSize = 15.sp)
@@ -354,8 +353,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                 TextButton(
                                     onClick = {
                                         // Qui gestisci l'azione quando l'utente sceglie di non continuare
-                                        alertDialog =
-                                            false // Imposta la variabile alertDialog su false per chiudere l'AlertDialog
+                                        alertDialog = false
                                     }, modifier = Modifier.padding(end = 36.dp)
                                 ) {
                                     Text(
@@ -372,11 +370,8 @@ fun SchermataCreazioneAsta(navController: NavController) {
             }
 
 
-
-
-            @SuppressLint("SimpleDateFormat")
             fun convertMillisToDate(millis: Long): String {
-                val formatter = SimpleDateFormat("dd/MM/yyyy")
+                val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.ITALY)
                 return formatter.format(Date(millis))
             }
 
@@ -1192,8 +1187,9 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         Image(
                                             painter = defaultImage,
                                             contentDescription = null,
-                                            modifier = Modifier.matchParentSize()
-                                                .clickable {  getContent.launch("image/*") }
+                                            modifier = Modifier
+                                                .matchParentSize()
+                                                .clickable { getContent.launch("image/*") }
                                         )
                                     }
                                 }

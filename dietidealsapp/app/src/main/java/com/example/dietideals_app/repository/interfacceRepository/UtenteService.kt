@@ -3,6 +3,7 @@ package com.example.dietideals_app.repository.interfacceRepository
 import com.example.dietideals_app.model.Utente
 import com.example.dietideals_app.model.dto.DatiProfiloUtente
 import com.example.dietideals_app.model.dto.UtenteRegistrazione
+import com.example.dietideals_app.model.enum.RuoloUtente
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -28,6 +29,9 @@ interface UtenteService {
 
     @GET("utente/datiUtente")
     fun getDatiUtente(@Query("idUtente") idUtente: UUID?): Call<DatiProfiloUtente>
+
+    @GET("/utente/ruolo")
+    fun getRuoloUtente(): Call<RuoloUtente>
 
     @GET("utente/idUtente/{idAuth}")
     fun getUtenteByIdAuth(@Path("idAuth") idAuth: String): Call<Utente>

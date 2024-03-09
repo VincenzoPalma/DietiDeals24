@@ -1,6 +1,7 @@
 package com.example.dietideals_app.viewmodel
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.example.dietideals_app.model.dto.UtenteRegistrazione
@@ -131,11 +132,12 @@ class PaginaRegistrazioneViewModel {
         nomeTitolare: String,
         codiceBicSwift: String,
         partitaIva: String,
-        iban: String
+        iban: String,
+        urlDocumento: Uri?
     ): Boolean {
         return isValidNomeTitolare(nomeTitolare) && isValidCodiceBicSwift(codiceBicSwift) && isValidIban(
             iban
-        ) && isValidPartitaIva(partitaIva)
+        ) && isValidPartitaIva(partitaIva) && urlDocumento != null
     }
 
     @SuppressLint("SimpleDateFormat")

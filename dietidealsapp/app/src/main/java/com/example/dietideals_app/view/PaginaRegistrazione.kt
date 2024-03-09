@@ -719,14 +719,13 @@ fun SchermataRegistrazione(navController: NavController) {
                 }
 
                 LocalContext.current as ComponentActivity
-                // Definisci il contratto per l'activity result
                 val getContent =
                     rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
                         uri?.let {
                             selectedImageUri = it
                         }
                     }
-                // Cerchio con icona di una matita al centro
+
                 Box(
                     modifier = Modifier
                         .constrainAs(profileImage) {
@@ -988,9 +987,6 @@ fun SchermataRegistrazione(navController: NavController) {
                     )
                 }
 
-
-                // Bottone "NON ORA"
-
             }
         }
 
@@ -1090,11 +1086,8 @@ fun SchermataRegistrazione(navController: NavController) {
                     Spacer(modifier = Modifier.width(8.dp))
 
                     LocalContext.current as ComponentActivity
-                    // Definisci il contratto per l'activity result
                     val getContent =
                         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-                            // Gestisci l'URI dell'immagine selezionata
-                            // Puoi eseguire ulteriori operazioni qui, come caricare l'immagine
                             uri?.let {
                                 selectedFileUri = it
                             }
@@ -1389,7 +1382,8 @@ fun SchermataRegistrazione(navController: NavController) {
                             nomeTitolare,
                             codiceBicSwift,
                             partitaIva,
-                            iban
+                            iban,
+                            selectedFileUri
                         ),
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
@@ -1400,10 +1394,8 @@ fun SchermataRegistrazione(navController: NavController) {
                                         storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
                                     selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
                                     immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
-                                        // Ottieni l'URL di download dell'immagine
                                         imageDownloadUrl = uri.toString()
                                     }.addOnFailureListener { exception ->
-                                        // Gestisci eventuali errori nell'ottenere l'URL di download
                                         println("Errore durante il recupero dell'URL di download: $exception")
                                     }
                                 }
@@ -1414,7 +1406,6 @@ fun SchermataRegistrazione(navController: NavController) {
                                     documentoVenditoreRef.downloadUrl.addOnSuccessListener { uri ->
                                         fileDownloadUrl = uri.toString()
                                     }.addOnFailureListener { exception ->
-                                        // Gestisci eventuali errori nell'ottenere l'URL di download
                                         println("Errore durante il recupero dell'URL di download: $exception")
                                     }
                                 }
