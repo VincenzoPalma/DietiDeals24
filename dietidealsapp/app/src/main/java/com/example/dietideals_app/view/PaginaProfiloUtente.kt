@@ -68,7 +68,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -116,12 +115,6 @@ fun SchermataProfiloUtente(navController: NavController) {
     val backIcon = painterResource(id = R.drawable.baseline_arrow_back_24)
     val logoutIcon = painterResource(id = R.drawable.baseline_logout_24)
     val paymentIcon = painterResource(id = R.drawable.baseline_attach_money_24)
-    val profilePicture = painterResource(id = R.drawable.ic_launcher_foreground)
-    val homeIcon = R.drawable.baseline_home_24
-    val gestisciAste = R.drawable.line_chart_svgrepo_com
-    val creaAsta = R.drawable.hand_money_cash_hold_svgrepo_com
-    val account = R.drawable.baseline_manage_accounts_24
-    val colorGreen = 0xFF0EA639
     var datiProfiloUtente by remember { mutableStateOf<DatiProfiloUtente?>(null) }
 
     val listener = remember {
@@ -150,10 +143,12 @@ fun SchermataProfiloUtente(navController: NavController) {
         }
     }
 
-    val openUrlLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        // Handle the result if needed
-    }
-    fun openUrl(url : String?) {
+    val openUrlLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            // Handle the result if needed
+        }
+
+    fun openUrl(url: String?) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://$url"))
         openUrlLauncher.launch(intent)
     }
@@ -206,7 +201,7 @@ fun SchermataProfiloUtente(navController: NavController) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { navController.navigate("SchermataRegistrazioneDatiVenditore") }
+                        modifier = Modifier.clickable { navController.navigate("SchermataDatiVenditore") }
                     )
                     {
                         Icon(
@@ -449,21 +444,28 @@ fun SchermataProfiloUtente(navController: NavController) {
                     ClickableText(
                         text = text,
                         modifier = Modifier.padding(8.dp),
-                        onClick = { if (datiProfiloUtente?.sitoWeb != null) {
-                            try {
-                                openUrl(datiProfiloUtente?.sitoWeb)
-                            } catch (_: ActivityNotFoundException) {
-                                //
+                        onClick = {
+                            if (datiProfiloUtente?.sitoWeb != null) {
+                                try {
+                                    openUrl(datiProfiloUtente?.sitoWeb)
+                                } catch (_: ActivityNotFoundException) {
+                                    //
+                                }
                             }
-                        }
                         },
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
 
 
-                    @Composable
-                fun IconWithText(iconId: Int, text: String, url: String?, prefix: String, color: Color) {
+                @Composable
+                fun IconWithText(
+                    iconId: Int,
+                    text: String,
+                    url: String?,
+                    prefix: String,
+                    color: Color
+                ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(2.dp)
@@ -507,7 +509,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     IconWithText(
                         iconId = R.drawable.instagramicon,
                         text = "Instagram",
-                        datiProfiloUtente?.instagram + "/", "www.instagram.com/",Color.Black
+                        datiProfiloUtente?.instagram + "/", "www.instagram.com/", Color.Black
 
                     )
                     Spacer(

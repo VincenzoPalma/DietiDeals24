@@ -150,7 +150,7 @@ class MainActivity : ComponentActivity() {
                         composable("SchermataCreazioneAsta") { SchermataCreazioneAsta(navController = navController) }
                         composable("SchermataPaginaAsta") { SchermataPaginaAsta(navController = navController) }
                         composable("SchermataOfferte") { SchermataOfferte(navController = navController) }
-                        composable("schermataDatiVenditore") { SchermataDatiVenditore(navController = navController) }
+                        composable("SchermataDatiVenditore") { SchermataDatiVenditore(navController = navController) }
 
                     }
                 }

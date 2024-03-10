@@ -8,13 +8,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -28,8 +31,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,7 +45,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -55,7 +60,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
-import com.example.dietideals_app.ui.theme.titleCustomFont
+import com.example.dietideals_app.viewmodel.PaginaRegistrazioneViewModel
 
 class PaginaDatiVenditore : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,89 +85,93 @@ class PaginaDatiVenditore : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataDatiVenditore(navController: NavController) {
-    val background = painterResource(id = R.drawable.sfondo1)
+
+
     var partitaIva by remember { mutableStateOf("") } //11 caratteri numerici
-    fun isValidPartitaIva(partitaIva: String): Boolean {
-        return partitaIva.length == 11 && partitaIva.all { it.isDigit() }
-    }
 
     var nomeTitolare by remember { mutableStateOf("") }
-    fun isValidNomeTitolare(nomeTitolare: String): Boolean {
-        return nomeTitolare.isNotBlank()
-    }
 
     var codiceBicSwift by remember { mutableStateOf("") } //8-11 cifre
-    fun isValidCodiceBicSwift(codiceBicSwift: String): Boolean {
-        return codiceBicSwift.length in 8..11
-    }
 
     var iban by remember { mutableStateOf("") } /*27caratteri lettere e numeri*/
-    fun isValidIban(iban: String): Boolean {
-        return iban.length == 27 && iban.matches(Regex("[A-Za-z0-9]+"))
-    }
 
 
     var isCodiceBicSwiftValid by remember { mutableStateOf(false) }
+    var isNomeTitolareValid by remember { mutableStateOf(false) }
     var isIbanValid by remember { mutableStateOf(false) }
     var isPartitaIvaValid by remember { mutableStateOf(false) }
-
-    fun checkFields(): Boolean {
-        return isValidNomeTitolare(nomeTitolare) && isValidCodiceBicSwift(codiceBicSwift) && isValidIban(
-            iban
-        ) && isValidPartitaIva(partitaIva)
-    }
 
     val nomeTitolareFocusRequester = remember { FocusRequester() }
     val bicSwiftCodeFocusReqeuster = remember { FocusRequester() }
     val ibanFocusRequest = remember { FocusRequester() }
+    val viewModel = PaginaRegistrazioneViewModel()
+
+
+    var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
+    val currentPage = remember { mutableIntStateOf(0) }
+
 
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (backgroundImage, title, subTitle, documentRow, partitaIvaTextField, bankAccountTitle, ownerTextField, bicSwiftCodeTextField, ibanTextField, buttons) = createRefs()
+        val (background, topBar, subTitle, documentRow, partitaIvaTextField, bankAccountTitle, ownerTextField, bicSwiftCodeTextField, ibanTextField, buttons) = createRefs()
 
         // Immagine di sfondo
-        Image(
-            painter = background,
-            contentDescription = null,
+        Box(
             modifier = Modifier
-                .constrainAs(backgroundImage) {
+                .constrainAs(background) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
-                },
-            contentScale = ContentScale.Crop
-        )
-
-        // Titolo
-        Text(
-            text = "REGISTRAZIONE",
-            color = Color.White,
-            fontFamily = titleCustomFont,
-            textAlign = TextAlign.Center,
-            fontSize = 30.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(title)
-                {
-                    top.linkTo(parent.top, margin = 20.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
                 }
-        )
-        Text(
-            text = "Dati Aggiuntivi",
-            color = Color.White,
-            fontFamily = titleCustomFont,
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp,
-            modifier = Modifier.constrainAs(subTitle) {
-                top.linkTo(title.top, margin = 40.dp)
+                .background(Color.White)
+        ) {}
+        TopAppBar(
+            title = {
+                Text(
+                    text = "DATI VENDITORE",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    fontWeight = FontWeight.Bold, // Imposta il grassetto
+                    fontSize = 40.sp
+                ) // Imposta la dimensione del testo)
+            },
+            modifier = Modifier.constrainAs(topBar)
+            {
+                top.linkTo(parent.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
+
+            },
+            navigationIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .clickable {
+                            navController.popBackStack()
+
+
+                        }
+                        .size(35.dp)
+                )
+
+            },
+            colors = TopAppBarColors(
+                containerColor = (MaterialTheme.colorScheme.primary),
+                navigationIconContentColor = Color.White,
+                titleContentColor = Color.White,
+                actionIconContentColor = Color.White,
+                scrolledContainerColor = Color.White
+            ), actions = {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_brush_24),
+                    contentDescription = "Modifica Dati"
+                )
             }
         )
         Row(
@@ -188,14 +197,10 @@ fun SchermataDatiVenditore(navController: NavController) {
             Spacer(modifier = Modifier.width(8.dp))
 
             LocalContext.current as ComponentActivity
-            var selectedDocument by remember { mutableStateOf<Uri?>(null) }
-            // Definisci il contratto per l'activity result
             val getContent =
                 rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-                    // Gestisci l'URI dell'immagine selezionata
-                    // Puoi eseguire ulteriori operazioni qui, come caricare l'immagine
                     uri?.let {
-                        selectedDocument = it
+                        selectedFileUri = it
                     }
                 }
 
@@ -203,19 +208,24 @@ fun SchermataDatiVenditore(navController: NavController) {
 
 
             ElevatedButton(
-                onClick = { getContent.launch("application/pdf") },
+                onClick = {
+                    getContent.launch("application/pdf")
+
+                },
             ) {
                 Text(
-                    text = if (selectedDocument == null) "CARICA" else "CARICATO",
+                    text = if (selectedFileUri == null) "CARICA" else "CARICATO",
                     fontSize = 10.sp,
                 )
             }
         }
         OutlinedTextField(
+            enabled = true,//se è gia venditore
+
             value = partitaIva,
             onValueChange = {
                 partitaIva = it
-                isPartitaIvaValid = isValidPartitaIva(it)
+                isPartitaIvaValid = viewModel.isValidPartitaIva(it)
             },
             label = {
                 Text(
@@ -280,32 +290,36 @@ fun SchermataDatiVenditore(navController: NavController) {
             }
         )
         OutlinedTextField(
+            enabled = true,//se è gia venditore
             value = nomeTitolare,
-            onValueChange = { nomeTitolare = it },
+            onValueChange = {
+                nomeTitolare = it
+                isNomeTitolareValid = viewModel.isValidNomeTitolare(it)
+            },
             label = {
                 Text(
                     "Nome Titolare",
-                    color = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Black
+                    color = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Black
                 )
             },
 
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
-                focusedBorderColor = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
+                unfocusedBorderColor = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
+                focusedBorderColor = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
             ),
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_account_circle_24),
                     contentDescription = null,
-                    tint = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
+                    tint = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
                 )
             },
             trailingIcon = {
                 Icon(
-                    painter = painterResource(id = if (nomeTitolare.isNotEmpty()) R.drawable.baseline_done_24 else R.drawable.empty),
+                    painter = painterResource(id = if (isNomeTitolareValid) R.drawable.baseline_done_24 else R.drawable.empty),
                     contentDescription = null,
-                    tint = if (nomeTitolare.isNotEmpty()) Color(0xFF0EA639) else Color.Gray,
-                    modifier = if (nomeTitolare.isEmpty()) Modifier.alpha(0f) else Modifier
+                    tint = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
+                    modifier = if (isNomeTitolareValid) Modifier.alpha(0f) else Modifier
                 )
             },
             modifier = Modifier
@@ -328,10 +342,11 @@ fun SchermataDatiVenditore(navController: NavController) {
 
 
         OutlinedTextField(
+            enabled = true,//se è gia venditore
             value = codiceBicSwift,
             onValueChange = {
                 codiceBicSwift = it
-                isCodiceBicSwiftValid = isValidCodiceBicSwift(it)
+                isCodiceBicSwiftValid = viewModel.isValidCodiceBicSwift(it)
             },
             label = {
                 Text(
@@ -389,10 +404,11 @@ fun SchermataDatiVenditore(navController: NavController) {
 
 
         OutlinedTextField(
+            enabled = true,//se è gia venditore
             value = iban,
             onValueChange = {
                 iban = it
-                isIbanValid = isValidIban(it)
+                isIbanValid = viewModel.isValidIban(it)
             },
             label = {
                 Text(
@@ -460,6 +476,7 @@ fun SchermataDatiVenditore(navController: NavController) {
             // Bottone Annulla
             ElevatedButton(
                 onClick = {
+                    currentPage.intValue = 2
                 },
 
                 colors = ButtonColors(
@@ -478,12 +495,79 @@ fun SchermataDatiVenditore(navController: NavController) {
 
             // Bottone Conferma
             ElevatedButton(
-                enabled = checkFields(),
+                enabled = viewModel.checkFieldsDatiVenditore(
+                    nomeTitolare,
+                    codiceBicSwift,
+                    partitaIva,
+                    iban,
+                    selectedFileUri
+                ),
                 onClick = {
+                    /*CoroutineScope(Dispatchers.Main).launch {
+                        var imageDownloadUrl: String? = null
+                        var fileDownloadUrl: String? = null
+                        if (selectedImageUri != null) {
+                            val immagineProfiloRef =
+                                storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
+                            selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
+                            immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
+                                imageDownloadUrl = uri.toString()
+                            }.addOnFailureListener { exception ->
+                                println("Errore durante il recupero dell'URL di download: $exception")
+                            }
+                        }
+                        if (selectedFileUri != null) {
+                            val documentoVenditoreRef =
+                                storageRef.child("DocumentiVenditore/${selectedFileUri?.lastPathSegment}")
+                            selectedFileUri?.let { documentoVenditoreRef.putFile(it).await() }
+                            documentoVenditoreRef.downloadUrl.addOnSuccessListener { uri ->
+                                fileDownloadUrl = uri.toString()
+                            }.addOnFailureListener { exception ->
+                                println("Errore durante il recupero dell'URL di download: $exception")
+                            }
+                        }
+                        delay(500)
+                        if (isRegistrazioneTerzeParti) {
+                            viewModel.registraUtente(
+                                UtenteRegistrazione(
+                                    username,
+                                    RuoloUtente.VENDITORE,
+                                    nome,
+                                    cognome,
+                                    viewModel.convertMillisToDate(state.selectedDateMillis!!)
+                                        .toString(),
+                                    email,
+                                    null,
+                                    partitaIva,
+                                    fileDownloadUrl,
+                                    imageDownloadUrl,
+                                    ContoCorrente(nomeTitolare, codiceBicSwift, iban)
+                                ),
+                                firebaseAuth.currentUser?.uid
+                            )
 
+                        } else {
+                            viewModel.registraUtente(
+                                UtenteRegistrazione(
+                                    username,
+                                    RuoloUtente.VENDITORE,
+                                    nome,
+                                    cognome,
+                                    viewModel.convertMillisToDate(state.selectedDateMillis!!)
+                                        .toString(),
+                                    email,
+                                    password,
+                                    partitaIva,
+                                    fileDownloadUrl,
+                                    imageDownloadUrl,
+                                    ContoCorrente(nomeTitolare, codiceBicSwift, iban)
+                                ), null
+                            )
+                        }
+                        isDialogVisible.value = true
+                    }*/
                 },
-
-                ) {
+            ) {
                 Text(
                     text = "CONFERMA",
                     fontSize = 12.sp,
@@ -491,6 +575,7 @@ fun SchermataDatiVenditore(navController: NavController) {
             }
         }
     }
+
 
 }
 

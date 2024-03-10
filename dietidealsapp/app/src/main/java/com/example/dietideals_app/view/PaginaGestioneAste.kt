@@ -5,9 +5,9 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,8 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -44,11 +44,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -108,6 +105,7 @@ fun SchermataGestioneAste(navController: NavController) {
     var numeroPaginaAsteSeguite by remember { mutableIntStateOf(0) }
     var asteVinte by remember { mutableStateOf<List<Asta>>(emptyList()) }
     var numeroPaginaAsteVinte by remember { mutableIntStateOf(0) }
+
 
     val listenerAste = remember {
         object : AsteListener {
@@ -245,156 +243,220 @@ fun SchermataGestioneAste(navController: NavController) {
                 }
             }
             @Composable
-            fun ProductDetails(aste : List<Asta>) {
+            fun ProductDetails(aste: List<Asta>) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    items(aste.size) { index ->
-                        val asta = aste[index]
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            Row(
+                    if (aste.isEmpty()) {
+                        item {
+                            Row(Modifier.fillMaxWidth()) {
+                                Text(
+                                    text = "NESSUNA ASTA DISPONIBILE",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+
+                            }
+                        }
+                    } else {
+
+
+                        items(aste.size) { index ->
+                            val asta = aste[index]
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .padding(8.dp)
                             ) {
-                                // Riquadro per ogni elemento della lista
-                                ElevatedCard(
+                                Row(
                                     modifier = Modifier
-                                        .clickable { val gson = GsonBuilder()
-                                            .registerTypeAdapter(
-                                                OffsetDateTime::class.java,
-                                                JsonSerializer<OffsetDateTime> { src, _, _ ->
-                                                    JsonPrimitive(src.toString())
+                                        .fillMaxWidth()
+                                ) {
+                                    // Riquadro per ogni elemento della lista
+                                    ElevatedCard(
+                                        modifier = Modifier
+                                            .clickable {
+                                                val gson = GsonBuilder()
+                                                    .registerTypeAdapter(
+                                                        OffsetDateTime::class.java,
+                                                        JsonSerializer<OffsetDateTime> { src, _, _ ->
+                                                            JsonPrimitive(src.toString())
+                                                        }
+                                                    )
+                                                    .create()
+                                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                    key = "asta",
+                                                    value = gson.toJson(asta)
+                                                )
+                                                navController.navigate("SchermataPaginaAsta")
+                                            }
+                                            .weight(1f)
+                                            .height(150.dp)
+                                            .padding(2.dp),
+                                        elevation = CardDefaults.cardElevation(
+                                            defaultElevation = 6.dp
+                                        ),
+
+
+                                        ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
+                                            Column {
+                                                // Immagine
+                                                AsyncImage(
+                                                    model = asta.urlFoto,
+                                                    placeholder = painterResource(id = R.drawable.defaultimage),
+                                                    error = painterResource(id = R.drawable.defaultimage),
+                                                    contentDescription = "Immagine dell'asta",
+                                                    modifier = Modifier
+                                                        .size(150.dp)
+                                                )
+                                            }
+                                            VerticalDivider()
+                                            Spacer(modifier = Modifier.width(20.dp))
+                                            Column {
+                                                // Titolo in grassetto
+                                                Text(
+                                                    text = asta.nome,
+                                                    color = Color.Black,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 10.sp,
+
+                                                    )
+
+                                                //TAB ASTE ATTIVE
+                                                if (selectedTabIndex.intValue == 0 || selectedTabIndex.intValue == 2) {
+                                                    Text(
+                                                        text = "Prezzo base",
+                                                        color = Color.Black,
+                                                        fontSize = 10.sp,
+
+                                                        )
                                                 }
-                                            )
-                                            .create()
-                                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                key = "asta",
-                                                value = gson.toJson(asta)
-                                            )
-                                            navController.navigate("SchermataPaginaAsta") }
-                                        .weight(1f)
-                                        .height(150.dp)
-                                        .padding(2.dp),
-                                    elevation = CardDefaults.cardElevation(
-                                        defaultElevation = 6.dp
-                                    ),
 
 
-                                    ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        Column {
-                                            // Immagine
-                                            AsyncImage(
-                                                model = asta.urlFoto,
-                                                placeholder = painterResource(id = R.drawable.defaultimage),
-                                                error = painterResource(id = R.drawable.defaultimage),
-                                                contentDescription = "Immagine dell'asta",
-                                                modifier = Modifier
-                                                    .size(150.dp)
-                                            )
+                                                ///TAB ASTE CONCLUSE
+                                                if (selectedTabIndex.intValue == 1 || selectedTabIndex.intValue == 3) {
+                                                    Text(
+                                                        text = "Venduto per",
+                                                        color = Color.Black,
+                                                        fontSize = 10.sp,
+
+                                                        )
+
+                                                }
+
+
+                                                //TAB ASTE VINTE
+                                                if (selectedTabIndex.intValue == 3) {
+                                                    Text(
+                                                        text = "Acquistato per",
+                                                        color = Color.Black,
+                                                        fontSize = 10.sp,
+
+                                                        )
+
+                                                }
+
+
+                                                // Prezzo in verde
+                                                Text(
+                                                    text = asta.prezzoBase.toString(),
+                                                    color = Color(colorGreen),
+                                                    fontSize = 10.sp,
+
+                                                    )
+                                                Text(
+                                                    text = "Categoria: " + asta.categoria.name.replace(
+                                                        "_",
+                                                        " ",
+                                                        false
+                                                    ).lowercase()
+                                                        .replaceFirstChar { it.uppercase() },
+                                                    color = Color.Black,
+                                                    fontSize = 10.sp,
+
+                                                    )
+
+                                                // Altre informazioni
+
+                                                if ((selectedTabIndex.intValue % 2) != 0) {
+                                                    Text(
+                                                        text = if (asta.tipo != TipoAsta.INGLESE) {
+                                                            "Conclusa il " + asta.dataScadenza?.format(
+                                                                DateTimeFormatter.ofPattern("dd/MM/yy")
+                                                            )
+                                                        } else {
+                                                            "Conclusa"
+                                                        },
+                                                        color = Color(colorRed),
+                                                        fontSize = 10.sp,
+
+                                                        )
+                                                } else {
+                                                    Text(
+                                                        text = if (asta.tipo != TipoAsta.INGLESE) {
+                                                            "Scade il " + asta.dataScadenza?.format(
+                                                                DateTimeFormatter.ofPattern("dd/MM/yy")
+                                                            )
+                                                        } else {
+                                                            "Intervallo offerta : " + asta.intervalloTempoOfferta
+                                                        },
+                                                        color = Color.Black,
+                                                        fontSize = 10.sp,
+
+                                                        )
+
+                                                }
+                                            }
+
+
                                         }
-                                        VerticalDivider()
-                                        Spacer(modifier = Modifier.width(20.dp))
-                                        Column {
-                                            // Titolo in grassetto
-                                            Text(
-                                                text = asta.nome,
-                                                color = Color.Black,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 10.sp,
-
-                                                )
-
-                                            //TAB ASTE ATTIVE
-                                            if (selectedTabIndex.intValue == 0 || selectedTabIndex.intValue == 2) {
-                                                Text(
-                                                    text = "Prezzo base",
-                                                    color = Color.Black,
-                                                    fontSize = 10.sp,
-
-                                                    )
-                                            }
-
-
-                                            ///TAB ASTE CONCLUSE
-                                            if (selectedTabIndex.intValue == 1 || selectedTabIndex.intValue == 3) {
-                                                Text(
-                                                    text = "Venduto per",
-                                                    color = Color.Black,
-                                                    fontSize = 10.sp,
-
-                                                    )
-
-                                            }
-
-
-                                            //TAB ASTE VINTE
-                                            if (selectedTabIndex.intValue == 3) {
-                                                Text(
-                                                    text = "Acquistato per",
-                                                    color = Color.Black,
-                                                    fontSize = 10.sp,
-
-                                                    )
-
-                                            }
-
-
-                                            // Prezzo in verde
-                                            Text(
-                                                text = asta.prezzoBase.toString(),
-                                                color = Color(colorGreen),
-                                                fontSize = 10.sp,
-
-                                                )
-                                            Text(
-                                                text = "Categoria: " + asta.categoria.name.replace("_", " ", false).lowercase().replaceFirstChar { it.uppercase() },
-                                                color = Color.Black,
-                                                fontSize = 10.sp,
-
-                                                )
-
-                                            // Altre informazioni
-
-                                            if ((selectedTabIndex.intValue % 2) != 0) {
-                                                Text(
-                                                    text = if(asta.tipo != TipoAsta.INGLESE) {"Conclusa il " + asta.dataScadenza?.format(
-                                                        DateTimeFormatter.ofPattern("dd/MM/yy"))} else {"Conclusa"},
-                                                    color = Color(colorRed),
-                                                    fontSize = 10.sp,
-
-                                                    )
-                                            } else {
-                                                Text(
-                                                    text = if (asta.tipo != TipoAsta.INGLESE) {"Scade il " + asta.dataScadenza?.format(DateTimeFormatter.ofPattern("dd/MM/yy"))} else {"Intervallo offerta : " + asta.intervalloTempoOfferta},
-                                                    color = Color.Black,
-                                                    fontSize = 10.sp,
-
-                                                    )
-
-                                            }
-                                        }
-
-
                                     }
                                 }
                             }
                         }
-                    }
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(120.dp) // Altezza dello Spacer uguale all'altezza della BottomAppBar
-                        )
+
+
+                        //TODO
+                        item {
+                            Spacer(modifier = Modifier.height(200.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                ElevatedButton(
+                                    onClick = {
+                                        /*numeroPagina++
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        viewModel.mostraAste(numeroPagina, nomeAstaRicerca, categoriaAstaRicerca, tipoAstaRicerca, listenerAste)
+                                    }
+                                    // Codice per caricare ulteriori aste
+                                    // Aggiungi logicamente altri elementi alla tua lista di asteVisualizzate*/
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_refresh_24),
+                                        contentDescription = "LoadMore"
+                                    )
+                                    Text(text = "Carica Altre")
+                                }
+                            }
+
+
+                        }
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp) // Altezza dello Spacer uguale all'altezza della BottomAppBar
+                            )
+                        }
                     }
                 }
 

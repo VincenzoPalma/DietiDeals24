@@ -107,6 +107,7 @@ class PaginaModificaProfiloUtente : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataModificaProfilo(navController: NavController) {
+    val MAX_LENGTH = 300
     val viewModel = PaginaModificaProfiloUtenteViewModel()
     val sitoWebFocusRequester = remember { FocusRequester() }
     val addressFocusRequester = remember { FocusRequester() }
@@ -128,12 +129,18 @@ fun SchermataModificaProfilo(navController: NavController) {
             navController.previousBackStackEntry?.savedStateHandle?.get<String>("datiProfiloUtente"),
             DatiProfiloUtente::class.java
         )
-        shortBio = if (datiProfiloUtente?.descrizione == null) "" else datiProfiloUtente!!.descrizione.toString()
-        sitoWeb = if (datiProfiloUtente?.sitoWeb == null) "" else datiProfiloUtente!!.sitoWeb.toString()
-        address = if (datiProfiloUtente?.indirizzo == null) "" else datiProfiloUtente!!.indirizzo.toString()
-        instagramLink = if (datiProfiloUtente?.instagram == null) "" else datiProfiloUtente!!.instagram.toString()
-        facebookLink = if (datiProfiloUtente?.facebook == null) "" else datiProfiloUtente!!.facebook.toString()
-        twitterLink = if (datiProfiloUtente?.twitter == null) "" else datiProfiloUtente!!.twitter.toString()
+        shortBio =
+            if (datiProfiloUtente?.descrizione == null) "" else datiProfiloUtente!!.descrizione.toString()
+        sitoWeb =
+            if (datiProfiloUtente?.sitoWeb == null) "" else datiProfiloUtente!!.sitoWeb.toString()
+        address =
+            if (datiProfiloUtente?.indirizzo == null) "" else datiProfiloUtente!!.indirizzo.toString()
+        instagramLink =
+            if (datiProfiloUtente?.instagram == null) "" else datiProfiloUtente!!.instagram.toString()
+        facebookLink =
+            if (datiProfiloUtente?.facebook == null) "" else datiProfiloUtente!!.facebook.toString()
+        twitterLink =
+            if (datiProfiloUtente?.twitter == null) "" else datiProfiloUtente!!.twitter.toString()
     }
 
     val listener = remember {
@@ -231,7 +238,11 @@ fun SchermataModificaProfilo(navController: NavController) {
         ) {
 
             AsyncImage(
-                model = if (selectedImageUri == null) { datiProfiloUtente?.urlFotoProfilo } else { selectedImageUri },
+                model = if (selectedImageUri == null) {
+                    datiProfiloUtente?.urlFotoProfilo
+                } else {
+                    selectedImageUri
+                },
                 placeholder = painterResource(id = com.facebook.login.R.drawable.com_facebook_profile_picture_blank_portrait),
                 error = painterResource(id = com.facebook.login.R.drawable.com_facebook_profile_picture_blank_portrait),
                 contentDescription = "Immagine del profilo dell'utente",
@@ -288,6 +299,17 @@ fun SchermataModificaProfilo(navController: NavController) {
         //.offset(y = 235.dp)
         OutlinedTextField(value = shortBio,
             onValueChange = { shortBio = it },
+            supportingText = {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End)
+                {
+                    Text(
+                        text = shortBio.length.toString() + "/$MAX_LENGTH",
+                        color = Color.LightGray,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Right
+                    )
+                }
+            },
             shape = RoundedCornerShape(15.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
@@ -369,7 +391,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                     contentDescription = null,
                     modifier = Modifier
                         .size(30.dp)
-                    )
+                )
 
                 Text(
                     text = text,
@@ -609,7 +631,8 @@ fun SchermataModificaProfilo(navController: NavController) {
                     CoroutineScope(Dispatchers.Main).launch {
                         var downloadUrl: String? = null
                         if (selectedImageUri != null) {
-                            val immagineProfiloRef = storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
+                            val immagineProfiloRef =
+                                storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
                             selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
                             immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
                                 downloadUrl = uri.toString()

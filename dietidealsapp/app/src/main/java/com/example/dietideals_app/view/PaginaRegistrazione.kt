@@ -1097,9 +1097,10 @@ fun SchermataRegistrazione(navController: NavController) {
 
 
                     ElevatedButton(
-                        onClick = { getContent.launch("application/pdf")
+                        onClick = {
+                            getContent.launch("application/pdf")
 
-                                  },
+                        },
                     ) {
                         Text(
                             text = if (selectedFileUri == null) "CARICA" else "CARICATO",
@@ -1402,7 +1403,9 @@ fun SchermataRegistrazione(navController: NavController) {
                                 if (selectedFileUri != null) {
                                     val documentoVenditoreRef =
                                         storageRef.child("DocumentiVenditore/${selectedFileUri?.lastPathSegment}")
-                                    selectedFileUri?.let { documentoVenditoreRef.putFile(it).await() }
+                                    selectedFileUri?.let {
+                                        documentoVenditoreRef.putFile(it).await()
+                                    }
                                     documentoVenditoreRef.downloadUrl.addOnSuccessListener { uri ->
                                         fileDownloadUrl = uri.toString()
                                     }.addOnFailureListener { exception ->

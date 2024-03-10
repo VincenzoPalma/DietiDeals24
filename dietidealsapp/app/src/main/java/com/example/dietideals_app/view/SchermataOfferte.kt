@@ -7,9 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -26,14 +24,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -103,11 +101,6 @@ class PaginaOfferte : ComponentActivity() {
 fun SchermataOfferte(navController: NavController) {
 
     val viewModel = PaginaOfferteViewModel()
-    val homeIcon = R.drawable.baseline_home_24
-    val gestisciAste = R.drawable.line_chart_svgrepo_com
-    val creaAsta = R.drawable.hand_money_cash_hold_svgrepo_com
-    val account = R.drawable.baseline_manage_accounts_24
-    val colorGreen = 0xFF0EA639
     var isDialogVisible by remember { mutableStateOf(false) }
     var listaOfferteVisualizzate by remember { mutableStateOf<List<Offerta>>(emptyList()) }
 
@@ -185,46 +178,8 @@ fun SchermataOfferte(navController: NavController) {
             actions = {
             }
         )
-
-        @Composable
-        fun IconWithText(iconId: Int, text: String, route: String, color: Color) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(2.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = iconId),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clickable { navController.navigate(route) },
-                    tint = color
-
-                )
-
-                Text(
-                    text = text,
-                    fontSize = 15.sp,
-                    color = color
-                )//
-            }
-        }
-
         // Definisci uno stato per tracciare le righe visualizzate
         val righeVisualizzate = remember { mutableStateListOf(*Array(7) { it }) }
-        val nomi = remember {
-            mutableStateListOf(
-                "Mario Rossi", "Giovanni Bianchi", "Luca Verdi", "Paolo Neri",
-                "Francesca Ferrari", "Alessandro Russo", "Chiara Esposito"
-            )
-        }
-
-        val prezzi = remember {
-            mutableStateListOf(
-                "€100,00", "€150,00", "€200,00", "€250,00",
-                "€300,00", "€350,00", "€400,00"
-            )
-        }
         var nomeSelezionato by remember { mutableStateOf("") }
         var prezzoSelezionato by remember { mutableStateOf("") }
 
@@ -255,11 +210,12 @@ fun SchermataOfferte(navController: NavController) {
                         detectHorizontalDragGestures(
                             onHorizontalDrag = { change, dragAmount ->
                                 change.consume()
-                                offsetX += dragAmount
+                                val sensitiveDragAmount = dragAmount * 0.5f
+                                offsetX += sensitiveDragAmount
                             },
                             onDragStart = { offsetX = 0f },
                             onDragEnd = {
-                                if (offsetX > 0) {
+                                if (offsetX > 100) {
                                     onSwipeRight()
                                 } else {
                                     onSwipeLeft()
@@ -285,129 +241,150 @@ fun SchermataOfferte(navController: NavController) {
                 .padding(16.dp)
         )
         {
-            items(listaOfferteVisualizzate.size) { index ->
-                // Utilizza l'indice per accedere all'elemento corrispondente della lista dei dati
-                val offerta = listaOfferteVisualizzate[index]
-                if (index in righeVisualizzate) {
-                    val nome = offerta.utente.username
-                    val prezzo = offerta.prezzo
-                    SwipeableRow(
-                        onSwipeLeft = {
-                            // Rimuovi la riga dalla lista delle righe visualizzate quando si fa clic su RIFIUTA
-                            val newOfferteVisualizzate = listaOfferteVisualizzate.toMutableList()
-                            newOfferteVisualizzate.removeAt(index)
-                            newOfferteVisualizzate.toList()
-                            listaOfferteVisualizzate = newOfferteVisualizzate
-                            CoroutineScope(Dispatchers.Main).launch {
-                                viewModel.makeOffertaRifiutata(offerta.id)
-                            }
-                        },
-                        onSwipeRight = {
-                            nomeSelezionato = offerta.utente.username
-                            prezzoSelezionato = offerta.prezzo.toString()
-                            isDialogVisible = true
-                            CoroutineScope(Dispatchers.Main).launch {
-                                viewModel.makeOffertaVincente(offerta.id)
-                            }
-                            // Azione da eseguire quando viene effettuato uno swipe verso destra
-                        }
-                    ) {
 
-                        OutlinedCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            border = BorderStroke(1.dp, Color.Black),
+            if (listaOfferteVisualizzate.isEmpty()) {
+                item {
+                    Row(Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "NESSUNA OFFERTA DISPONIBILE",
+                            fontSize = 20.sp,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
 
-                            ) {
+                    }
+                }
 
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Column(
-                                    modifier = Modifier.fillMaxHeight(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(90.dp) // Imposta le dimensioni della Box
-                                            .clip(shape = CircleShape)
-                                            .fillMaxHeight()
-                                            .padding(start = 10.dp)// Applica la forma circolare
-                                    ) {
-                                        AsyncImage( //ci torniamo
-                                            model = offerta.utente.immagineProfilo,
-                                            placeholder = painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
-                                            error = painterResource(id = com.facebook.R.drawable.com_facebook_close),
-                                            contentDescription = "Immagine dell'utente",
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Crop
-                                        )
+            } else {
 
-                                    }
+
+                items(listaOfferteVisualizzate.size) { index ->
+                    // Utilizza l'indice per accedere all'elemento corrispondente della lista dei dati
+                    val offerta = listaOfferteVisualizzate[index]
+                    if (index in righeVisualizzate) {
+                        val nome = offerta.utente.username
+                        val prezzo = offerta.prezzo
+                        SwipeableRow(
+                            onSwipeLeft = {
+                                // Rimuovi la riga dalla lista delle righe visualizzate quando si fa clic su RIFIUTA
+                                val newOfferteVisualizzate =
+                                    listaOfferteVisualizzate.toMutableList()
+                                newOfferteVisualizzate.removeAt(index)
+                                newOfferteVisualizzate.toList()
+                                listaOfferteVisualizzate = newOfferteVisualizzate
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    viewModel.makeOffertaRifiutata(offerta.id)
+                                }
+                            },
+                            onSwipeRight = {
+                                nomeSelezionato = offerta.utente.username
+                                prezzoSelezionato = offerta.prezzo.toString()
+                                isDialogVisible = true
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    viewModel.makeOffertaVincente(offerta.id)
                                 }
 
-                                Column(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center,
-                                        modifier = Modifier.fillMaxWidth()
+                            }
+                        ) {
+
+                            OutlinedCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                border = BorderStroke(1.dp, Color.Black),
+
+                                ) {
+
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Column(
+                                        modifier = Modifier.fillMaxHeight(),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        Text(text = nome, fontWeight = FontWeight.Bold)
-                                    }
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text(text = "OFFERTA : ")
-                                        Text(
-                                            text = prezzo.toString(),
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        ElevatedButton(
-                                            onClick = {
-                                                // Rimuovi la riga dalla lista delle righe visualizzate quando si fa clic su RIFIUTA
-                                                val newOfferteVisualizzate = listaOfferteVisualizzate.toMutableList()
-                                                newOfferteVisualizzate.removeAt(index)
-                                                newOfferteVisualizzate.toList()
-                                                listaOfferteVisualizzate = newOfferteVisualizzate
-                                                CoroutineScope(Dispatchers.Main).launch {
-                                                    viewModel.makeOffertaRifiutata(offerta.id)
-                                                }
-                                            },
-                                            colors = ButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                                contentColor = Color(0xFFBA1A1A),
-                                                disabledContentColor = Color.Gray,
-                                                disabledContainerColor = Color.Gray
-                                            )
+                                        Box(
+                                            modifier = Modifier
+                                                .size(90.dp) // Imposta le dimensioni della Box
+                                                .clip(shape = CircleShape)
+                                                .fillMaxHeight()
+                                                .padding(start = 10.dp)// Applica la forma circolare
                                         ) {
-                                            Text(text = "RIFIUTA")
+                                            AsyncImage( //ci torniamo
+                                                model = offerta.utente.immagineProfilo,
+                                                placeholder = painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
+                                                error = painterResource(id = com.facebook.R.drawable.com_facebook_close),
+                                                contentDescription = "Immagine dell'utente",
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentScale = ContentScale.Crop
+                                            )
+
                                         }
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        ElevatedButton(
-                                            onClick = {
-                                                nomeSelezionato = offerta.utente.username
-                                                prezzoSelezionato = offerta.prezzo.toString()
-                                                isDialogVisible = true
-                                                CoroutineScope(Dispatchers.Main).launch {
-                                                    viewModel.makeOffertaVincente(offerta.id)
-                                                }
-                                            },
-                                            colors = ButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                contentColor = MaterialTheme.colorScheme.primary,
-                                                disabledContentColor = Color.Gray,
-                                                disabledContainerColor = Color.Gray
-                                            )
+                                    }
+
+                                    Column(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center,
+                                            modifier = Modifier.fillMaxWidth()
                                         ) {
-                                            Text(text = "ACCETTA")
+                                            Text(text = nome, fontWeight = FontWeight.Bold)
+                                        }
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text(text = "OFFERTA : ")
+                                            Text(
+                                                text = prezzo.toString(),
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            ElevatedButton(
+                                                onClick = {
+                                                    // Rimuovi la riga dalla lista delle righe visualizzate quando si fa clic su RIFIUTA
+                                                    val newOfferteVisualizzate =
+                                                        listaOfferteVisualizzate.toMutableList()
+                                                    newOfferteVisualizzate.removeAt(index)
+                                                    newOfferteVisualizzate.toList()
+                                                    listaOfferteVisualizzate =
+                                                        newOfferteVisualizzate
+                                                    CoroutineScope(Dispatchers.Main).launch {
+                                                        viewModel.makeOffertaRifiutata(offerta.id)
+                                                    }
+                                                },
+                                                colors = ButtonColors(
+                                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                                    contentColor = Color(0xFFBA1A1A),
+                                                    disabledContentColor = Color.Gray,
+                                                    disabledContainerColor = Color.Gray
+                                                )
+                                            ) {
+                                                Text(text = "RIFIUTA")
+                                            }
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            ElevatedButton(
+                                                onClick = {
+                                                    nomeSelezionato = offerta.utente.username
+                                                    prezzoSelezionato = offerta.prezzo.toString()
+                                                    isDialogVisible = true
+                                                    CoroutineScope(Dispatchers.Main).launch {
+                                                        viewModel.makeOffertaVincente(offerta.id)
+                                                    }
+                                                },
+                                                colors = ButtonColors(
+                                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                    contentColor = MaterialTheme.colorScheme.primary,
+                                                    disabledContentColor = Color.Gray,
+                                                    disabledContainerColor = Color.Gray
+                                                )
+                                            ) {
+                                                Text(text = "ACCETTA")
+                                            }
                                         }
                                     }
                                 }
@@ -415,81 +392,99 @@ fun SchermataOfferte(navController: NavController) {
                         }
                     }
                 }
-            }
-            item {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(90.dp) // Altezza dello Spacer uguale all'altezza della BottomAppBar
-                )
+                item {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(90.dp) // Altezza dello Spacer uguale all'altezza della BottomAppBar
+                    )
+                }
             }
         }
-
-        BottomAppBar(
+        NavigationBar(
+            tonalElevation = 30.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .constrainAs(bottomBar) {
+                .height(70.dp)// Add a black border
+                .constrainAs(bottomBar)
+                {
                     bottom.linkTo(parent.bottom)
-                }
+                },
+            content = {
+                NavigationBarItem(
+                    label = { Text(text = "Home") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("SchermataHome") {
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.homeicon),
+                            contentDescription = "Home"
+                        )
+                    }
+                )
+                NavigationBarItem(
+                    label = { Text(text = "Gestisci") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("SchermataGestioneAste") {
+                            popUpTo("SchermataGestioneAste") {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.gestisci_icon),
+                            contentDescription = "Gestione Aste"
+                        )
+                    }
+                )
+                NavigationBarItem(
+                    label = { Text(text = "Crea Asta") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("SchermataCreazioneAsta") {
+                            popUpTo("SchermataCreazioneAsta") {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.crea_asta_icon),
+                            contentDescription = "Crea Asta"
+                        )
+                    }
+                )
+                NavigationBarItem(
+                    label = { Text(text = "Profilo") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate("SchermataProfiloUtente") {
+                            popUpTo("SchermataProfiloUtente") {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.usericon),
+                            contentDescription = "ProfiloUtente"
+                        )
+                    }
+                )
 
-                .background(color = Color.White) // Set the background color to white
-                .border(1.dp, color = Color.Black)
-                .height(60.dp)// Add a black border
-        ) {
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
+            }
+        )
 
-            IconWithText(
-                iconId = homeIcon,
-                text = "Home",
-                "SchermataHome",
-                Color(colorGreen)
-            )
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
 
-            IconWithText(
-                iconId = gestisciAste,
-                text = "Gestisci Aste",
-                "",
-                Color(colorGreen)
-            )
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
 
-            IconWithText(
-                iconId = creaAsta,
-                text = "Crea Asta",
-                "",
-                Color(colorGreen)
-            )
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-
-            IconWithText(
-                iconId = account,
-                text = "Profilo",
-                "SchermataProfiloUtente",
-                Color(colorGreen)
-            )
-            Spacer(
-                modifier = Modifier
-                    .width(0.dp)
-                    .weight(1f)
-            )
-        }
 
         if (isDialogVisible) {
             Dialog(onDismissRequest = { isDialogVisible = false }) {
@@ -525,8 +520,6 @@ fun SchermataOfferte(navController: NavController) {
 
 
     }
-
-
 }
 
 

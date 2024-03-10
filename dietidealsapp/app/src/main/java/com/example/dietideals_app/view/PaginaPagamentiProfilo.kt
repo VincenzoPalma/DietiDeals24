@@ -67,7 +67,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Carta
-import com.example.dietideals_app.model.dto.CreaCarta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.PaginaPagamentiViewModel
 import com.example.dietideals_app.viewmodel.listener.CartaListener
@@ -77,7 +76,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalTime
 import java.util.Date
 import java.util.Locale
 
@@ -153,7 +151,8 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
     fun checkField(): Boolean {
         return nomeTitolare.isNotEmpty() && numeroCarta.isNotEmpty() && codiceCvvCvc.isNotEmpty() && state.selectedDateMillis != null
-                && LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).isAfter(LocalDate.now())
+                && LocalDate.of(1970, 1, 1)
+            .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).isAfter(LocalDate.now())
     }
 
     fun isNumeroCartaValid(): Boolean {
@@ -235,10 +234,10 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                             .padding(8.dp)
                             .height(200.dp)
                             .background(Color.White),
-                        ) {
+                    ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            ) {
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth(),
@@ -267,7 +266,11 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
                             // Titolo
                             Text(
-                                text = if (carta.numero.first() == '5') {"Mastercard\n"} else {"Visa\n"} + carta.nomeTitolare + "\n" + "**** " + carta.numero.substring(12),
+                                text = if (carta.numero.first() == '5') {
+                                    "Mastercard\n"
+                                } else {
+                                    "Visa\n"
+                                } + carta.nomeTitolare + "\n" + "**** " + carta.numero.substring(12),
                                 color = Color.Black,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp,
@@ -463,10 +466,10 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 TextButton(
                                     onClick = {
                                         CoroutineScope(Dispatchers.IO).launch {
-                                           /* viewModel.salvaCarta(CreaCarta(numeroCarta, nomeTitolare, codiceCvvCvc,
-                                                LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!!
-                                                        / (24 * 60 * 60 * 1000)).toString() + "T" + LocalTime.now().hour + ":" + LocalTime.now().minute + ":" + "00+00:00"),
-                                                listener) */
+                                            /* viewModel.salvaCarta(CreaCarta(numeroCarta, nomeTitolare, codiceCvvCvc,
+                                                 LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!!
+                                                         / (24 * 60 * 60 * 1000)).toString() + "T" + LocalTime.now().hour + ":" + LocalTime.now().minute + ":" + "00+00:00"),
+                                                 listener) */
                                             isDialogVisible = false
                                         }
                                     },
@@ -494,7 +497,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 }) {
                                     DatePicker(
                                         state = state
-
                                     )
                                 }
                             }
@@ -526,7 +528,10 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                             TextButton(
                                 onClick = {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        viewModel.deleteCarta(listaCarte[selectedIndex].id ,listener)
+                                        viewModel.deleteCarta(
+                                            listaCarte[selectedIndex].id,
+                                            listener
+                                        )
                                         delay(300)
                                         viewModel.mostraCarte(listener)
                                         deleteAlertDialog = false
@@ -568,4 +573,6 @@ fun PreviewSchermataPagamentiProfilo() {
         SchermataPagamentiProfilo(navController)
     }
 }
+
+
 

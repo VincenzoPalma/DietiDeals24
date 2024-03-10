@@ -96,9 +96,6 @@ import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.SchermataHomeViewModel
 import com.example.dietideals_app.viewmodel.listener.AsteListener
 import com.example.dietideals_app.viewmodel.listener.NotificaListener
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializer
@@ -207,7 +204,8 @@ fun SchermataHome(navController: NavController) {
     var checkSilenziosa by remember { mutableStateOf(false) }
 
     var openCategoryDialog by remember { mutableStateOf(false) }
-    var categoriaSelezionata by remember { mutableStateOf("Seleziona Categoria")
+    var categoriaSelezionata by remember {
+        mutableStateOf("Seleziona Categoria")
     }
 
     val categorie = arrayOf(
@@ -1077,7 +1075,13 @@ fun SchermataHome(navController: NavController) {
                                     onClick = {
                                         numeroPagina++
                                         CoroutineScope(Dispatchers.Main).launch {
-                                            viewModel.mostraAste(numeroPagina, nomeAstaRicerca, categoriaAstaRicerca, tipoAstaRicerca, listenerAste)
+                                            viewModel.mostraAste(
+                                                numeroPagina,
+                                                nomeAstaRicerca,
+                                                categoriaAstaRicerca,
+                                                tipoAstaRicerca,
+                                                listenerAste
+                                            )
                                         }
                                         // Codice per caricare ulteriori aste
                                         // Aggiungi logicamente altri elementi alla tua lista di asteVisualizzate
