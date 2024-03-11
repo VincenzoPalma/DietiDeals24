@@ -1,5 +1,6 @@
 package com.example.dietideals_app.viewmodel
 
+import com.example.dietideals_app.model.enum.RuoloUtente
 import com.example.dietideals_app.model.enum.StatoOfferta
 import com.example.dietideals_app.repository.OffertaRepository
 import com.example.dietideals_app.repository.UtenteRepository
@@ -7,6 +8,7 @@ import com.example.dietideals_app.viewmodel.listener.OffertaListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -45,5 +47,13 @@ class PaginaAstaViewModel {
         CoroutineScope(Dispatchers.IO).launch {
             offertaRepository.saveOfferta(astaId, prezzo)
         }
+    }
+
+    suspend fun isUtenteVenditore(): Boolean {
+        var ruolo: RuoloUtente?
+        withContext(Dispatchers.IO) {
+            ruolo = utenteRepository.getRuoloUtente()
+        }
+        return ruolo == RuoloUtente.VENDITORE
     }
 }

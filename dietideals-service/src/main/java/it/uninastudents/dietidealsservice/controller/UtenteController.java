@@ -23,14 +23,14 @@ public class UtenteController {
     @PostMapping("/registrazione")
     public ResponseEntity<Utente> saveUtente(@RequestBody @Valid UtenteRegistrazione datiRegistrazione, @RequestParam(required = false) String idFirebase) {
         Utente utente = utenteService.registraUtente(datiRegistrazione, idFirebase);
-        if (utente != null){
+        if (utente != null) {
             return ResponseEntity.created(URI.create("/registrazione/%s".formatted(utente.getId()))).body(utente);
         }
         return ResponseEntity.badRequest().body(null);
     }
 
     @GetMapping("/registrazione/esisteEmail/{email}")
-    public ResponseEntity<Utente> getUtenteByEmail(@PathVariable @Email String email){
+    public ResponseEntity<Utente> getUtenteByEmail(@PathVariable @Email String email) {
         Utente utente = utenteService.getUtenteByEmail(email);
         return ResponseEntity.ok(utente);
     }
@@ -47,13 +47,13 @@ public class UtenteController {
         try {
             return ResponseEntity.ok(utenteService.getDatiUtente(idUtente));
         } catch (IllegalArgumentException exception) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(200).build();
         }
     }
 
     @GetMapping("/utente/idUtente/{idAuth}")
     public ResponseEntity<Utente> getUtenteByIdAuth(@PathVariable(name = "idAuth") String idAuth) {
-            return ResponseEntity.ok(utenteService.findUtenteByIdAuth(idAuth));
+        return ResponseEntity.ok(utenteService.findUtenteByIdAuth(idAuth));
     }
 
     @GetMapping("/utente/ruolo")

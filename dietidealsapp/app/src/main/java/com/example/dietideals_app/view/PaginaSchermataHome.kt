@@ -134,8 +134,7 @@ fun SchermataHome(navController: NavController) {
     var isSearchVisible by remember { mutableStateOf(false) }
     var isFilterVisible by remember { mutableStateOf(false) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val searchFocusRequester =
-        remember { FocusRequester() }
+    val searchFocusRequester = remember { FocusRequester() }
     val scope = rememberCoroutineScope()
     var asteVisualizzate by remember { mutableStateOf<List<Asta>>(emptyList()) }
     var numeroPagina by remember { mutableIntStateOf(0) }
@@ -306,8 +305,22 @@ fun SchermataHome(navController: NavController) {
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .height(100.dp)
-                                                    .padding(2.dp),
-
+                                                    .padding(2.dp)
+                                                    .clickable {
+                                                        val gson = GsonBuilder()
+                                                        .registerTypeAdapter(
+                                                            OffsetDateTime::class.java,
+                                                            JsonSerializer<OffsetDateTime> { src, _, _ ->
+                                                                JsonPrimitive(src.toString())
+                                                            }
+                                                        )
+                                                        .create()
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            key = "asta",
+                                                            value = gson.toJson(notifica.asta)
+                                                        )
+                                                        navController.navigate("SchermataPaginaAsta")
+                                                               },
                                                 ) {
                                                 Row(
                                                     verticalAlignment = Alignment.CenterVertically,
@@ -806,37 +819,6 @@ fun SchermataHome(navController: NavController) {
                         }
 
                     }
-                    var timeLeft by rememberSaveable { mutableLongStateOf(0L) }
-                    var timerRunning by remember { mutableStateOf(false) }
-                    LaunchedEffect(Unit) {
-
-                        val inputText = "00:04:30" // Inserisci qui il tempo iniziale desiderato
-                        val time = inputText.split(":")
-                        if (time.size == 3) {
-                            val hours = time[0].toLongOrNull() ?: 0
-                            val minutes = time[1].toLongOrNull() ?: 0
-                            val seconds = time[2].toLongOrNull() ?: 0
-                            val totalTime = TimeUnit.HOURS.toMillis(hours) +
-                                    TimeUnit.MINUTES.toMillis(minutes) +
-                                    TimeUnit.SECONDS.toMillis(seconds)
-                            if (totalTime > 0) {
-                                timeLeft = totalTime
-                                timerRunning = true
-                                while (timeLeft > 0 && timerRunning) {
-                                    delay(1000)
-                                    timeLeft -= 1000
-                                }
-                                timerRunning = false
-                            }
-                        }
-                    }
-
-                    fun formatTime(timeMillis: Long): String {
-                        val hours = TimeUnit.MILLISECONDS.toHours(timeMillis)
-                        val minutes = TimeUnit.MILLISECONDS.toMinutes(timeMillis) % 60
-                        val seconds = TimeUnit.MILLISECONDS.toSeconds(timeMillis) % 60
-                        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
-                    }
 
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
@@ -1083,8 +1065,6 @@ fun SchermataHome(navController: NavController) {
                                                 listenerAste
                                             )
                                         }
-                                        // Codice per caricare ulteriori aste
-                                        // Aggiungi logicamente altri elementi alla tua lista di asteVisualizzate
                                     }
                                 ) {
                                     Icon(

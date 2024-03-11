@@ -13,7 +13,6 @@ import it.uninastudents.dietidealsservice.repository.specs.OffertaSpecs;
 import it.uninastudents.dietidealsservice.utils.NotificaUtils;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
-import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -168,10 +167,9 @@ public class OffertaService {
     public Offerta modificaStatoOfferta(UUID idOfferta, StatoOfferta stato) throws SchedulerException {
         var spec = OffertaSpecs.hasId(idOfferta);
         Optional<Offerta> offerta = offertaRepository.findOne(spec);
-        if (offerta.isPresent()){
+        if (offerta.isPresent()) {
             offerta.get().setStato(stato);
-            if (stato.equals(StatoOfferta.VINCENTE) && offerta.get().getAsta().getTipo().equals(TipoAsta.SILENZIOSA))
-            {
+            if (stato.equals(StatoOfferta.VINCENTE) && offerta.get().getAsta().getTipo().equals(TipoAsta.SILENZIOSA)) {
                 modificaTriggerJobTermineAsta("termineAstaJob_" + offerta.get().getAsta().getId().toString(), "termineAsta", TriggerBuilder.newTrigger()
                         .withIdentity("termineAstaTrigger_" + offerta.get().getAsta().getId().toString())
                         .startNow().build());

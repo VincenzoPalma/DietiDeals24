@@ -264,28 +264,6 @@ fun SchermataOfferte(navController: NavController) {
                     if (index in righeVisualizzate) {
                         val nome = offerta.utente.username
                         val prezzo = offerta.prezzo
-                        SwipeableRow(
-                            onSwipeLeft = {
-                                // Rimuovi la riga dalla lista delle righe visualizzate quando si fa clic su RIFIUTA
-                                val newOfferteVisualizzate =
-                                    listaOfferteVisualizzate.toMutableList()
-                                newOfferteVisualizzate.removeAt(index)
-                                newOfferteVisualizzate.toList()
-                                listaOfferteVisualizzate = newOfferteVisualizzate
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    viewModel.makeOffertaRifiutata(offerta.id)
-                                }
-                            },
-                            onSwipeRight = {
-                                nomeSelezionato = offerta.utente.username
-                                prezzoSelezionato = offerta.prezzo.toString()
-                                isDialogVisible = true
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    viewModel.makeOffertaVincente(offerta.id)
-                                }
-
-                            }
-                        ) {
 
                             OutlinedCard(
                                 modifier = Modifier
@@ -389,7 +367,7 @@ fun SchermataOfferte(navController: NavController) {
                                     }
                                 }
                             }
-                        }
+
                     }
                 }
                 item {

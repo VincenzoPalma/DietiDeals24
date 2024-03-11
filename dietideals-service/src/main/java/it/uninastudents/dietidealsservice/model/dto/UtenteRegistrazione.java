@@ -12,7 +12,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nullable;
 import java.time.LocalDate;
 
 @Data
@@ -40,7 +39,7 @@ public class UtenteRegistrazione {
 
     private String password;
 
-    @Pattern(regexp = "^[0-9]{11}$|^[0-9]{0}$")
+    @Pattern(regexp = "^\\d{11}$|^$")
     private String partitaIva;
 
     private String urlDocumentoIdentita;

@@ -37,6 +37,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberDatePickerState
@@ -56,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,6 +69,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.Carta
+import com.example.dietideals_app.model.dto.CreaCarta
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.PaginaPagamentiViewModel
 import com.example.dietideals_app.viewmodel.listener.CartaListener
@@ -74,10 +77,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.util.Date
-import java.util.Locale
+import java.time.LocalTime
+import java.time.OffsetDateTime
 
 class PaginaPagamentiProfilo : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +109,8 @@ fun SchermataPagamentiProfilo(navController: NavController) {
     var numeroCarta by remember { mutableStateOf("") }
     var codiceCvvCvc by remember { mutableStateOf("") }
     val numeroCartaFocusrequested = remember { FocusRequester() }
-    val dataScadenzaFocusRequested = remember { FocusRequester() }
+    val meseScadenzaFocusRequested = remember { FocusRequester() }
+    val annoScadenzaFocusRequested = remember { FocusRequester() }
     val cvcFocusRequested = remember { FocusRequester() }
     var selectedIndex by remember { mutableIntStateOf(-1) }
     var isDialogVisible by remember { mutableStateOf(false) }
@@ -115,6 +118,8 @@ fun SchermataPagamentiProfilo(navController: NavController) {
     val state = rememberDatePickerState()
     val openDialog = remember { mutableStateOf(false) }
     var listaCarte by remember { mutableStateOf<List<Carta>>(emptyList()) }
+    var meseScadenza by remember { mutableStateOf("") }
+    var annoScadenza by remember { mutableStateOf("") }
 
     val listener = remember {
         object : CartaListener {
@@ -150,9 +155,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
     }
 
     fun checkField(): Boolean {
-        return nomeTitolare.isNotEmpty() && numeroCarta.isNotEmpty() && codiceCvvCvc.isNotEmpty() && state.selectedDateMillis != null
-                && LocalDate.of(1970, 1, 1)
-            .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)).isAfter(LocalDate.now())
+        return nomeTitolare.isNotEmpty() && numeroCarta.isNotEmpty() && codiceCvvCvc.isNotEmpty()
     }
 
     fun isNumeroCartaValid(): Boolean {
@@ -189,7 +192,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                         .fillMaxWidth(),
                     fontWeight = FontWeight.Bold, // Imposta il grassetto
                     fontSize = 40.sp
-                ) // Imposta la dimensione del testo)
+                ) // Imposta la dimensione del testo
             },
                 navigationIcon = {
                     Icon(
@@ -354,9 +357,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     isNumeroCartaValid()
                                 },
                                 shape = RoundedCornerShape(15.dp),
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    imeAction = ImeAction.Next
-                                ),
                                 trailingIcon = {
                                     Icon(
                                         painter = painterResource(
@@ -373,8 +373,12 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 modifier = Modifier
                                     .height(50.dp)
                                     .focusRequester(numeroCartaFocusrequested),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    imeAction = ImeAction.Next,
+                                    keyboardType = KeyboardType.Number // Tastiera numerica
+                                ),
                                 keyboardActions = KeyboardActions(
-                                    onNext = { dataScadenzaFocusRequested.requestFocus() }
+                                    onNext = { meseScadenzaFocusRequested.requestFocus() }
                                 ),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     unfocusedBorderColor = if (isNumeroCartaValid()) Color(
@@ -400,54 +404,79 @@ fun SchermataPagamentiProfilo(navController: NavController) {
 
 
 
-                            fun convertMillisToDate(millis: Long): String {
-                                val formatter = SimpleDateFormat("MM/yyyy", Locale.ITALIAN)
-                                return formatter.format(Date(millis))
-                            }
-
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp)
+                                    .padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                TextButton(
-                                    onClick = { openDialog.value = true },
-                                ) {
-
-                                    Text(
-                                        text = if (state.selectedDateMillis == null) "__/____" else convertMillisToDate(
-                                            state.selectedDateMillis!!
-                                        ),
-                                        modifier = Modifier
-                                            .focusRequester(dataScadenzaFocusRequested)
+                                TextField(value = meseScadenza,
+                                    label = {Text(text = "Mese")},
+                                    singleLine = true,
+                                    onValueChange = { newValue ->
+                                        val input = newValue.take(2)
+                                        val month = input.toIntOrNull()
+                                        meseScadenza = if (month != null && month in 1..12) {
+                                            input
+                                        } else {
+                                            ""
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .width(80.dp)
+                                        .focusRequester(meseScadenzaFocusRequested),
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        imeAction = ImeAction.Next,
+                                        keyboardType = KeyboardType.Number // Tastiera numerica
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onNext = { annoScadenzaFocusRequested.requestFocus() }
+                                    ),
+                                )
+                                Text(text = "/")
+                                TextField(
+                                    value = annoScadenza,
+                                    singleLine = true,
+                                    label = {Text(text = "Anno")},
+                                    onValueChange = {
+                                        it.take(4)
+                                        annoScadenza = it
+                                    },
+                                    modifier = Modifier
+                                        .width(80.dp)
+                                        .focusRequester(annoScadenzaFocusRequested),
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        imeAction = ImeAction.Next,
+                                        keyboardType = KeyboardType.Number // Tastiera numerica
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onNext = { cvcFocusRequested.requestFocus() }
+                                    ),
+                                )
+                                OutlinedTextField(
+                                    value = codiceCvvCvc, onValueChange = {
+                                        codiceCvvCvc = it
+                                        isCvcValid()
+                                    },
+                                    shape = RoundedCornerShape(15.dp),
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        imeAction = ImeAction.Next,
+                                        keyboardType = KeyboardType.Number // Tastiera numerica
+                                    ),
+                                    modifier = Modifier
+                                        .height(50.dp)
+                                        .focusRequester(cvcFocusRequested),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        unfocusedBorderColor = if (isCvcValid()) Color(
+                                            0xFF0EA639
+                                        ) else if (!isCvcValid() && codiceCvvCvc.isNotEmpty()) Color(
+                                            0xFF9B0404
+                                        ) else Color.Gray,
+                                        focusedBorderColor = if (isCvcValid()) Color(0xFF0EA639) else if (!isCvcValid() && codiceCvvCvc.isNotEmpty()) Color(
+                                            0xFF9B0404
+                                        ) else Color.Gray,
                                     )
-                                    Spacer(modifier = Modifier.width(70.dp))
-                                    OutlinedTextField(
-                                        value = codiceCvvCvc, onValueChange = {
-                                            codiceCvvCvc = it
-                                            isCvcValid()
-                                        },
-                                        shape = RoundedCornerShape(15.dp),
-                                        keyboardOptions = KeyboardOptions.Default.copy(
-                                            imeAction = ImeAction.Done
-                                        ),
-                                        modifier = Modifier
-                                            .height(50.dp)
-                                            .focusRequester(cvcFocusRequested),
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            unfocusedBorderColor = if (isCvcValid()) Color(
-                                                0xFF0EA639
-                                            ) else if (!isCvcValid() && codiceCvvCvc.isNotEmpty()) Color(
-                                                0xFF9B0404
-                                            ) else Color.Gray,
-                                            focusedBorderColor = if (isCvcValid()) Color(0xFF0EA639) else if (!isCvcValid() && codiceCvvCvc.isNotEmpty()) Color(
-                                                0xFF9B0404
-                                            ) else Color.Gray,
-                                        )
-                                    )
-
-                                }
-
+                                )
 
                             }
                             Spacer(modifier = Modifier.height(15.dp))
@@ -466,10 +495,10 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 TextButton(
                                     onClick = {
                                         CoroutineScope(Dispatchers.IO).launch {
-                                            /* viewModel.salvaCarta(CreaCarta(numeroCarta, nomeTitolare, codiceCvvCvc,
-                                                 LocalDate.of(1970, 1, 1).plusDays(state.selectedDateMillis!!
-                                                         / (24 * 60 * 60 * 1000)).toString() + "T" + LocalTime.now().hour + ":" + LocalTime.now().minute + ":" + "00+00:00"),
-                                                 listener) */
+                                            viewModel.salvaCarta(
+                                                CreaCarta(numeroCarta, nomeTitolare, codiceCvvCvc,
+                                                    "$annoScadenza-$meseScadenza-01T00:00:00+00:00"
+                                                ), listener)
                                             isDialogVisible = false
                                         }
                                     },

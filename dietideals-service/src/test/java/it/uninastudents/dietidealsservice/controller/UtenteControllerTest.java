@@ -6,6 +6,7 @@ import io.github.benas.randombeans.EnhancedRandomBuilder;
 import it.uninastudents.dietidealsservice.model.dto.DatiProfiloUtente;
 import it.uninastudents.dietidealsservice.model.dto.UtenteRegistrazione;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
+import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
 import it.uninastudents.dietidealsservice.model.mapper.UtenteMapper;
 import it.uninastudents.dietidealsservice.service.UtenteService;
 import org.junit.jupiter.api.Test;
@@ -186,6 +187,40 @@ class UtenteControllerTest {
 
         JsonNode bodyRisposta = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
         verify(utenteServiceMock, times(1)).getUtenteByEmail(emailUtente);
+        assertEquals(objectMapper.writeValueAsString(risultato), bodyRisposta.toString());
+        assertEquals(200, mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    void getUtenteByIdAuthTest() throws Exception {
+        Utente risultato = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Utente.class);
+        String idAuth = "abcdefghilmnopqrstuvz1234567";
+        risultato.setIdAuth(idAuth);
+        when(utenteServiceMock.findUtenteByIdAuth(idAuth)).thenReturn(risultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .get("/utente/idUtente/" + idAuth)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")).andReturn();
+
+        JsonNode bodyRisposta = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
+        verify(utenteServiceMock, times(1)).findUtenteByIdAuth(idAuth);
+        assertEquals(objectMapper.writeValueAsString(risultato), bodyRisposta.toString());
+        assertEquals(200, mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    void getRuoloUtenteTest() throws Exception {
+        RuoloUtente risultato = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Utente.class).getRuolo();
+        when(utenteServiceMock.getRuoloUtente()).thenReturn(risultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .get("/utente/ruolo")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")).andReturn();
+
+        JsonNode bodyRisposta = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
+        verify(utenteServiceMock, times(1)).getRuoloUtente();
         assertEquals(objectMapper.writeValueAsString(risultato), bodyRisposta.toString());
         assertEquals(200, mvcResult.getResponse().getStatus());
     }

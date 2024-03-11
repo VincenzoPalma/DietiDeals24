@@ -15,14 +15,14 @@ import java.time.OffsetDateTime;
 public class CreaCarta {
 
     @NotBlank
-    @Pattern(regexp = "^[0-9]{16}$")
+    @Pattern(regexp = "^\\d{16}$")
     private String numero;
 
     @NotBlank
     private String nomeTitolare;
 
     @NotBlank
-    @Pattern(regexp = "^[0-9]{3}$")
+    @Pattern(regexp = "^\\d{3}$")
     private String codiceCvvCvc;
 
     @Future

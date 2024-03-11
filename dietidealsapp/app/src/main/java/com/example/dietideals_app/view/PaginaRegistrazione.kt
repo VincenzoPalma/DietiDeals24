@@ -1205,7 +1205,7 @@ fun SchermataRegistrazione(navController: NavController) {
                             painter = painterResource(id = if (isNomeTitolareValid) R.drawable.baseline_done_24 else R.drawable.empty),
                             contentDescription = null,
                             tint = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
-                            modifier = if (isNomeTitolareValid) Modifier.alpha(0f) else Modifier
+                            modifier = if (nomeTitolare.isEmpty()) Modifier.alpha(0f) else Modifier
                         )
                     },
                     modifier = Modifier

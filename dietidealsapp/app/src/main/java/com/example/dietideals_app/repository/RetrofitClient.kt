@@ -2,6 +2,7 @@ package com.example.dietideals_app.repository
 
 import com.example.dietideals_app.repository.interfacceRepository.AstaService
 import com.example.dietideals_app.repository.interfacceRepository.CartaService
+import com.example.dietideals_app.repository.interfacceRepository.ContoCorrenteService
 import com.example.dietideals_app.repository.interfacceRepository.NotificaService
 import com.example.dietideals_app.repository.interfacceRepository.OffertaService
 import com.example.dietideals_app.repository.interfacceRepository.UtenteService
@@ -109,6 +110,12 @@ object ApiAsta {
 object ApiCarta {
     val cartaService: CartaService by lazy {
         RetrofitClient.getClientWithAuthorization().create(CartaService::class.java)
+    }
+}
+
+object ApiContoCorrente {
+    val contoCorrenteService: ContoCorrenteService by lazy {
+        RetrofitClient.getClientWithAuthorization().create(ContoCorrenteService::class.java)
     }
 }
 

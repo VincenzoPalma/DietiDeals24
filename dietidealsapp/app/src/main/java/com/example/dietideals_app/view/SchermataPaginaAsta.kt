@@ -135,6 +135,7 @@ fun SchermataPaginaAsta(navController: NavController) {
     var utenteHasOfferta by remember { mutableStateOf(false) }
     var listaOfferte by remember { mutableStateOf<List<Offerta>?>(emptyList()) }
     var tempoRimanenteMillisecondi by remember { mutableLongStateOf(0L) }
+    var isUtenteVenditore by remember { mutableStateOf(false) }
 
     val listenerOfferta = remember {
         object : OffertaListener {
@@ -172,6 +173,7 @@ fun SchermataPaginaAsta(navController: NavController) {
         if (!isUtenteProprietario && astaVisualizzata?.tipo == TipoAsta.SILENZIOSA) {
             astaVisualizzata?.id?.let { viewModel.getOfferte(it, listenerOfferta) }
         }
+        isUtenteVenditore = viewModel.isUtenteVenditore()
     }
 
     ConstraintLayout(
@@ -281,7 +283,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(start = 8.dp),
                     horizontalArrangement = Arrangement.Absolute.Left,
                     verticalAlignment = Alignment.CenterVertically
                 )
@@ -291,7 +293,7 @@ fun SchermataPaginaAsta(navController: NavController) {
 
 
                     TextButton(
-                        modifier = Modifier.padding(start = 5.dp),
+                        modifier = Modifier.padding(start = 3.dp),
                         onClick = {
                             navController.currentBackStackEntry?.savedStateHandle?.set(
                                 key = "idUtente",
@@ -499,9 +501,12 @@ fun SchermataPaginaAsta(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     ElevatedButton(
-                        enabled = (astaVisualizzata?.stato == StatoAsta.ATTIVA) && (((astaVisualizzata?.tipo != TipoAsta.SILENZIOSA && !isUtenteProprietario)
-                                && (astaVisualizzata?.tipo != TipoAsta.SILENZIOSA && idUtenteCorrente != offertaVincente?.utente?.id))
-                                || (astaVisualizzata?.tipo == TipoAsta.SILENZIOSA && !utenteHasOfferta)),
+                        enabled = (astaVisualizzata?.stato == StatoAsta.ATTIVA) && (
+                                ((astaVisualizzata?.tipo != TipoAsta.SILENZIOSA && !isUtenteProprietario)
+                                        && (astaVisualizzata?.tipo != TipoAsta.SILENZIOSA && idUtenteCorrente != offertaVincente?.utente?.id))
+                                        || (astaVisualizzata?.tipo == TipoAsta.SILENZIOSA && !utenteHasOfferta))
+                                && (astaVisualizzata?.tipo != TipoAsta.INVERSA || (astaVisualizzata?.tipo == TipoAsta.INVERSA && isUtenteVenditore))
+                        ,
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = Color.White,
@@ -625,7 +630,6 @@ fun SchermataPaginaAsta(navController: NavController) {
                                     }
 
                                 }
-
 
                             })
                     }

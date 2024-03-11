@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -60,6 +59,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
+import com.example.dietideals_app.viewmodel.PaginaDatiVenditoreViewModel
 import com.example.dietideals_app.viewmodel.PaginaRegistrazioneViewModel
 
 class PaginaDatiVenditore : ComponentActivity() {
@@ -104,7 +104,8 @@ fun SchermataDatiVenditore(navController: NavController) {
     val nomeTitolareFocusRequester = remember { FocusRequester() }
     val bicSwiftCodeFocusReqeuster = remember { FocusRequester() }
     val ibanFocusRequest = remember { FocusRequester() }
-    val viewModel = PaginaRegistrazioneViewModel()
+    val viewModelControlloDati = PaginaRegistrazioneViewModel()
+    val viewModelDatiVenditore = PaginaDatiVenditoreViewModel()
 
 
     var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
@@ -114,7 +115,7 @@ fun SchermataDatiVenditore(navController: NavController) {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (background, topBar, subTitle, documentRow, partitaIvaTextField, bankAccountTitle, ownerTextField, bicSwiftCodeTextField, ibanTextField, buttons) = createRefs()
+        val (background, topBar, documentRow, partitaIvaTextField, bankAccountTitle, ownerTextField, bicSwiftCodeTextField, ibanTextField, buttons) = createRefs()
 
         // Immagine di sfondo
         Box(
@@ -170,14 +171,15 @@ fun SchermataDatiVenditore(navController: NavController) {
             ), actions = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_brush_24),
-                    contentDescription = "Modifica Dati"
+                    contentDescription = "Modifica Dati",
+                    modifier = Modifier.size(35.dp)
                 )
             }
         )
         Row(
             modifier = Modifier
                 .constrainAs(documentRow) {
-                    top.linkTo(subTitle.bottom, margin = 50.dp)
+                    top.linkTo(topBar.bottom, margin = 25.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
@@ -191,11 +193,7 @@ fun SchermataDatiVenditore(navController: NavController) {
                 style = TextStyle(fontWeight = FontWeight.Bold)
             )
 
-
-
-
             Spacer(modifier = Modifier.width(8.dp))
-
             LocalContext.current as ComponentActivity
             val getContent =
                 rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -203,9 +201,6 @@ fun SchermataDatiVenditore(navController: NavController) {
                         selectedFileUri = it
                     }
                 }
-
-
-
 
             ElevatedButton(
                 onClick = {
@@ -221,11 +216,10 @@ fun SchermataDatiVenditore(navController: NavController) {
         }
         OutlinedTextField(
             enabled = true,//se è gia venditore
-
             value = partitaIva,
             onValueChange = {
                 partitaIva = it
-                isPartitaIvaValid = viewModel.isValidPartitaIva(it)
+                isPartitaIvaValid = viewModelControlloDati.isValidPartitaIva(it)
             },
             label = {
                 Text(
@@ -294,7 +288,7 @@ fun SchermataDatiVenditore(navController: NavController) {
             value = nomeTitolare,
             onValueChange = {
                 nomeTitolare = it
-                isNomeTitolareValid = viewModel.isValidNomeTitolare(it)
+                isNomeTitolareValid = viewModelControlloDati.isValidNomeTitolare(it)
             },
             label = {
                 Text(
@@ -319,7 +313,7 @@ fun SchermataDatiVenditore(navController: NavController) {
                     painter = painterResource(id = if (isNomeTitolareValid) R.drawable.baseline_done_24 else R.drawable.empty),
                     contentDescription = null,
                     tint = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
-                    modifier = if (isNomeTitolareValid) Modifier.alpha(0f) else Modifier
+                    modifier = if (nomeTitolare.isEmpty()) Modifier.alpha(0f) else Modifier
                 )
             },
             modifier = Modifier
@@ -346,7 +340,7 @@ fun SchermataDatiVenditore(navController: NavController) {
             value = codiceBicSwift,
             onValueChange = {
                 codiceBicSwift = it
-                isCodiceBicSwiftValid = viewModel.isValidCodiceBicSwift(it)
+                isCodiceBicSwiftValid = viewModelControlloDati.isValidCodiceBicSwift(it)
             },
             label = {
                 Text(
@@ -408,7 +402,7 @@ fun SchermataDatiVenditore(navController: NavController) {
             value = iban,
             onValueChange = {
                 iban = it
-                isIbanValid = viewModel.isValidIban(it)
+                isIbanValid = viewModelControlloDati.isValidIban(it)
             },
             label = {
                 Text(
@@ -471,31 +465,12 @@ fun SchermataDatiVenditore(navController: NavController) {
                 }
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.End
         ) {
-            // Bottone Annulla
-            ElevatedButton(
-                onClick = {
-                    currentPage.intValue = 2
-                },
-
-                colors = ButtonColors(
-                    containerColor = Color(0xFF9b0404),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color.Gray,
-                    disabledContentColor = Color.Black
-                )
-
-            ) {
-                Text(
-                    text = "ANNULLA",
-                    fontSize = 12.sp,
-                )
-            }
 
             // Bottone Conferma
             ElevatedButton(
-                enabled = viewModel.checkFieldsDatiVenditore(
+                enabled = viewModelControlloDati.checkFieldsDatiVenditore(
                     nomeTitolare,
                     codiceBicSwift,
                     partitaIva,

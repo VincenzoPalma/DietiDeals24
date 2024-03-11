@@ -187,6 +187,12 @@ fun SchermataCreazioneAsta(navController: NavController) {
         }
 
     fun isScadenzaValid(): Boolean {
+        if ((selectedTabIndex.intValue == 1 || selectedTabIndex.intValue == 2) && !(LocalDate.of(1970, 1, 1)
+                .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)))
+                .isBefore(LocalDate.now().plusDays(31)))
+        {
+            return false
+        }
         if (selectedTabIndex.intValue == 1) {
             return if (LocalDate.of(1970, 1, 1)
                     .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000))

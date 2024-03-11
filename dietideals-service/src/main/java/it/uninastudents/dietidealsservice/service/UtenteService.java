@@ -72,7 +72,6 @@ public class UtenteService {
             }
             utente = utenteRepository.save(utente);
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
             return null;
         }
         return utente;

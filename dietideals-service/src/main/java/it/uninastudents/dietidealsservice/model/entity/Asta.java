@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -20,7 +19,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "asta")
-public class Asta extends BaseEntity implements Serializable {
+public class Asta extends BaseEntity {
 
     @Column(nullable = false)
     private String nome;

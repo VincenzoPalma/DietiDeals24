@@ -3,7 +3,34 @@ plugins {
 	id 'org.springframework.boot' version '3.2.1'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id "org.sonarqube" version "4.4.1.3373"
+	id 'jacoco'
 }
+
+jacoco {
+	toolVersion = "0.8.11"
+}
+
+test {
+	finalizedBy jacocoTestReport  // il rapporto viene sempre generato dopo l'esecuzione dei test
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+	}
+	dependsOn test
+}
+
+sonarqube {
+	properties {
+		property 'sonar.host.url', 'http://localhost:9000'
+	}
+}
+
+tasks.named('sonarqube').configure {
+	dependsOn jacocoTestReport
+}
+
 
 group = 'it.uninastudents'
 version = '0.0.1-SNAPSHOT'

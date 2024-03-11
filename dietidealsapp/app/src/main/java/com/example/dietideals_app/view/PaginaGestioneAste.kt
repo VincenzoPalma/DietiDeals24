@@ -65,6 +65,9 @@ import com.example.dietideals_app.viewmodel.listener.AsteListener
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
@@ -422,9 +425,7 @@ fun SchermataGestioneAste(navController: NavController) {
                         }
 
 
-                        //TODO
                         item {
-                            Spacer(modifier = Modifier.height(200.dp))
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth(),
@@ -432,12 +433,26 @@ fun SchermataGestioneAste(navController: NavController) {
                             ) {
                                 ElevatedButton(
                                     onClick = {
-                                        /*numeroPagina++
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        viewModel.mostraAste(numeroPagina, nomeAstaRicerca, categoriaAstaRicerca, tipoAstaRicerca, listenerAste)
-                                    }
-                                    // Codice per caricare ulteriori aste
-                                    // Aggiungi logicamente altri elementi alla tua lista di asteVisualizzate*/
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            when (selectedTabIndex.intValue) {
+                                                0 -> {
+                                                    numeroPaginaAsteAttive++
+                                                    viewModel.getAsteUtenteAttive(numeroPaginaAsteAttive, listenerAste)
+                                                }
+                                                1 -> {
+                                                    numeroPaginaAsteTerminate++
+                                                    viewModel.getAsteUtenteTerminate(numeroPaginaAsteTerminate, listenerAste)
+                                                }
+                                                2 -> {
+                                                    numeroPaginaAsteSeguite++
+                                                    viewModel.getAsteUtenteSeguite(numeroPaginaAsteSeguite, listenerAste)
+                                                }
+                                                3 -> {
+                                                    numeroPaginaAsteVinte++
+                                                    viewModel.getAsteUtenteVinte(numeroPaginaAsteAttive, listenerAste)
+                                                }
+                                            }
+                                        }
                                     }
                                 ) {
                                     Icon(
