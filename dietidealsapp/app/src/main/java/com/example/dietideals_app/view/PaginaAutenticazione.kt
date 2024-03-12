@@ -428,7 +428,6 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
 
                                     override fun onCancel() {
                                         onCancel()
-                                        println("Login : On Cancel")
                                     }
 
                                     override fun onError(error: FacebookException) {

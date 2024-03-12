@@ -117,7 +117,7 @@ class PaginaRegistrazioneViewModel {
     }
 
     fun isValidNomeTitolare(nomeTitolare: String): Boolean {
-        return nomeTitolare.isNotBlank()
+        return nomeTitolare.isNotEmpty()
     }
 
     fun isValidCodiceBicSwift(codiceBicSwift: String): Boolean {

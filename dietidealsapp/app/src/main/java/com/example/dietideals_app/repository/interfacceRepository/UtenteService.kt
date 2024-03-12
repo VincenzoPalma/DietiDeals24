@@ -27,6 +27,15 @@ interface UtenteService {
     @PUT("utente/modificaDatiUtente")
     fun modificaDatiUtente(@Body datiProfiloUtente: DatiProfiloUtente): Call<Utente>
 
+    @PUT("utente/datiVenditore/partitaIva")
+    fun modificaPartitaIva(@Body partitaIva: String): Call<Utente>
+
+    @PUT("utente/datiVenditore/documentoVenditore")
+    fun modificaDocumentoVenditore(@Body urlDocumento: String): Call<Utente>
+
+    @PUT("utente/ruolo")
+    fun setUtenteVenditore(): Call<Utente>
+
     @GET("utente/datiUtente")
     fun getDatiUtente(@Query("idUtente") idUtente: UUID?): Call<DatiProfiloUtente>
 
@@ -35,5 +44,8 @@ interface UtenteService {
 
     @GET("utente/idUtente/{idAuth}")
     fun getUtenteByIdAuth(@Path("idAuth") idAuth: String): Call<Utente>
+
+    @GET("utente/partitaIva")
+    fun getPartitaIvaUtente(): Call<String>
 
 }

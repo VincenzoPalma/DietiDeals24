@@ -158,4 +158,95 @@ class UtenteRepository {
         }
     }
 
+    suspend fun modificaPartitaIva(partitaIva: String): Utente? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Utente?>()
+            ApiUtente.utenteService.modificaPartitaIva(partitaIva).enqueue(object :
+                Callback<Utente> {
+                override fun onResponse(
+                    call: Call<Utente>,
+                    response: Response<Utente>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<Utente>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
+
+    suspend fun modificaDocumentoVenditore(urlDocumento: String): Utente? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Utente?>()
+            ApiUtente.utenteService.modificaDocumentoVenditore(urlDocumento).enqueue(object :
+                Callback<Utente> {
+                override fun onResponse(
+                    call: Call<Utente>,
+                    response: Response<Utente>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<Utente>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
+
+    suspend fun getPartitaIva(): String? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<String?>()
+            ApiUtente.utenteService.getPartitaIvaUtente().enqueue(object :
+                Callback<String> {
+                override fun onResponse(
+                    call: Call<String>,
+                    response: Response<String>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
+
+    suspend fun setUtenteVenditore(): Utente? {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<Utente?>()
+            ApiUtente.utenteService.setUtenteVenditore().enqueue(object :
+                Callback<Utente> {
+                override fun onResponse(
+                    call: Call<Utente>,
+                    response: Response<Utente>
+                ) {
+                    if (response.isSuccessful) {
+                        val risultato = response.body()
+                        deferred.complete(risultato)
+                    }
+                }
+
+                override fun onFailure(call: Call<Utente>, t: Throwable) {
+                    deferred.complete(null)
+                }
+            })
+            deferred.await()
+        }
+    }
 }

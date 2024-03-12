@@ -1427,7 +1427,7 @@ fun SchermataRegistrazione(navController: NavController) {
                                             partitaIva,
                                             fileDownloadUrl,
                                             imageDownloadUrl,
-                                            ContoCorrente(nomeTitolare, codiceBicSwift, iban)
+                                            ContoCorrente(null, nomeTitolare, codiceBicSwift, iban)
                                         ),
                                         firebaseAuth.currentUser?.uid
                                     )
@@ -1446,7 +1446,7 @@ fun SchermataRegistrazione(navController: NavController) {
                                             partitaIva,
                                             fileDownloadUrl,
                                             imageDownloadUrl,
-                                            ContoCorrente(nomeTitolare, codiceBicSwift, iban)
+                                            ContoCorrente(null, nomeTitolare, codiceBicSwift, iban)
                                         ), null
                                     )
                                 }

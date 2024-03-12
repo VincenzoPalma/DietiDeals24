@@ -201,7 +201,13 @@ fun SchermataProfiloUtente(navController: NavController) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { navController.navigate("SchermataDatiVenditore") }
+                        modifier = Modifier.clickable {
+                            scope.launch {
+                                drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                            navController.navigate("SchermataDatiVenditore") }
                     )
                     {
                         Icon(
