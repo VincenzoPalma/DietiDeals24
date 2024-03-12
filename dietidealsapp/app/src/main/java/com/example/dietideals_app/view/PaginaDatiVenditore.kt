@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,9 +60,22 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietideals_app.R
+import com.example.dietideals_app.model.ContoCorrente
+import com.example.dietideals_app.model.dto.CreaContoCorrente
+import com.example.dietideals_app.model.enum.RuoloUtente
 import com.example.dietideals_app.ui.theme.DietidealsappTheme
 import com.example.dietideals_app.viewmodel.PaginaDatiVenditoreViewModel
 import com.example.dietideals_app.viewmodel.PaginaRegistrazioneViewModel
+import com.example.dietideals_app.viewmodel.listener.ContoCorrenteListener
+import com.example.dietideals_app.viewmodel.listener.UtenteListener
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class PaginaDatiVenditore : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,31 +101,73 @@ class PaginaDatiVenditore : ComponentActivity() {
 @Composable
 fun SchermataDatiVenditore(navController: NavController) {
 
-
     var partitaIva by remember { mutableStateOf("") } //11 caratteri numerici
-
     var nomeTitolare by remember { mutableStateOf("") }
-
     var codiceBicSwift by remember { mutableStateOf("") } //8-11 cifre
-
     var iban by remember { mutableStateOf("") } /*27caratteri lettere e numeri*/
-
-
     var isCodiceBicSwiftValid by remember { mutableStateOf(false) }
     var isNomeTitolareValid by remember { mutableStateOf(false) }
     var isIbanValid by remember { mutableStateOf(false) }
     var isPartitaIvaValid by remember { mutableStateOf(false) }
-
     val nomeTitolareFocusRequester = remember { FocusRequester() }
     val bicSwiftCodeFocusReqeuster = remember { FocusRequester() }
     val ibanFocusRequest = remember { FocusRequester() }
     val viewModelControlloDati = PaginaRegistrazioneViewModel()
     val viewModelDatiVenditore = PaginaDatiVenditoreViewModel()
-
-
     var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
     val currentPage = remember { mutableIntStateOf(0) }
+    var isUtenteVenditore by remember { mutableStateOf(false) }
+    var campiModificabili by remember { mutableStateOf(true) }
+    val storage = Firebase.storage
+    val storageRef = storage.reference
+    var idContoCorrente by remember { mutableStateOf<UUID?>(null) }
 
+    val listenerUtente = remember {
+        object : UtenteListener {
+            override fun onRuoloLoaded(ruolo: RuoloUtente) {
+                if (ruolo == RuoloUtente.VENDITORE) {
+                    isUtenteVenditore = true
+                    campiModificabili = !isUtenteVenditore
+                }
+            }
+
+            override fun onPartitaIvaLoaded(partitaIvaUtente: String) {
+                partitaIva = partitaIvaUtente
+                isPartitaIvaValid = viewModelControlloDati.isValidPartitaIva(partitaIva)
+            }
+
+            override fun onError() {
+                //
+            }
+        }
+    }
+
+    val listenerContoCorrente = remember {
+        object : ContoCorrenteListener {
+            override fun onContoCorrenteLoaded(contoCorrenteUtente: ContoCorrente) {
+                nomeTitolare = contoCorrenteUtente.nomeTitolare
+                codiceBicSwift = contoCorrenteUtente.codiceBicSwift
+                iban = contoCorrenteUtente.iban
+                isNomeTitolareValid = viewModelControlloDati.isValidNomeTitolare(nomeTitolare)
+                isCodiceBicSwiftValid = viewModelControlloDati.isValidCodiceBicSwift(codiceBicSwift)
+                isIbanValid = viewModelControlloDati.isValidIban(iban)
+                idContoCorrente = contoCorrenteUtente.id
+            }
+
+            override fun onError() {
+                //
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModelDatiVenditore.isUtenteVenditore(listenerUtente)
+        delay(300)
+        if (isUtenteVenditore) {
+            viewModelDatiVenditore.getPartitaIva(listenerUtente)
+            viewModelDatiVenditore.getContoCorrente(listenerContoCorrente)
+        }
+    }
 
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
@@ -172,7 +229,13 @@ fun SchermataDatiVenditore(navController: NavController) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_brush_24),
                     contentDescription = "Modifica Dati",
-                    modifier = Modifier.size(35.dp)
+                    modifier = if (!isUtenteVenditore) {
+                        Modifier.alpha(0f)
+                    } else {
+                        Modifier
+                            .size(35.dp)
+                            .clickable { campiModificabili = !campiModificabili }
+                    }
                 )
             }
         )
@@ -203,6 +266,7 @@ fun SchermataDatiVenditore(navController: NavController) {
                 }
 
             ElevatedButton(
+                enabled = campiModificabili,
                 onClick = {
                     getContent.launch("application/pdf")
 
@@ -215,7 +279,7 @@ fun SchermataDatiVenditore(navController: NavController) {
             }
         }
         OutlinedTextField(
-            enabled = true,//se è gia venditore
+            enabled = campiModificabili,
             value = partitaIva,
             onValueChange = {
                 partitaIva = it
@@ -265,9 +329,7 @@ fun SchermataDatiVenditore(navController: NavController) {
                     width = Dimension.fillToConstraints
                 }
                 .padding(8.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next
-            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             keyboardActions = KeyboardActions(
                 onNext = { nomeTitolareFocusRequester.requestFocus() }
             ),
@@ -284,7 +346,7 @@ fun SchermataDatiVenditore(navController: NavController) {
             }
         )
         OutlinedTextField(
-            enabled = true,//se è gia venditore
+            enabled = campiModificabili,
             value = nomeTitolare,
             onValueChange = {
                 nomeTitolare = it
@@ -310,7 +372,7 @@ fun SchermataDatiVenditore(navController: NavController) {
             },
             trailingIcon = {
                 Icon(
-                    painter = painterResource(id = if (isNomeTitolareValid) R.drawable.baseline_done_24 else R.drawable.empty),
+                    painter = painterResource(id = if (nomeTitolare.isNotEmpty()) R.drawable.baseline_done_24 else R.drawable.empty),
                     contentDescription = null,
                     tint = if (isNomeTitolareValid) Color(0xFF0EA639) else Color.Gray,
                     modifier = if (nomeTitolare.isEmpty()) Modifier.alpha(0f) else Modifier
@@ -336,7 +398,7 @@ fun SchermataDatiVenditore(navController: NavController) {
 
 
         OutlinedTextField(
-            enabled = true,//se è gia venditore
+            enabled = campiModificabili,
             value = codiceBicSwift,
             onValueChange = {
                 codiceBicSwift = it
@@ -398,7 +460,7 @@ fun SchermataDatiVenditore(navController: NavController) {
 
 
         OutlinedTextField(
-            enabled = true,//se è gia venditore
+            enabled = campiModificabili,
             value = iban,
             onValueChange = {
                 iban = it
@@ -469,84 +531,76 @@ fun SchermataDatiVenditore(navController: NavController) {
         ) {
 
             // Bottone Conferma
-            ElevatedButton(
-                enabled = viewModelControlloDati.checkFieldsDatiVenditore(
-                    nomeTitolare,
-                    codiceBicSwift,
-                    partitaIva,
-                    iban,
-                    selectedFileUri
-                ),
-                onClick = {
-                    /*CoroutineScope(Dispatchers.Main).launch {
-                        var imageDownloadUrl: String? = null
-                        var fileDownloadUrl: String? = null
-                        if (selectedImageUri != null) {
-                            val immagineProfiloRef =
-                                storageRef.child("ImmaginiProfilo/${selectedImageUri?.lastPathSegment}")
-                            selectedImageUri?.let { immagineProfiloRef.putFile(it).await() }
-                            immagineProfiloRef.downloadUrl.addOnSuccessListener { uri ->
-                                imageDownloadUrl = uri.toString()
-                            }.addOnFailureListener { exception ->
-                                println("Errore durante il recupero dell'URL di download: $exception")
+            if (campiModificabili){
+                ElevatedButton(
+                    enabled = viewModelControlloDati.checkFieldsDatiVenditore(
+                        nomeTitolare,
+                        codiceBicSwift,
+                        partitaIva,
+                        iban,
+                        selectedFileUri
+                    ),
+                    onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            var fileDownloadUrl: String? = null
+                            if (selectedFileUri != null) {
+                                val documentoVenditoreRef =
+                                    storageRef.child("DocumentiVenditore/${selectedFileUri?.lastPathSegment}")
+                                selectedFileUri?.let { documentoVenditoreRef.putFile(it).await() }
+                                documentoVenditoreRef.downloadUrl.addOnSuccessListener { uri ->
+                                    fileDownloadUrl = uri.toString()
+                                }.addOnFailureListener { exception ->
+                                    println("Errore durante il recupero dell'URL di download: $exception")
+                                }
+                            }
+                            delay(500)
+                            if (fileDownloadUrl != null){
+                                viewModelDatiVenditore.modificaDocumentoVenditore(fileDownloadUrl!!)
                             }
                         }
-                        if (selectedFileUri != null) {
-                            val documentoVenditoreRef =
-                                storageRef.child("DocumentiVenditore/${selectedFileUri?.lastPathSegment}")
-                            selectedFileUri?.let { documentoVenditoreRef.putFile(it).await() }
-                            documentoVenditoreRef.downloadUrl.addOnSuccessListener { uri ->
-                                fileDownloadUrl = uri.toString()
-                            }.addOnFailureListener { exception ->
-                                println("Errore durante il recupero dell'URL di download: $exception")
-                            }
-                        }
-                        delay(500)
-                        if (isRegistrazioneTerzeParti) {
-                            viewModel.registraUtente(
-                                UtenteRegistrazione(
-                                    username,
-                                    RuoloUtente.VENDITORE,
-                                    nome,
-                                    cognome,
-                                    viewModel.convertMillisToDate(state.selectedDateMillis!!)
-                                        .toString(),
-                                    email,
-                                    null,
-                                    partitaIva,
-                                    fileDownloadUrl,
-                                    imageDownloadUrl,
-                                    ContoCorrente(nomeTitolare, codiceBicSwift, iban)
-                                ),
-                                firebaseAuth.currentUser?.uid
-                            )
 
-                        } else {
-                            viewModel.registraUtente(
-                                UtenteRegistrazione(
-                                    username,
-                                    RuoloUtente.VENDITORE,
-                                    nome,
-                                    cognome,
-                                    viewModel.convertMillisToDate(state.selectedDateMillis!!)
-                                        .toString(),
-                                    email,
-                                    password,
-                                    partitaIva,
-                                    fileDownloadUrl,
-                                    imageDownloadUrl,
-                                    ContoCorrente(nomeTitolare, codiceBicSwift, iban)
-                                ), null
-                            )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            if (isUtenteVenditore) {
+                                idContoCorrente?.let {
+                                    ContoCorrente(
+                                        it,
+                                        nomeTitolare,
+                                        codiceBicSwift,
+                                        iban
+                                    )
+                                }?.let {
+                                    viewModelDatiVenditore.modifyContoCorrente(
+                                        it
+                                    )
+                                }
+                            } else {
+                                viewModelDatiVenditore.saveContoCorrente(
+                                    CreaContoCorrente(
+                                        iban,
+                                        nomeTitolare,
+                                        codiceBicSwift
+                                    )
+                                )
+                            }
                         }
-                        isDialogVisible.value = true
-                    }*/
-                },
-            ) {
-                Text(
-                    text = "CONFERMA",
-                    fontSize = 12.sp,
-                )
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModelDatiVenditore.modificaPartitaIva(partitaIva)
+                        }
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            if (!isUtenteVenditore) {
+                                viewModelDatiVenditore.setUtenteVenditore()
+                            }
+                        }
+                        campiModificabili = false
+                    }
+                ) {
+                    Text(
+                        text = "CONFERMA",
+                        fontSize = 12.sp,
+                    )
+                }
             }
         }
     }

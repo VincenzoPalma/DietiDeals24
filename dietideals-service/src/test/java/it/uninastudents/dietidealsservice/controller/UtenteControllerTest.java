@@ -224,4 +224,78 @@ class UtenteControllerTest {
         assertEquals(objectMapper.writeValueAsString(risultato), bodyRisposta.toString());
         assertEquals(200, mvcResult.getResponse().getStatus());
     }
+
+    @Test
+    void modifyPartitaIvaTest() throws Exception {
+        String nuovaPartitaIva = "12312312312";
+        Utente utenteModificato = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Utente.class);
+        UUID idUtenteModificato = UUID.randomUUID();
+        utenteModificato.setId(idUtenteModificato);
+        utenteModificato.setIdAuth("abcdefghilmnopqrstuvz1234567");
+        utenteModificato.setPartitaIva(nuovaPartitaIva);
+
+        when(utenteServiceMock.modificaPartitaIva(any(java.lang.String.class))).thenReturn(utenteModificato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/utente/datiVenditore/partitaIva")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(utenteModificato))).andReturn();
+
+        verify(utenteServiceMock, times(1)).modificaPartitaIva(any(java.lang.String.class));
+        assertEquals(200, mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    void modifyDocumentoVenditoreTest() throws Exception {
+        String nuovoDocumentoVenditore = "https://test.documento";
+        Utente utenteModificato = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Utente.class);
+        UUID idUtenteModificato = UUID.randomUUID();
+        utenteModificato.setId(idUtenteModificato);
+        utenteModificato.setIdAuth("abcdefghilmnopqrstuvz1234567");
+        utenteModificato.setUrlDocumentoIdentita(nuovoDocumentoVenditore);
+
+        when(utenteServiceMock.modificaDocumentoVenditore(any(java.lang.String.class))).thenReturn(utenteModificato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/utente/datiVenditore/documentoVenditore")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(utenteModificato))).andReturn();
+
+        verify(utenteServiceMock, times(1)).modificaDocumentoVenditore(any(java.lang.String.class));
+        assertEquals(200, mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    void setUtenteVenditoreTest() throws Exception {
+        Utente utenteModificato = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Utente.class);
+        UUID idUtenteModificato = UUID.randomUUID();
+        utenteModificato.setId(idUtenteModificato);
+        utenteModificato.setIdAuth("abcdefghilmnopqrstuvz1234567");
+        utenteModificato.setRuolo(RuoloUtente.VENDITORE);
+
+        when(utenteServiceMock.setUtenteVenditore()).thenReturn(utenteModificato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/utente/ruolo")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(utenteModificato))).andReturn();
+
+        verify(utenteServiceMock, times(1)).setUtenteVenditore();
+        assertEquals(200, mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    void getPartitaIvaTest() throws Exception {
+        String risultato = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Utente.class).getPartitaIva();
+        when(utenteServiceMock.getPartitaIva()).thenReturn(risultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .get("/utente/partitaIva")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")).andReturn();
+
+        verify(utenteServiceMock, times(1)).getPartitaIva();
+        assertEquals(risultato, mvcResult.getResponse().getContentAsString());
+        assertEquals(200, mvcResult.getResponse().getStatus());
+    }
 }

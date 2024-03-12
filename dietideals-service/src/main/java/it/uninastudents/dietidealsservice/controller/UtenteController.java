@@ -19,6 +19,7 @@ import java.util.UUID;
 public class UtenteController {
 
     private final UtenteService utenteService;
+    private final String urlDatiUtente = "/utente/%s/datiUtente";
 
     @PostMapping("/registrazione")
     public ResponseEntity<Utente> saveUtente(@RequestBody @Valid UtenteRegistrazione datiRegistrazione, @RequestParam(required = false) String idFirebase) {
@@ -38,9 +39,26 @@ public class UtenteController {
     @PutMapping("/utente/modificaDatiUtente")
     public ResponseEntity<Utente> modifyDatiUtente(@RequestBody @Valid DatiProfiloUtente datiProfiloUtente) {
         Utente utente = utenteService.modificaDatiUtente(datiProfiloUtente);
-        return ResponseEntity.ok().location(URI.create("/utente/%s/datiUtente".formatted(utente.getId()))).body(utente);
+        return ResponseEntity.ok().location(URI.create(urlDatiUtente.formatted(utente.getId()))).body(utente);
     }
 
+    @PutMapping("/utente/datiVenditore/partitaIva")
+    public ResponseEntity<Utente> modifyPartitaIva(@RequestBody String partitaIva) {
+        Utente utente = utenteService.modificaPartitaIva(partitaIva);
+        return ResponseEntity.ok().location(URI.create(urlDatiUtente.formatted(utente.getId()))).body(utente);
+    }
+
+    @PutMapping("/utente/datiVenditore/documentoVenditore")
+    public ResponseEntity<Utente> modifyDocumentoVenditore(@RequestBody String urlDocumento) {
+        Utente utente = utenteService.modificaDocumentoVenditore(urlDocumento);
+        return ResponseEntity.ok().location(URI.create(urlDatiUtente.formatted(utente.getId()))).body(utente);
+    }
+
+    @PutMapping("/utente/ruolo")
+    public ResponseEntity<Utente> setUtenteVenditore() {
+        Utente utente = utenteService.setUtenteVenditore();
+        return ResponseEntity.ok().location(URI.create(urlDatiUtente.formatted(utente.getId()))).body(utente);
+    }
 
     @GetMapping("/utente/datiUtente")
     public ResponseEntity<DatiProfiloUtente> getDatiUtente(@RequestParam(name = "idUtente", required = false) UUID idUtente) {
@@ -59,5 +77,10 @@ public class UtenteController {
     @GetMapping("/utente/ruolo")
     public ResponseEntity<RuoloUtente> getRuoloUtente() {
         return ResponseEntity.ok(utenteService.getRuoloUtente());
+    }
+
+    @GetMapping("/utente/partitaIva")
+    public ResponseEntity<String> getPartitaIva() {
+        return ResponseEntity.ok(utenteService.getPartitaIva());
     }
 }

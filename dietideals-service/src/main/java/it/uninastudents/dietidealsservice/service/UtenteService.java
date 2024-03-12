@@ -119,4 +119,29 @@ public class UtenteService {
         Optional<Utente> risultato = utenteRepository.findOne(spec);
         return risultato.map(Utente::getRuolo).orElse(null);
     }
+
+    public Utente modificaPartitaIva(String partitaIva) {
+        Utente utente = getUtenteAutenticato();
+        utente.setPartitaIva(partitaIva.replace("\"", ""));
+        return utenteRepository.save(utente);
+    }
+
+    public Utente modificaDocumentoVenditore(String urlDocumento) {
+        Utente utente = getUtenteAutenticato();
+        utente.setUrlDocumentoIdentita(urlDocumento.replace("\"", ""));
+        return utenteRepository.save(utente);
+    }
+
+    public Utente setUtenteVenditore() {
+        Utente utente = getUtenteAutenticato();
+        utente.setRuolo(RuoloUtente.VENDITORE);
+        return utenteRepository.save(utente);
+    }
+
+    public String getPartitaIva() {
+        Utente utente = getUtenteAutenticato();
+        var spec = UtenteSpecs.hasId(utente.getId());
+        Optional<Utente> risultato = utenteRepository.findOne(spec);
+        return risultato.map(Utente::getPartitaIva).orElse(null);
+    }
 }
