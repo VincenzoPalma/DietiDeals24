@@ -1,6 +1,7 @@
 package com.example.dietideals_app.view
 
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -96,6 +97,7 @@ class PaginaOfferte : ComponentActivity() {
 }
 
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataOfferte(navController: NavController) {
