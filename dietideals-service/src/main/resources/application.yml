@@ -53,4 +53,3 @@ security:
       - /public/**
     exposed-headers:
       - X-Xsrf-Token
-

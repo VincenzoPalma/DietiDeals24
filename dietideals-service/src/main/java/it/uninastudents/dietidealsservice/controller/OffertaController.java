@@ -36,7 +36,7 @@ public class OffertaController {
     @PutMapping("/aste/{idOfferta}")
     public ResponseEntity<Offerta> modificaStatoOfferta(@PathVariable UUID idOfferta, @RequestParam StatoOfferta statoOfferta) throws SchedulerException {
         Offerta offertaModificata = offertaService.modificaStatoOfferta(idOfferta, statoOfferta);
-        return ResponseEntity.created(URI.create("/asta/%s".formatted(idOfferta.toString()))).body(offertaModificata);
+        return ResponseEntity.ok().location(URI.create("/asta/%s".formatted(idOfferta.toString()))).body(offertaModificata);
     }
 
 }

@@ -118,4 +118,24 @@ class OffertaControllerTest {
         assertTrue(bodyRisposta.isArray());
         assertEquals(sizeRisultato, bodyRisposta.size());
     }
+
+    @Test
+    void modificaStatoOffertaTest() throws Exception {
+        Offerta offertaRisultato = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Offerta.class);
+        StatoOfferta nuovoStato = StatoOfferta.VINCENTE;
+        offertaRisultato.setStato(nuovoStato);
+        UUID idOffertaRisultato = UUID.randomUUID();
+        offertaRisultato.setId(idOffertaRisultato);
+
+        when(offertaServiceMock.modificaStatoOfferta(idOffertaRisultato, nuovoStato)).thenReturn(offertaRisultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/aste/" + idOffertaRisultato + "?statoOfferta=" + nuovoStato)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")).andReturn();
+
+        verify(offertaServiceMock, times(1)).modificaStatoOfferta(idOffertaRisultato, nuovoStato);
+        assertEquals(200, mvcResult.getResponse().getStatus());
+        assertEquals(objectMapper.writeValueAsString(offertaRisultato), mvcResult.getResponse().getContentAsString());
+        assertEquals("/asta/" + idOffertaRisultato, mvcResult.getResponse().getHeader("Location"));
+    }
 }

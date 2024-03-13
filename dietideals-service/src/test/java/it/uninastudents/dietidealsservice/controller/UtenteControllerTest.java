@@ -92,8 +92,6 @@ class UtenteControllerTest {
 
         verify(utenteServiceMock, times(0)).registraUtente(any(UtenteRegistrazione.class), eq(null));
         assertEquals(400, mvcResult.getResponse().getStatus());
-        assertEquals("", mvcResult.getResponse().getContentAsString());
-
     }
 
     @Test

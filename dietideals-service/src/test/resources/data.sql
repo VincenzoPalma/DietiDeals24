@@ -1,0 +1,4 @@
+/*INSERT INTO utente (id, created_by, creation_date, last_modified_by, last_modified_date, cognome, data_nascita, descrizione, email, facebook, id_auth, indirizzo, instagram, nome, partita_iva, ruolo, sito_web, twitter, url_documento_identita, url_foto_profilo, username, conto_corrente_id)
+VALUES ('2c936c5f-9978-4fcb-8738-33bf6bcd9572', null, null, null, null, 'Cognome', '1985-03-06', null, 'test.test@gmail.com', null, '7UgDv2dQkCREwWr8WlcwmuAla0w2', null, null, 'Nome', null, 0, null, null, null, null, 'Username', null);
+INSERT INTO carta (id, created_by, creation_date, last_modified_by, last_modified_date, codice_cvv_cvc, data_scadenza, nome_titolare, numero, utente_id)
+VALUES ('f170b481-58c6-4615-854e-3a61958773fa', null, null, null, null, '123', '2029-12-01 00:00:00.000000+00:00', 'Signor Venditore', '3152435321312233', '2c936c5f-9978-4fcb-8738-33bf6bcd9572')*/

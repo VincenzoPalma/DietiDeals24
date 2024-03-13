@@ -497,7 +497,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                         CoroutineScope(Dispatchers.IO).launch {
                                             viewModel.salvaCarta(
                                                 CreaCarta(numeroCarta, nomeTitolare, codiceCvvCvc,
-                                                    "$annoScadenza-$meseScadenza-01T00:00:00+00:00"
+                                                    if (meseScadenza.toInt() < 10) {"$annoScadenza-0$meseScadenza-01T00:00:00+00:00"} else {"$annoScadenza-$meseScadenza-01T00:00:00+00:00"}
                                                 ), listener)
                                             isDialogVisible = false
                                         }

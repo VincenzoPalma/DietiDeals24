@@ -154,4 +154,17 @@ class ContoCorrenteControllerTest {
         verify(contoCorrenteServiceMock, times(1)).findContoCorrenteByUtente();
         assertEquals(200, mvcResult.getResponse().getStatus());
     }
+
+    @Test
+    void getContoCorrenteBadRequestTest() throws Exception {
+        Optional<ContoCorrente> risultato = Optional.empty();
+        when(contoCorrenteServiceMock.findContoCorrenteByUtente()).thenReturn(risultato);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/utente/contoCorrente")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")).andReturn();
+
+        verify(contoCorrenteServiceMock, times(1)).findContoCorrenteByUtente();
+        assertEquals(400, mvcResult.getResponse().getStatus());
+    }
 }

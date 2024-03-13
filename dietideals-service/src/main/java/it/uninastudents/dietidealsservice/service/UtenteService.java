@@ -87,11 +87,7 @@ public class UtenteService {
             return utenteMapper.utenteToDatiProfiloUtente(getUtenteAutenticato());
         } else {
             Optional<Utente> risultato = utenteRepository.findById(idUtente);
-            if (risultato.isPresent()) {
-                return utenteMapper.utenteToDatiProfiloUtente(risultato.get());
-            } else {
-                throw new IllegalArgumentException("Utente non trovato.");
-            }
+            return risultato.map(utenteMapper::utenteToDatiProfiloUtente).orElse(null);
         }
     }
 
