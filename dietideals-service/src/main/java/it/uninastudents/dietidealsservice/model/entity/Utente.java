@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -60,6 +61,7 @@ public class Utente extends BaseEntity {
 
     private String urlFotoProfilo;
 
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)

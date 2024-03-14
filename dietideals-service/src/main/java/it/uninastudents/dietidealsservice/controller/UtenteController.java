@@ -18,8 +18,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UtenteController {
 
-    private final UtenteService utenteService;
     private static final String URL_DATI_UTENTE = "/utente/%s/datiUtente";
+    private final UtenteService utenteService;
 
     @PostMapping("/registrazione")
     public ResponseEntity<Utente> saveUtente(@RequestBody @Valid UtenteRegistrazione datiRegistrazione, @RequestParam(required = false) String idFirebase) {

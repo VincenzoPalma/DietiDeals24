@@ -3,7 +3,6 @@ package it.uninastudents.dietidealsservice.service;
 import it.uninastudents.dietidealsservice.model.entity.Carta;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.repository.CartaRepository;
-import it.uninastudents.dietidealsservice.repository.specs.CartaSpecs;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
-import java.time.OffsetDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
@@ -35,16 +31,10 @@ class CartaServiceTest {
     @Autowired
     private CartaService cartaService;
 
-    @Autowired
-    private CartaRepository cartaRepository;
 
     @Test
-    void getAllByUtenteTest(){
-        List<Carta> carte = cartaRepository.findAll();
-        System.out.println(carte.size());
-
+    void getAllByUtenteTest() {
         Utente utente = new Utente();
-        utente.setId(UUID.fromString("2c936c5f-9978-4fcb-8738-33bf6bcd9572")); //id utente esistente
         when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
 
         Carta carta1 = new Carta();
@@ -61,17 +51,13 @@ class CartaServiceTest {
 
         verify(utenteServiceMock, times(1)).getUtenteAutenticato();
         verify(cartaRepositoryMock, times(1)).findAll(any(Specification.class));
-        assertEquals(risultati.size(), risultatiEffettivi.size());
-        for (Carta carta : risultatiEffettivi) {
-            assertEquals(utente.getId(), carta.getUtente().getId());
-        }
+        assertEquals(risultati, risultatiEffettivi);
     }
 
     @Test
-    void testSalvaCarta() {
+    void salvaCartaTest() {
         Utente utente = new Utente();
         Carta nuovaCarta = new Carta();
-        nuovaCarta.setDataScadenza(OffsetDateTime.now().plusYears(3));
         utente.setCarte(new HashSet<>());
 
         when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
@@ -85,5 +71,58 @@ class CartaServiceTest {
 
         verify(utenteServiceMock, times(1)).getUtenteAutenticato();
         verify(cartaRepositoryMock, times(1)).save(nuovaCarta);
+    }
+
+    @Test
+    void cancellaCartaTest() {
+        Utente utente = new Utente();
+        utente.setId(UUID.randomUUID());
+        Carta carta = new Carta();
+        UUID idCarta = UUID.randomUUID();
+        utente.setCarte(new HashSet<>());
+        utente.getCarte().add(carta);
+        carta.setUtente(utente);
+
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(cartaRepositoryMock.findById(idCarta)).thenReturn(Optional.of(carta));
+        cartaService.cancellaCarta(idCarta);
+
+        verify(cartaRepositoryMock, times(1)).findById(idCarta);
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+        verify(cartaRepositoryMock, times(1)).deleteById(idCarta);
+    }
+
+    @Test
+    void cancellaCartaNonTrovataTest() {
+        Utente utente = new Utente();
+        UUID idCarta = UUID.randomUUID();
+
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(cartaRepositoryMock.findById(idCarta)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> cartaService.cancellaCarta(idCarta));
+        verify(cartaRepositoryMock, times(1)).findById(idCarta);
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+    }
+
+    @Test
+    void cancellaCartaUtenteNonValidoTest() {
+        Utente utenteProprietario = new Utente();
+        utenteProprietario.setId(UUID.randomUUID());
+        Carta carta = new Carta();
+        UUID idCarta = UUID.randomUUID();
+        utenteProprietario.setCarte(new HashSet<>());
+        utenteProprietario.getCarte().add(carta);
+        carta.setUtente(utenteProprietario);
+
+        Utente utenteAutenticato = new Utente();
+        utenteAutenticato.setId(UUID.randomUUID());
+
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utenteAutenticato);
+        when(cartaRepositoryMock.findById(idCarta)).thenReturn(Optional.of(carta));
+
+        assertThrows(IllegalArgumentException.class, () -> cartaService.cancellaCarta(idCarta));
+        verify(cartaRepositoryMock, times(1)).findById(idCarta);
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
     }
 }

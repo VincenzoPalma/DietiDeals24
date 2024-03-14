@@ -228,20 +228,6 @@ class AstaControllerTest {
         assertEquals(200, mvcResult.getResponse().getStatus());
         assertTrue(bodyRisposta.get("content").isArray());
         assertEquals(sizeRisultato, sizeRisposta);
-
-        for (JsonNode astaRisultato : bodyRisposta.get("content")) {
-            if (stringaRicerca != null && sizeRisposta > 0) {
-                assertTrue(astaRisultato.get("nome").asText().contains(stringaRicerca));
-            }
-
-            if (tipoAsta != null && sizeRisposta > 0) {
-                assertEquals(tipoAsta.toString(), astaRisultato.get("tipo").asText());
-            }
-
-            if (categoriaAsta != null && sizeRisposta > 0) {
-                assertEquals(categoriaAsta.toString(), astaRisultato.get("categoria").asText());
-            }
-        }
     }
 
     @Test

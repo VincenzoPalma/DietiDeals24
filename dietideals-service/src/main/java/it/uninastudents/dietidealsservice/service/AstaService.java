@@ -59,12 +59,12 @@ public class AstaService {
 
 
     public Asta salvaAsta(Asta asta) throws SchedulerException, JsonProcessingException {
-        asta.setStato(StatoAsta.ATTIVA);
         Utente utente = utenteService.getUtenteAutenticato();
         if (utente != null) {
             if (!asta.getTipo().equals(TipoAsta.INVERSA) && utente.getRuolo().equals(RuoloUtente.COMPRATORE)) {
                 throw new UnauthorizedException("Un utente compratore non può creare un'asta inglese o silenziosa.");
             } else {
+                asta.setStato(StatoAsta.ATTIVA);
                 asta.setProprietario(utente);
                 utente.getAste().add(asta);
                 asta = repository.save(asta);
