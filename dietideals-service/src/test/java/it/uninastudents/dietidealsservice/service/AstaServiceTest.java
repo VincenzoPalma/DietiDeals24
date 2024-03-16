@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 @SuppressWarnings("unchecked")
 @SpringBootTest
 @TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
@@ -60,14 +62,14 @@ class AstaServiceTest {
         utente.getAste().add(asta);
 
         when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
-        when(astaRepositoryMock.save(any(Asta.class))).thenReturn(asta);
-        doNothing().when(astaServiceSpy).schedulerScadenzaAsta(any(Asta.class));
+        when(astaRepositoryMock.save(asta)).thenReturn(asta);
+        doNothing().when(astaServiceSpy).schedulerScadenzaAsta(asta);
 
         Asta astaSalvata = astaServiceSpy.salvaAsta(asta);
 
         verify(utenteServiceMock, times(1)).getUtenteAutenticato();
-        verify(astaServiceSpy, times(1)).schedulerScadenzaAsta(any(Asta.class));
-        verify(astaRepositoryMock, times(1)).save(any(Asta.class));
+        verify(astaServiceSpy, times(1)).schedulerScadenzaAsta(asta);
+        verify(astaRepositoryMock, times(1)).save(astaSalvata);
         assertEquals(utente, astaSalvata.getProprietario());
         assertTrue(utente.getAste().contains(astaSalvata));
         assertEquals(asta, astaSalvata);
@@ -89,13 +91,13 @@ class AstaServiceTest {
 
         when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
         when(astaRepositoryMock.save(any(Asta.class))).thenReturn(asta);
-        doNothing().when(astaServiceSpy).schedulerScadenzaAsta(any(Asta.class));
+        doNothing().when(astaServiceSpy).schedulerScadenzaAsta(asta);
 
         Asta astaSalvata = astaServiceSpy.salvaAsta(asta);
 
         verify(utenteServiceMock, times(1)).getUtenteAutenticato();
-        verify(astaServiceSpy, times(1)).schedulerScadenzaAsta(any(Asta.class));
-        verify(astaRepositoryMock, times(1)).save(any(Asta.class));
+        verify(astaServiceSpy, times(1)).schedulerScadenzaAsta(asta);
+        verify(astaRepositoryMock, times(1)).save(asta);
         assertEquals(utente, astaSalvata.getProprietario());
         assertTrue(utente.getAste().contains(astaSalvata));
         assertEquals(asta, astaSalvata);
@@ -269,14 +271,14 @@ class AstaServiceTest {
     void getAsteACuiUtenteHaPartecipatoTest() {
         Pageable pageable = ControllerUtils.pageableBuilder(0, 12, Sort.by("creationDate").ascending());
 
-        doReturn(null).when(astaServiceSpy).getAsteVinteByUtente(any(Pageable.class));
-        doReturn(null).when(astaServiceSpy).getAstePartecipateByUtente(any(Pageable.class));
+        doReturn(null).when(astaServiceSpy).getAsteVinteByUtente(pageable);
+        doReturn(null).when(astaServiceSpy).getAstePartecipateByUtente(pageable);
 
         astaServiceSpy.getAsteACuiUtenteHaPartecipato(pageable, true);
-        verify(astaServiceSpy, times(1)).getAsteVinteByUtente(any(Pageable.class));
+        verify(astaServiceSpy, times(1)).getAsteVinteByUtente(pageable);
 
         astaServiceSpy.getAsteACuiUtenteHaPartecipato(pageable, false);
-        verify(astaServiceSpy, times(1)).getAstePartecipateByUtente(any(Pageable.class));
+        verify(astaServiceSpy, times(1)).getAstePartecipateByUtente(pageable);
     }
 
 //    @Test

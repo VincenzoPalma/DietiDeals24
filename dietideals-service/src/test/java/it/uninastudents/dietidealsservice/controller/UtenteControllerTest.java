@@ -95,6 +95,31 @@ class UtenteControllerTest {
     }
 
     @Test
+    void saveUtenteNonValidoTest() throws Exception {
+        UtenteRegistrazione datiNuovoUtente = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(UtenteRegistrazione.class);
+        datiNuovoUtente.setPartitaIva(null);
+        datiNuovoUtente.setDataNascita(LocalDate.now().minusYears(1));
+        datiNuovoUtente.setContoCorrente(null);
+        datiNuovoUtente.setEmail("test.test@test.com");
+        System.out.println(objectMapper.writeValueAsString(datiNuovoUtente));
+
+        Utente utenteRisultato = utenteMapper.utenteRegistrazioneToUtente(datiNuovoUtente);
+        UUID idUtenteRisultato = UUID.randomUUID();
+        utenteRisultato.setIdAuth("abcdefghilmnopqrstuvz1234567");
+        utenteRisultato.setId(idUtenteRisultato);
+
+        when(utenteServiceMock.registraUtente(any(UtenteRegistrazione.class), eq(null))).thenReturn(null);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/registrazione")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(datiNuovoUtente))).andReturn();
+
+        verify(utenteServiceMock, times(1)).registraUtente(any(UtenteRegistrazione.class), eq(null));
+        assertEquals(400, mvcResult.getResponse().getStatus());
+    }
+
+    @Test
     void modifyDatiUtenteDatiCorretti() throws Exception {
         DatiProfiloUtente nuovoDatiProfiloUtente = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(DatiProfiloUtente.class);
         nuovoDatiProfiloUtente.setDescrizione("descrizione");

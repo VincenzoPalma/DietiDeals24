@@ -39,7 +39,7 @@ public class UtenteService {
 
     public Utente registraUtente(UtenteRegistrazione utenteRegistrazione, String idFireBase) {
         //inserimento utente nel db
-        Utente utente = null;
+        Utente utente;
         try {
             if (utenteRegistrazione.getContoCorrente() == null) {
                 utenteRegistrazione.setRuolo(RuoloUtente.COMPRATORE);

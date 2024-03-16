@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "notifica")
 public class Notifica extends BaseEntity {
 
+    @ToString.Exclude
     @JsonIgnore
     @ManyToOne
     @JoinColumn(nullable = false)

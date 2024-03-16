@@ -42,7 +42,7 @@ class ContoCorrenteServiceTest {
         utente.setCarte(new HashSet<>());
 
         when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
-        when(contoCorrenteRepositoryMock.save(any(ContoCorrente.class))).thenReturn(nuovoContoCorrente);
+        when(contoCorrenteRepositoryMock.save(nuovoContoCorrente)).thenReturn(nuovoContoCorrente);
 
         ContoCorrente result = contoCorrenteService.salvaContoCorrente(nuovoContoCorrente);
 

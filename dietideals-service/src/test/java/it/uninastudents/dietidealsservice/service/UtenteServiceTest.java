@@ -1,13 +1,18 @@
 package it.uninastudents.dietidealsservice.service;
 
+import com.google.firebase.auth.UserRecord;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import it.uninastudents.dietidealsservice.model.User;
 import it.uninastudents.dietidealsservice.model.dto.DatiProfiloUtente;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
+import it.uninastudents.dietidealsservice.repository.ContoCorrenteRepository;
 import it.uninastudents.dietidealsservice.repository.UtenteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,12 +35,16 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @SuppressWarnings("unchecked")
 @TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({UserRecord.CreateRequest.class})
 class UtenteServiceTest {
 
     @SpyBean
     UtenteService utenteServiceSpy;
     @MockBean
     private UtenteRepository utenteRepositoryMock;
+    @MockBean
+    private ContoCorrenteRepository contoCorrenteRepositoryMock;
     @Autowired
     private UtenteService utenteService;
 
@@ -141,6 +150,7 @@ class UtenteServiceTest {
         Utente risultato = utenteService.modificaDatiUtente(datiProfiloUtente);
 
         verify(utenteRepositoryMock, times(1)).save(utente);
+        verify(utenteServiceSpy, times(1)).getUtenteAutenticato();
         assertEquals(utente, risultato);
     }
 
@@ -180,6 +190,7 @@ class UtenteServiceTest {
         RuoloUtente risultato = utenteService.getRuoloUtente();
 
         verify(utenteRepositoryMock, times(1)).findOne(any(Specification.class));
+        verify(utenteServiceSpy, times(1)).getUtenteAutenticato();
         assertEquals(utente.getRuolo(), risultato);
     }
 
@@ -193,6 +204,7 @@ class UtenteServiceTest {
         RuoloUtente risultato = utenteService.getRuoloUtente();
 
         verify(utenteRepositoryMock, times(1)).findOne(any(Specification.class));
+        verify(utenteServiceSpy, times(1)).getUtenteAutenticato();
         assertNull(risultato);
     }
 
@@ -208,6 +220,7 @@ class UtenteServiceTest {
         Utente risultato = utenteService.modificaPartitaIva(partitaIva);
 
         verify(utenteRepositoryMock, times(1)).save(utente);
+        verify(utenteServiceSpy, times(1)).getUtenteAutenticato();
         assertEquals(utente, risultato);
 
     }
@@ -224,6 +237,7 @@ class UtenteServiceTest {
         Utente risultato = utenteService.modificaDocumentoVenditore(documentoUrl);
 
         verify(utenteRepositoryMock, times(1)).save(utente);
+        verify(utenteServiceSpy, times(1)).getUtenteAutenticato();
         assertEquals(utente, risultato);
 
     }
@@ -239,6 +253,7 @@ class UtenteServiceTest {
         String risultato = utenteService.getPartitaIva();
 
         verify(utenteRepositoryMock, times(1)).findOne(any(Specification.class));
+        verify(utenteServiceSpy, times(1)).getUtenteAutenticato();
         assertEquals(utente.getPartitaIva(), risultato);
     }
 
@@ -253,7 +268,28 @@ class UtenteServiceTest {
         Utente risultato = utenteService.setUtenteVenditore();
 
         verify(utenteRepositoryMock, times(1)).save(utente);
+        verify(utenteServiceSpy, times(1)).getUtenteAutenticato();
         assertEquals(utente, risultato);
 
     }
+
+//    @Test
+//    void registraUtenteCompratoreTest() throws Exception {
+//        UtenteRegistrazione utenteRegistrazione = new UtenteRegistrazione();
+//        utenteRegistrazione.setEmail("email@gmail.com");
+//        utenteRegistrazione.setPassword("password");
+//        utenteRegistrazione.setUsername("username");
+//        Utente utente = new Utente();
+//        utente.setRuolo(RuoloUtente.COMPRATORE);
+//        utente.setEmail(utenteRegistrazione.getEmail());
+//        utente.setUsername(utenteRegistrazione.getUsername());
+//
+//        when(utenteRepositoryMock.save(utente)).thenReturn(utente);
+//
+//        Utente risultato = utenteService.registraUtente(utenteRegistrazione, null);
+//
+//        verify(utenteRepositoryMock, times(2)).save(utente);
+//        assertEquals(utente, risultato);
+//
+//    }
 }

@@ -85,7 +85,7 @@ public class OffertaService {
         return offertaRepository.save(nuovaOfferta);
     }
 
-    private void gestisciOffertaVincente(Optional<Offerta> offertaVincente, Utente utente, Offerta nuovaOfferta, Asta asta) {
+    public void gestisciOffertaVincente(Optional<Offerta> offertaVincente, Utente utente, Offerta nuovaOfferta, Asta asta) {
         if (offertaVincente.isPresent()) {
             if (utente.getId().equals(offertaVincente.get().getUtente().getId())) {
                 throw new IllegalArgumentException("IMPOSSIBILE EFFETTUARE OFFERTE CONSECUTIVE");
@@ -105,11 +105,11 @@ public class OffertaService {
         }
     }
 
-    private boolean controlloOfferteUtenteAstaSilenziosa(UUID idUtente, Asta asta) {
+    public boolean controlloOfferteUtenteAstaSilenziosa(UUID idUtente, Asta asta) {
         return findOffertaNonRifiutataByUtenteAstaSilenziosa(idUtente, asta).isPresent();
     }
 
-    private Optional<Offerta> findOffertaNonRifiutataByUtenteAstaSilenziosa(UUID idUtente, Asta asta) {
+    public Optional<Offerta> findOffertaNonRifiutataByUtenteAstaSilenziosa(UUID idUtente, Asta asta) {
         if (!asta.getTipo().equals(TipoAsta.SILENZIOSA)) {
             return Optional.empty();
         }
@@ -121,7 +121,7 @@ public class OffertaService {
         if (statoOfferta.equals(StatoOfferta.NON_VINCENTE)) {
             return findAllByAsta(idAsta);
         } else if (statoOfferta.equals(StatoOfferta.VINCENTE)) {
-            return findPageOffertaVincenteByAsta(idAsta);
+            return findListOffertaVincenteByAsta(idAsta);
         } else return Collections.emptyList();
     }
 
@@ -135,7 +135,7 @@ public class OffertaService {
         }
     }
 
-    public List<Offerta> findPageOffertaVincenteByAsta(UUID idAsta) {
+    public List<Offerta> findListOffertaVincenteByAsta(UUID idAsta) {
         var spec = OffertaSpecs.hasAsta(idAsta).and(OffertaSpecs.hasStato(StatoOfferta.VINCENTE));
         return offertaRepository.findAll(spec);
     }
@@ -145,7 +145,7 @@ public class OffertaService {
         return offertaRepository.findOne(spec);
     }
 
-    private boolean confrontaPrezzoOffertaConPrezzoBaseAsta(BigDecimal prezzo, Asta asta) {
+    public boolean confrontaPrezzoOffertaConPrezzoBaseAsta(BigDecimal prezzo, Asta asta) { //possibile metodo da documentazione
         if (asta.getTipo().equals(TipoAsta.INVERSA)) {
             return prezzo.compareTo(asta.getPrezzoBase()) <= 0;
         } else if (asta.getTipo().equals(TipoAsta.SILENZIOSA)) {
@@ -155,7 +155,7 @@ public class OffertaService {
         }
     }
 
-    private boolean confrontaPrezzoNuovaOffertaConPrezzoOffertaVincente(Offerta nuovaOfferta, Offerta offertaVincente, Asta asta) {
+    public boolean confrontaPrezzoNuovaOffertaConPrezzoOffertaVincente(Offerta nuovaOfferta, Offerta offertaVincente, Asta asta) {
         if (asta.getTipo().equals(TipoAsta.INGLESE)) {
             return nuovaOfferta.getPrezzo().compareTo(offertaVincente.getPrezzo().add(asta.getSogliaRialzo())) >= 0;
         } else if (asta.getTipo().equals(TipoAsta.INVERSA)) {
@@ -164,7 +164,7 @@ public class OffertaService {
         return false;
     }
 
-    public Offerta modificaStatoOfferta(UUID idOfferta, StatoOfferta stato) throws SchedulerException {
+    public Offerta modificaStatoOfferta(UUID idOfferta, StatoOfferta stato) throws SchedulerException { //possibile test per documentazione
         var spec = OffertaSpecs.hasId(idOfferta);
         Optional<Offerta> offerta = offertaRepository.findOne(spec);
         if (offerta.isPresent()) {

@@ -61,7 +61,7 @@ class CartaServiceTest {
         utente.setCarte(new HashSet<>());
 
         when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
-        when(cartaRepositoryMock.save(any(Carta.class))).thenReturn(nuovaCarta);
+        when(cartaRepositoryMock.save(nuovaCarta)).thenReturn(nuovaCarta);
 
         Carta result = cartaService.salvaCarta(nuovaCarta);
 

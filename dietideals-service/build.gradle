@@ -76,6 +76,9 @@ dependencies {
 	implementation 'com.google.firebase:firebase-admin:6.13.0'
 	implementation 'org.quartz-scheduler:quartz:2.3.2'
 	implementation 'org.springframework.boot:spring-boot-starter-quartz'
+	testImplementation 'org.powermock:powermock-core:2.0.9'
+	testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+	testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
 
 }
 
