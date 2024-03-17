@@ -4,6 +4,7 @@ import it.uninastudents.dietidealsservice.model.entity.Asta;
 import it.uninastudents.dietidealsservice.model.entity.Notifica;
 import it.uninastudents.dietidealsservice.model.entity.Offerta;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
+import it.uninastudents.dietidealsservice.model.entity.enums.StatoAsta;
 import it.uninastudents.dietidealsservice.model.entity.enums.StatoOfferta;
 import it.uninastudents.dietidealsservice.model.entity.enums.TipoAsta;
 import it.uninastudents.dietidealsservice.repository.AstaRepository;
@@ -11,9 +12,7 @@ import it.uninastudents.dietidealsservice.repository.OffertaRepository;
 import it.uninastudents.dietidealsservice.utils.NotificaUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,6 +21,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,6 +39,9 @@ class OffertaServiceTest {
 
     @MockBean
     private OffertaRepository offertaRepositoryMock;
+
+    @MockBean
+    private Scheduler schedulerMock;
 
     @MockBean
     private AstaRepository astaRepositoryMock;
@@ -552,6 +556,250 @@ class OffertaServiceTest {
         verify(offertaServiceSpy, times(1)).modificaTriggerJobTermineAsta(nuovoNomeJob, nuovoGruppoJob, nuovoTrigger);
 
         assertEquals(offerta, risultato);
+    }
+
+    @Test
+    void modificaTriggerJobTermineAstaTest() throws SchedulerException {
+        JobDetail jobDetailMock = mock(JobDetail.class);
+        Trigger triggerMock = mock(Trigger.class);
+
+        when(schedulerMock.getJobDetail(any(JobKey.class))).thenReturn(jobDetailMock);
+        when(schedulerMock.deleteJob(any(JobKey.class))).thenReturn(true);
+        when(schedulerMock.scheduleJob(any(JobDetail.class), eq(triggerMock))).thenReturn(null);
+
+        offertaService.modificaTriggerJobTermineAsta("nomeJob", "gruppoJob", triggerMock);
+
+        verify(schedulerMock, times(1)).getJobDetail(any(JobKey.class));
+        verify(schedulerMock, times(1)).deleteJob(any(JobKey.class));
+        verify(schedulerMock, times(1)).scheduleJob(any(JobDetail.class), eq(triggerMock));
+    }
+
+    @Test
+    void modificaTriggerJobTermineAstaJobNonTrovatoTest() throws SchedulerException {
+        Trigger triggerMock = mock(Trigger.class);
+
+        when(schedulerMock.getJobDetail(any(JobKey.class))).thenReturn(null);
+
+        assertThrows(SchedulerException.class, () -> offertaService.modificaTriggerJobTermineAsta("nomeJob", "gruppoJob", triggerMock));
+
+        verify(schedulerMock, times(1)).getJobDetail(any(JobKey.class));
+    }
+
+    @Test
+    void salvaOffertaAstaNonTrovataTest() {
+        Utente utente = new Utente();
+        UUID idAsta = UUID.randomUUID();
+        BigDecimal prezzo = BigDecimal.valueOf(100);
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(astaRepositoryMock.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> offertaService.salvaOfferta(idAsta, prezzo));
+
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+        verify(astaRepositoryMock, times(1)).findById(any(UUID.class));
+    }
+
+    @Test
+    void salvaOffertaProprietarioOfferenteTest() {
+        Utente utente = new Utente();
+        Asta asta = new Asta();
+        asta.setStato(StatoAsta.ATTIVA);
+        UUID idAsta = UUID.randomUUID();
+        asta.setProprietario(utente);
+        asta.setId(idAsta);
+        BigDecimal prezzo = BigDecimal.valueOf(100);
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(astaRepositoryMock.findById(any(UUID.class))).thenReturn(Optional.of(asta));
+
+        assertThrows(IllegalArgumentException.class, () -> offertaService.salvaOfferta(idAsta, prezzo));
+
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+        verify(astaRepositoryMock, times(1)).findById(any(UUID.class));
+    }
+
+    @Test
+    void salvaOffertaAstaTerminataTest() {
+        Utente utente = new Utente();
+        Asta asta = new Asta();
+        asta.setStato(StatoAsta.TERMINATA);
+        UUID idAsta = UUID.randomUUID();
+        asta.setId(idAsta);
+        BigDecimal prezzo = BigDecimal.valueOf(100);
+
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(astaRepositoryMock.findById(any(UUID.class))).thenReturn(Optional.of(asta));
+
+        assertThrows(IllegalArgumentException.class, () -> offertaService.salvaOfferta(idAsta, prezzo));
+
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+        verify(astaRepositoryMock, times(1)).findById(any(UUID.class));
+    }
+
+    @Test
+    void salvaOffertaPrezzoNonValidoTest() {
+        Utente utente = new Utente();
+        Asta asta = new Asta();
+        asta.setStato(StatoAsta.ATTIVA);
+        UUID idAsta = UUID.randomUUID();
+        asta.setId(idAsta);
+        BigDecimal prezzo = BigDecimal.valueOf(100);
+
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(astaRepositoryMock.findById(any(UUID.class))).thenReturn(Optional.of(asta));
+        doReturn(false).when(offertaServiceSpy).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+
+        assertThrows(IllegalArgumentException.class, () -> offertaServiceSpy.salvaOfferta(idAsta, prezzo));
+
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+        verify(offertaServiceSpy, times(1)).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+        verify(astaRepositoryMock, times(1)).findById(any(UUID.class));
+    }
+
+    @Test
+    void salvaOffertaConsecutivaAstaSilenziosaTest() {
+        Utente utente = new Utente();
+        utente.setId(UUID.randomUUID());
+        Asta asta = new Asta();
+        asta.setStato(StatoAsta.ATTIVA);
+        asta.setTipo(TipoAsta.SILENZIOSA);
+        UUID idAsta = UUID.randomUUID();
+        asta.setId(idAsta);
+        BigDecimal prezzo = BigDecimal.valueOf(100);
+
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(astaRepositoryMock.findById(any(UUID.class))).thenReturn(Optional.of(asta));
+        doReturn(true).when(offertaServiceSpy).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+        doReturn(true).when(offertaServiceSpy).controlloOfferteUtenteAstaSilenziosa(utente.getId(), asta);
+
+        assertThrows(IllegalArgumentException.class, () -> offertaServiceSpy.salvaOfferta(idAsta, prezzo));
+
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+        verify(offertaServiceSpy, times(1)).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+        verify(astaRepositoryMock, times(1)).findById(any(UUID.class));
+        verify(offertaServiceSpy, times(1)).controlloOfferteUtenteAstaSilenziosa(utente.getId(), asta);
+
+    }
+
+    @Test
+    void salvaOffertaAstaSilenziosaTest() throws SchedulerException {
+        BigDecimal prezzo = BigDecimal.valueOf(100);
+        Offerta offerta = new Offerta();
+        offerta.setPrezzo(prezzo);
+        offerta.setStato(StatoOfferta.NON_VINCENTE);
+        Asta asta = new Asta();
+        asta.setOfferte(new HashSet<>());
+        asta.setStato(StatoAsta.ATTIVA);
+        asta.setTipo(TipoAsta.SILENZIOSA);
+        UUID idAsta = UUID.randomUUID();
+        asta.setId(idAsta);
+        offerta.setAsta(asta);
+        Utente utente = new Utente();
+        utente.setId(UUID.randomUUID());
+        utente.setOfferte(new HashSet<>());
+        offerta.setUtente(utente);
+
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(astaRepositoryMock.findById(any(UUID.class))).thenReturn(Optional.of(asta));
+        doReturn(true).when(offertaServiceSpy).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+        doReturn(false).when(offertaServiceSpy).controlloOfferteUtenteAstaSilenziosa(utente.getId(), asta);
+        when(offertaRepositoryMock.save(any(Offerta.class))).thenReturn(offerta);
+
+        Offerta risultato = offertaService.salvaOfferta(idAsta, prezzo);
+
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+        verify(offertaServiceSpy, times(1)).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+        verify(astaRepositoryMock, times(1)).findById(any(UUID.class));
+        verify(offertaServiceSpy, times(1)).controlloOfferteUtenteAstaSilenziosa(utente.getId(), asta);
+        verify(offertaRepositoryMock, times(1)).save(any(Offerta.class));
+        assertEquals(offerta, risultato);
+
+    }
+
+    @Test
+    void salvaOffertaAstaInversaTest() throws SchedulerException {
+        BigDecimal prezzo = BigDecimal.valueOf(100);
+        Offerta offerta = new Offerta();
+        offerta.setPrezzo(prezzo);
+        offerta.setStato(StatoOfferta.VINCENTE);
+        Asta asta = new Asta();
+        asta.setOfferte(new HashSet<>());
+        asta.setStato(StatoAsta.ATTIVA);
+        asta.setTipo(TipoAsta.INVERSA);
+        UUID idAsta = UUID.randomUUID();
+        asta.setId(idAsta);
+        offerta.setAsta(asta);
+        Utente utente = new Utente();
+        utente.setId(UUID.randomUUID());
+        utente.setOfferte(new HashSet<>());
+        offerta.setUtente(utente);
+        Optional<Offerta> offertaVincente = Optional.of(new Offerta());
+
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(astaRepositoryMock.findById(any(UUID.class))).thenReturn(Optional.of(asta));
+        doReturn(offertaVincente).when(offertaServiceSpy).findOptionalOffertaVincenteByAsta(idAsta);
+        doReturn(true).when(offertaServiceSpy).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+        doNothing().when(offertaServiceSpy).gestisciOffertaVincente(any(Optional.class), any(Utente.class), any(Offerta.class), any(Asta.class));
+        when(offertaRepositoryMock.save(any(Offerta.class))).thenReturn(offerta);
+
+        Offerta risultato = offertaServiceSpy.salvaOfferta(idAsta, prezzo);
+
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+        verify(offertaServiceSpy, times(1)).findOptionalOffertaVincenteByAsta(idAsta);
+        verify(offertaServiceSpy, times(1)).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+        verify(astaRepositoryMock, times(1)).findById(any(UUID.class));
+        verify(offertaServiceSpy, times(1)).gestisciOffertaVincente(any(Optional.class), any(Utente.class), any(Offerta.class), any(Asta.class));
+        verify(offertaRepositoryMock, times(1)).save(any(Offerta.class));
+        assertEquals(offerta, risultato);
+
+    }
+
+    @Test
+    void salvaOffertaAstaIngleseTest() throws SchedulerException {
+        BigDecimal prezzo = BigDecimal.valueOf(100);
+        Offerta offerta = new Offerta();
+        offerta.setPrezzo(prezzo);
+        offerta.setStato(StatoOfferta.VINCENTE);
+        Asta asta = new Asta();
+        asta.setIntervalloTempoOfferta(30);
+        asta.setOfferte(new HashSet<>());
+        asta.setStato(StatoAsta.ATTIVA);
+        asta.setTipo(TipoAsta.INGLESE);
+        UUID idAsta = UUID.randomUUID();
+        asta.setId(idAsta);
+        offerta.setAsta(asta);
+        Utente utente = new Utente();
+        utente.setId(UUID.randomUUID());
+        utente.setOfferte(new HashSet<>());
+        offerta.setUtente(utente);
+        Optional<Offerta> offertaVincente = Optional.of(new Offerta());
+
+        when(utenteServiceMock.getUtenteAutenticato()).thenReturn(utente);
+        when(astaRepositoryMock.findById(any(UUID.class))).thenReturn(Optional.of(asta));
+        doReturn(offertaVincente).when(offertaServiceSpy).findOptionalOffertaVincenteByAsta(idAsta);
+        doReturn(true).when(offertaServiceSpy).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+        doNothing().when(offertaServiceSpy).modificaTriggerJobTermineAsta("termineAstaJob_" + asta.getId().toString(), "termineAsta",
+                TriggerBuilder.newTrigger()
+                        .withIdentity("termineAstaTrigger_" + asta.getId().toString())
+                        .startAt(java.util.Date.from(Instant.now().plus(asta.getIntervalloTempoOfferta(), ChronoUnit.MINUTES)))
+                        .build());
+        doNothing().when(offertaServiceSpy).gestisciOffertaVincente(any(Optional.class), any(Utente.class), any(Offerta.class), any(Asta.class));
+        when(offertaRepositoryMock.save(any(Offerta.class))).thenReturn(offerta);
+
+        Offerta risultato = offertaServiceSpy.salvaOfferta(idAsta, prezzo);
+
+        verify(utenteServiceMock, times(1)).getUtenteAutenticato();
+        verify(offertaServiceSpy, times(1)).findOptionalOffertaVincenteByAsta(idAsta);
+        verify(offertaServiceSpy, times(1)).confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
+        verify(astaRepositoryMock, times(1)).findById(any(UUID.class));
+        verify(offertaServiceSpy, times(1)).modificaTriggerJobTermineAsta("termineAstaJob_" + asta.getId().toString(), "termineAsta",
+                TriggerBuilder.newTrigger()
+                        .withIdentity("termineAstaTrigger_" + asta.getId().toString())
+                        .startAt(java.util.Date.from(Instant.now().plus(asta.getIntervalloTempoOfferta(), ChronoUnit.MINUTES)))
+                        .build());
+        verify(offertaServiceSpy, times(1)).gestisciOffertaVincente(any(Optional.class), any(Utente.class), any(Offerta.class), any(Asta.class));
+        verify(offertaRepositoryMock, times(1)).save(any(Offerta.class));
+        assertEquals(offerta, risultato);
+
     }
 }
 

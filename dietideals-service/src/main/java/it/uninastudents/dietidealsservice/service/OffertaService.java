@@ -49,7 +49,7 @@ public class OffertaService {
 
     public Offerta salvaOfferta(UUID idAsta, BigDecimal prezzo) throws SchedulerException {
         Utente utente = utenteService.getUtenteAutenticato();
-        var asta = astaRepository.findById(idAsta).orElseThrow(() -> new IllegalArgumentException("ASTA NON TROVATA")); //gestione errori
+        var asta = astaRepository.findById(idAsta).orElseThrow(() -> new IllegalArgumentException("ASTA NON TROVATA"));
         if (utente.equals(asta.getProprietario())) {
             throw new IllegalArgumentException("IMPOSSIBILE OFFRIRE AD UNA PROPRIA ASTA");
         }

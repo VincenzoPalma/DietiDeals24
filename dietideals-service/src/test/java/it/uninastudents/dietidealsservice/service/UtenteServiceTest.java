@@ -3,7 +3,10 @@ package it.uninastudents.dietidealsservice.service;
 import com.google.firebase.auth.UserRecord;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import it.uninastudents.dietidealsservice.model.User;
+import it.uninastudents.dietidealsservice.model.dto.CreaContoCorrente;
 import it.uninastudents.dietidealsservice.model.dto.DatiProfiloUtente;
+import it.uninastudents.dietidealsservice.model.dto.UtenteRegistrazione;
+import it.uninastudents.dietidealsservice.model.entity.ContoCorrente;
 import it.uninastudents.dietidealsservice.model.entity.Utente;
 import it.uninastudents.dietidealsservice.model.entity.enums.RuoloUtente;
 import it.uninastudents.dietidealsservice.repository.ContoCorrenteRepository;
@@ -11,6 +14,7 @@ import it.uninastudents.dietidealsservice.repository.UtenteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -273,23 +277,50 @@ class UtenteServiceTest {
 
     }
 
-//    @Test
-//    void registraUtenteCompratoreTest() throws Exception {
-//        UtenteRegistrazione utenteRegistrazione = new UtenteRegistrazione();
-//        utenteRegistrazione.setEmail("email@gmail.com");
-//        utenteRegistrazione.setPassword("password");
-//        utenteRegistrazione.setUsername("username");
-//        Utente utente = new Utente();
-//        utente.setRuolo(RuoloUtente.COMPRATORE);
-//        utente.setEmail(utenteRegistrazione.getEmail());
-//        utente.setUsername(utenteRegistrazione.getUsername());
-//
-//        when(utenteRepositoryMock.save(utente)).thenReturn(utente);
-//
-//        Utente risultato = utenteService.registraUtente(utenteRegistrazione, null);
-//
-//        verify(utenteRepositoryMock, times(2)).save(utente);
-//        assertEquals(utente, risultato);
-//
-//    }
+    /*I seguenti test relativi al metodo registraUtente sono relativi al caso in cui
+    il parametro idFireBase sia non null, ovvero una registrazione con credenziali di terze parti
+    */
+    @Test
+    void registraUtenteCompratoreTest() {
+        UtenteRegistrazione utenteRegistrazione = new UtenteRegistrazione();
+        Utente utente = new Utente();
+        utente.setIdAuth("id auth");
+        utente.setRuolo(RuoloUtente.COMPRATORE);
+        ArgumentCaptor<Utente> utenteCaptor = ArgumentCaptor.forClass(Utente.class);
+
+        when(utenteRepositoryMock.save(any(Utente.class))).thenReturn(utente);
+
+        Utente risultato = utenteService.registraUtente(utenteRegistrazione, "id auth");
+
+        verify(utenteRepositoryMock, times(2)).save(utenteCaptor.capture());
+        assertEquals(utente, risultato);
+
+    }
+
+    @Test
+    void registraUtenteVenditoreTest() {
+        UtenteRegistrazione utenteRegistrazione = new UtenteRegistrazione();
+        utenteRegistrazione.setContoCorrente(new CreaContoCorrente());
+        Utente utente = new Utente();
+        utente.setContoCorrente(new ContoCorrente());
+        utente.setIdAuth("id auth");
+        utente.setRuolo(RuoloUtente.VENDITORE);
+        ArgumentCaptor<Utente> utenteCaptor = ArgumentCaptor.forClass(Utente.class);
+
+        when(utenteRepositoryMock.save(any(Utente.class))).thenReturn(utente);
+        when(contoCorrenteRepositoryMock.save(any(ContoCorrente.class))).thenReturn(utente.getContoCorrente());
+
+        Utente risultato = utenteService.registraUtente(utenteRegistrazione, "id auth");
+
+        verify(utenteRepositoryMock, times(3)).save(utenteCaptor.capture());
+        verify(contoCorrenteRepositoryMock, times(1)).save(any(ContoCorrente.class));
+        assertEquals(utente, risultato);
+
+    }
+
+    @Test
+    void registraUtenteEccezioneTest() {
+        Utente risultato = utenteService.registraUtente(null, "id auth");
+        assertNull(risultato);
+    }
 }

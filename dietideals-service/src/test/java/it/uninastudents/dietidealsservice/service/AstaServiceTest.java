@@ -13,7 +13,7 @@ import it.uninastudents.dietidealsservice.repository.AstaRepository;
 import it.uninastudents.dietidealsservice.utils.ControllerUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.quartz.SchedulerException;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,6 +25,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
@@ -43,6 +46,8 @@ class AstaServiceTest {
     AstaService astaServiceSpy;
     @MockBean
     private AstaRepository astaRepositoryMock;
+    @MockBean
+    private Scheduler schedulerMock;
     @MockBean
     private UtenteService utenteServiceMock;
     @Autowired
@@ -281,35 +286,35 @@ class AstaServiceTest {
         verify(astaServiceSpy, times(1)).getAstePartecipateByUtente(pageable);
     }
 
-//    @Test
-//    void schedulerScadenzaAstaIngleseTest() throws JsonProcessingException, SchedulerException {
-//        ObjectMapper objectMapper = mock(ObjectMapper.class);
-//        Scheduler scheduler = mock(Scheduler.class);
-//
-//        Asta asta = EnhancedRandomBuilder.aNewEnhancedRandom().nextObject(Asta.class);
-//        asta.setId(UUID.randomUUID());
-//        asta.setTipo(TipoAsta.INGLESE);
-//        asta.setIntervalloTempoOfferta(60);
-//
-//        String astaJson = "{\"id\":" + asta.getId() + ",\"tipo\":\"INGLESE\",\"intervalloTempoOfferta\":60}";
-//
-//        JobDetail jobDetail = JobBuilder.newJob(TermineAstaJob.class)
-//                .withIdentity("termineAstaJob_" + asta.getId().toString(), "termineAsta")
-//                .usingJobData("asta", astaJson)
-//                .build();
-//
-//        Trigger triggerAsteInglese = TriggerBuilder.newTrigger()
-//                .withIdentity("termineAstaTrigger_" + asta.getId().toString())
-//                .startAt(java.util.Date.from(Instant.now().plus(asta.getIntervalloTempoOfferta(), ChronoUnit.MINUTES)))
-//                .build();
-//
-//        when(objectMapper.writeValueAsString(asta)).thenReturn(astaJson);
-//
-//        // Test
-//        astaService.schedulerScadenzaAsta(asta);
-//
-//        // Verify
-//        verify(objectMapper).writeValueAsString(asta);
-//        verify(scheduler).scheduleJob(jobDetail, triggerAsteInglese);
-//    }
+    @Test
+    void schedulerScadenzaAstaIngleseTest() throws SchedulerException, JsonProcessingException {
+        Asta asta = new Asta();
+        asta.setTipo(TipoAsta.INGLESE);
+        asta.setId(UUID.randomUUID());
+        asta.setIntervalloTempoOfferta(30);
+        Trigger triggerAsteInglese = TriggerBuilder.newTrigger()
+                .withIdentity("termineAstaTrigger_" + asta.getId().toString())
+                .startAt(java.util.Date.from(Instant.now().plus(asta.getIntervalloTempoOfferta(), ChronoUnit.MINUTES)))
+                .build();
+
+        astaService.schedulerScadenzaAsta(asta);
+
+        verify(schedulerMock).scheduleJob(any(JobDetail.class), eq(triggerAsteInglese));
+    }
+
+    @Test
+    void schedulerScadenzaAstaNonIngleseTest() throws SchedulerException, JsonProcessingException {
+        Asta asta = new Asta();
+        asta.setTipo(TipoAsta.INVERSA); //valido anche per aste silenziose
+        asta.setDataScadenza(OffsetDateTime.now().plusDays(5));
+        asta.setId(UUID.randomUUID());
+        Trigger triggerAsteInversaSilenziosa = TriggerBuilder.newTrigger()
+                .withIdentity("termineAstaTrigger_" + asta.getId().toString())
+                .startAt(java.util.Date.from(asta.getDataScadenza().toInstant()))
+                .build();
+
+        astaService.schedulerScadenzaAsta(asta);
+
+        verify(schedulerMock).scheduleJob(any(JobDetail.class), eq(triggerAsteInversaSilenziosa));
+    }
 }
