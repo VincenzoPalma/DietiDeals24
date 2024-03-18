@@ -60,9 +60,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         }
         var user = mapFirebaseTokenToInternalUser(decodedToken);
         if (user != null) {
-            // Al posto di "null" in authorities, mettere il ruolo "UtenteRuolo" come SimpleGrantedAuthority, per poter usare i preauthorize di spring
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_Compratore");//??
-            var authentication = new UsernamePasswordAuthenticationToken(user, new Credentials(type, decodedToken, token, session), List.of(authority));
+            var authentication = new UsernamePasswordAuthenticationToken(user, new Credentials(type, decodedToken, token, session), null);
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
