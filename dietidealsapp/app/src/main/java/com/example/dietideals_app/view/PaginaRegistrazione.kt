@@ -242,6 +242,7 @@ fun SchermataRegistrazione(navController: NavController) {
                             ) else Color.Black,
                         )
                     },
+                    singleLine = true,
                     shape = RoundedCornerShape(15.dp),
                     value = email,
                     onValueChange = {
