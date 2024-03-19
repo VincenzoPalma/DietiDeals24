@@ -128,7 +128,7 @@ fun SchermataProfiloUtente(navController: NavController) {
             }
 
             override fun onError() {
-                // Gestisci l'errore
+                //
             }
         }
     }

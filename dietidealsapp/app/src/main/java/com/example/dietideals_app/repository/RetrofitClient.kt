@@ -21,7 +21,7 @@ import kotlin.coroutines.suspendCoroutine
 
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:8080/"
+    private const val BASE_URL = "http://15.237.127.165:8080/"
 
     private suspend fun getAccessToken(): String? {
         return suspendCoroutine { continuation ->

@@ -1308,7 +1308,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                                 categoriaSelezionata?.let {
                                                     CreaAsta(
                                                         nomeAsta,
-                                                        "descrizione",
+                                                        descrizione,
                                                         LocalDate.of(1970, 1, 1)
                                                             .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000))
                                                             .toString() + "T" + LocalTime.now().hour + ":" + LocalTime.now().minute + ":" + "00+00:00",
