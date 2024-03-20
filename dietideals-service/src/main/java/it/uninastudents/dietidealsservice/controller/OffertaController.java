@@ -21,7 +21,6 @@ public class OffertaController {
 
     private final OffertaService offertaService;
 
-    //usare uno di questi metodi per la parte del testing nella documentazione
     @PostMapping("/aste/{idAsta}/offerte")
     public ResponseEntity<Offerta> saveOfferta(@PathVariable UUID idAsta, @RequestBody @Positive BigDecimal prezzo) throws SchedulerException {
         Offerta offerta = offertaService.salvaOfferta(idAsta, prezzo);
