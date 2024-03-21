@@ -212,7 +212,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     {
                         Icon(
                             painter = upgradeIcon,
-                            contentDescription = "Diventa Venditore",
+                            contentDescription = "Diventa Venditore", //TODO cambiare scritta quando si è venditori
                             modifier = Modifier.size(30.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))

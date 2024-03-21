@@ -38,6 +38,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -60,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -77,6 +79,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.dto.CreaAsta
 import com.example.dietideals_app.model.enum.CategoriaAsta
@@ -169,6 +172,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
     var categoriaSelezionata by remember { mutableStateOf<CategoriaAsta?>(null) }
     var isUtenteVenditore by remember { mutableStateOf(false) }
     var alertDialog by remember { mutableStateOf(false) }
+    var snackbarVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         isUtenteVenditore = viewModel.isUtenteVenditore()
@@ -249,6 +253,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
         selectedMinute = 60
         categoriaSelezionata = null
         state.selectedDateMillis = null
+        selectedImageUri = null
 
     }
     ConstraintLayout(
@@ -564,21 +569,32 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .offset(y = 10.dp),
+                                        .offset(y = 40.dp),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
+                                    AsyncImage(
+                                        model = selectedImageUri,
+                                        contentDescription = "immagine Asta",
+                                        modifier = Modifier.height(180.dp)
+                                            .clickable { getContent.launch("image/*") },
+                                        placeholder = defaultImage,
+                                        error = defaultImage,
+                                        contentScale = ContentScale.Crop,
+                                        onSuccess = { snackbarVisible = true }
+                                    )
+                                }
 
-                                    Box(modifier = Modifier.size(250.dp)) {
-                                        Image(
-                                            painter = defaultImage,
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .matchParentSize()
-                                                .clickable { getContent.launch("image/*") }
-                                        )
-                                    }
-
-
+                                if(snackbarVisible)
+                                {
+                                    Snackbar(
+                                        modifier = Modifier.padding(16.dp,bottom = 64.dp).align(Alignment.BottomCenter),
+                                        content = { Text(text = "Immagine caricata con successo!")},
+                                        action = {
+                                            TextButton(onClick = { snackbarVisible = false}) {
+                                                Text(text = "OK")
+                                            }
+                                        }
+                                    )
                                 }
                                 HorizontalDivider(
                                     // Aggiungi una linea divisoria
@@ -1019,20 +1035,37 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .offset(y = 10.dp),
+                                        .offset(y = 40.dp),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
 
-                                    Box(modifier = Modifier.size(250.dp)) {
-                                        Image(
-                                            painter = defaultImage,
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .matchParentSize()
-                                                .clickable { getContent.launch("image/*") }
+                                    AsyncImage(
+                                        model = selectedImageUri,
+                                        contentDescription = "immagine Asta",
+                                        modifier = Modifier.height(200.dp)
+                                            .clickable { getContent.launch("image/*") },
+                                        placeholder = defaultImage,
+                                        error = defaultImage,
+                                        contentScale = ContentScale.Crop,
+                                        onSuccess = { snackbarVisible = true }
+                                    )
+                                }
+
+                                    if(snackbarVisible)
+                                    {
+                                        Snackbar(
+                                            modifier = Modifier.padding(16.dp,bottom = 64.dp).align(Alignment.BottomCenter),
+                                            content = { Text(text = "Immagine caricata con successo!")},
+                                            action = {
+                                                TextButton(onClick = { snackbarVisible = false}) {
+                                                    Text(text = "OK")
+                                                }
+                                            }
                                         )
                                     }
-                                }
+
+
+
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.End,
@@ -1239,7 +1272,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     modifier = Modifier
                                         .offset(y = 340.dp)
                                         .fillMaxWidth()
-                                        .height(100.dp)
+                                        .height(150.dp)
                                         .focusRequester(descrizioneFocusRequested),
                                     keyboardOptions = KeyboardOptions.Default.copy(
                                         imeAction = ImeAction.Done
@@ -1266,6 +1299,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                         }
 
                         1 -> {
+
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -1282,20 +1316,36 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .offset(y = 10.dp),
+                                        .offset(y = 40.dp),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
 
-                                    Box(modifier = Modifier.size(250.dp)) {
-                                        Image(
-                                            painter = defaultImage,
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .matchParentSize()
-                                                .clickable { getContent.launch("image/*") }
-                                        )
-                                    }
+                                    AsyncImage(
+                                        model = selectedImageUri,
+                                        contentDescription = "immagine Asta",
+                                        modifier = Modifier.height(200.dp)
+                                            .clickable { getContent.launch("image/*") },
+                                        placeholder = defaultImage,
+                                        error = defaultImage,
+                                        contentScale = ContentScale.Crop ,
+                                        onSuccess = {snackbarVisible = true}
+                                    )
                                 }
+
+                                if(snackbarVisible)
+                                {
+                                    Snackbar(
+                                        modifier = Modifier.padding(16.dp,bottom = 64.dp).align(Alignment.BottomCenter),
+                                        content = { Text(text = "Immagine caricata con successo!")},
+                                        action = {
+                                            TextButton(onClick = { snackbarVisible = false}) {
+                                                Text(text = "OK")
+                                            }
+                                        }
+                                    )
+                                }
+
+
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.End,
@@ -1303,6 +1353,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     ElevatedButton(
                                         onClick = {
                                             CoroutineScope(Dispatchers.Main).launch {
+                                                snackbarVisible = false
                                                 caricaImmagineAsta()
                                                 delay(1500)
                                                 categoriaSelezionata?.let {

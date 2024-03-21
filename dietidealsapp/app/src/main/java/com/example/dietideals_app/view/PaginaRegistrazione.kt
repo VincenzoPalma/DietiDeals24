@@ -44,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -78,6 +79,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.dietideals_app.R
 import com.example.dietideals_app.model.ContoCorrente
 import com.example.dietideals_app.model.dto.UtenteRegistrazione
@@ -663,7 +665,7 @@ fun SchermataRegistrazione(navController: NavController) {
             ConstraintLayout(
                 modifier = Modifier.fillMaxSize()
             ) {
-                val (backgroundImage, title, profileImage, testoImmagine, testoOpzionale, bottoneAvanti) = createRefs()
+                val (backgroundImage, title, snackbar, profileImage, testoImmagine, testoOpzionale, bottoneAvanti) = createRefs()
 
                 // Immagine di sfondo
                 Image(
@@ -726,8 +728,13 @@ fun SchermataRegistrazione(navController: NavController) {
                             selectedImageUri = it
                         }
                     }
-
-                Box(
+                var snackbarVisible by remember { mutableStateOf(false) }
+                AsyncImage(model = selectedImageUri,
+                    placeholder = painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
+                    error =  painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
+                    onSuccess = {snackbarVisible = true},
+                    contentDescription ="immagine profilo",
+                    contentScale = ContentScale.Crop ,
                     modifier = Modifier
                         .constrainAs(profileImage) {
                             top.linkTo(parent.top)
@@ -737,25 +744,24 @@ fun SchermataRegistrazione(navController: NavController) {
                         }
                         .size(150.dp)
                         .clip(CircleShape)
-                        .background(
-                            Color.White
-                        )
                         .clickable {
                             getContent.launch("image/*")
                         }
-                        .border(5.dp, Color(0xFF0EA639), shape = CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-
-                    Icon(
-                        painter = if (selectedImageUri == null) painterResource(id = R.drawable.baseline_brush_24) else painterResource(
-                            id = R.drawable.baseline_done_24
-                        ),
-                        contentDescription = null,
-                        tint = Color(0xFF0EA639),
-                        modifier = Modifier.size(70.dp)
+                        .border(5.dp, Color(0xFF0EA639), shape = CircleShape))
+                if(snackbarVisible)
+                {
+                    Snackbar(
+                        modifier = Modifier.padding(16.dp).constrainAs(snackbar){
+                            bottom.linkTo(parent.bottom)},
+                        content = { Text(text = "Immagine caricata con successo!")},
+                        action = {
+                            TextButton(onClick = { snackbarVisible = false}) {
+                                Text(text = "OK")
+                            }
+                        }
                     )
                 }
+
 
                 Text(
                     text = "IMMAGINE DEL PROFILO",
@@ -775,10 +781,11 @@ fun SchermataRegistrazione(navController: NavController) {
                     }, fontFamily = titleCustomFont
                 )
                 ElevatedButton(onClick = {
+                    snackbarVisible = false
                     currentPage.intValue = 2
                 }, modifier = Modifier.constrainAs(bottoneAvanti) {
                     top.linkTo(testoOpzionale.bottom, margin = 100.dp)
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
+                    bottom.linkTo(parent.bottom, margin = 25.dp)
                     end.linkTo(parent.end, margin = 16.dp)
                 }) {
                     Text(text = "AVANTI", fontSize = 20.sp)

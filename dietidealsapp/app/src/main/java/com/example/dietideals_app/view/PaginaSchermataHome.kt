@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -308,19 +309,19 @@ fun SchermataHome(navController: NavController) {
                                                     .padding(2.dp)
                                                     .clickable {
                                                         val gson = GsonBuilder()
-                                                        .registerTypeAdapter(
-                                                            OffsetDateTime::class.java,
-                                                            JsonSerializer<OffsetDateTime> { src, _, _ ->
-                                                                JsonPrimitive(src.toString())
-                                                            }
-                                                        )
-                                                        .create()
+                                                            .registerTypeAdapter(
+                                                                OffsetDateTime::class.java,
+                                                                JsonSerializer<OffsetDateTime> { src, _, _ ->
+                                                                    JsonPrimitive(src.toString())
+                                                                }
+                                                            )
+                                                            .create()
                                                         navController.currentBackStackEntry?.savedStateHandle?.set(
                                                             key = "asta",
                                                             value = gson.toJson(notifica.asta)
                                                         )
                                                         navController.navigate("SchermataPaginaAsta")
-                                                               },
+                                                    },
                                                 ) {
                                                 Row(
                                                     verticalAlignment = Alignment.CenterVertically,
@@ -819,134 +820,101 @@ fun SchermataHome(navController: NavController) {
                         }
 
                     }
+                    val listState = rememberLazyGridState()
+                    Box(modifier = Modifier
+                        .constrainAs(listaAste) {
+                            top.linkTo(filterBar.bottom)
+                        }
+                        .fillMaxWidth()
+                        .height(650.dp)
+                        .padding(16.dp),) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            state = listState,
+                            content = {
+                                items(asteVisualizzate.size ) { index ->
+                                    val asta = asteVisualizzate[index]
+                                    var open by remember {
+                                        mutableStateOf(false)
+                                    }
+                                    val type = asta.tipo
+                                    val category = asta.categoria
 
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier
-                            .constrainAs(listaAste) {
-                                top.linkTo(filterBar.bottom)
-                            }
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        items(asteVisualizzate.size) { index ->
-                            val asta = asteVisualizzate[index]
-                            var open by remember {
-                                mutableStateOf(false)
-                            }
-                            val type = asta.tipo
-                            val category = asta.categoria
-
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .height(if (!open) 230.dp else 290.dp)
-                                    .padding(8.dp)
-                                    .clickable {
-                                        val gson = GsonBuilder()
-                                            .registerTypeAdapter(
-                                                OffsetDateTime::class.java,
-                                                JsonSerializer<OffsetDateTime> { src, _, _ ->
-                                                    JsonPrimitive(src.toString())
-                                                }
-                                            )
-                                            .create()
-                                        navController.currentBackStackEntry?.savedStateHandle?.set(
-                                            key = "asta",
-                                            value = gson.toJson(asta)
-                                        )
-                                        navController.navigate("SchermataPaginaAsta")
-                                    },
-                                elevation = CardDefaults.cardElevation(
-                                    defaultElevation = 6.dp
-                                ),
-                                content = {
-                                    Column(
-                                        modifier = Modifier.padding(bottom = 8.dp),
-                                    ) {
-                                        AsyncImage(
-                                            model = asta.urlFoto,
-                                            placeholder = painterResource(id = R.drawable.defaultimage),
-                                            error = painterResource(id = R.drawable.defaultimage),
-                                            contentDescription = "Immagine dell'asta",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(110.dp)
-                                                .clip(
-                                                    shape = RoundedCornerShape(
-                                                        bottomStart = 16.dp,
-                                                        bottomEnd = 16.dp
+                                    ElevatedCard(
+                                        modifier = Modifier
+                                            .height(if (!open) 230.dp else 290.dp)
+                                            .padding(8.dp)
+                                            .clickable {
+                                                val gson = GsonBuilder()
+                                                    .registerTypeAdapter(
+                                                        OffsetDateTime::class.java,
+                                                        JsonSerializer<OffsetDateTime> { src, _, _ ->
+                                                            JsonPrimitive(src.toString())
+                                                        }
                                                     )
-                                                ),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                        Spacer(modifier = Modifier.height(5.dp))
-
-                                        Text(
-                                            text = asta.nome,
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 20.sp,
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            textAlign = TextAlign.Center
-                                        )
-                                        Row(
-                                            horizontalArrangement = Arrangement.Start,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(start = 8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.category_icon),
-                                                contentDescription = "category",
-                                                Modifier.size(15.dp)
-                                            )
-                                            Text(
-                                                text = category.name.replace("_", " ", false),
-                                                fontSize = 12.sp,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
-                                        Row(
-                                            horizontalArrangement = Arrangement.Start,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(start = 8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.auction_type_icon),
-                                                contentDescription = "auctionType",
-                                                Modifier.size(15.dp)
-                                            )
-                                            Text(
-                                                text = type.name,
-                                                fontSize = 12.sp,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
-                                        if (open) {
-                                            Row(
-                                                horizontalArrangement = Arrangement.Start,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(start = 8.dp),
-                                                verticalAlignment = Alignment.CenterVertically
+                                                    .create()
+                                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                    key = "asta",
+                                                    value = gson.toJson(asta)
+                                                )
+                                                navController.navigate("SchermataPaginaAsta")
+                                            },
+                                        elevation = CardDefaults.cardElevation(
+                                            defaultElevation = 6.dp
+                                        ),
+                                        content = {
+                                            Column(
+                                                modifier = Modifier.padding(bottom = 8.dp),
                                             ) {
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.baseline_attach_money_24),
-                                                    contentDescription = "auctionType",
-                                                    Modifier.size(15.dp)
+                                                AsyncImage(
+                                                    model = asta.urlFoto,
+                                                    placeholder = painterResource(id = R.drawable.defaultimage),
+                                                    error = painterResource(id = R.drawable.defaultimage),
+                                                    contentDescription = "Immagine dell'asta",
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(110.dp)
+                                                        .clip(
+                                                            shape = RoundedCornerShape(
+                                                                bottomStart = 16.dp,
+                                                                bottomEnd = 16.dp
+                                                            )
+                                                        ),
+                                                    contentScale = ContentScale.Crop
                                                 )
-                                                Text(
-                                                    text = "Prezzo Base " + asta.prezzoBase,
-                                                    fontSize = 12.sp,
-                                                    overflow = TextOverflow.Ellipsis
-                                                )
+                                                Spacer(modifier = Modifier.height(5.dp))
 
-                                            }
-                                            if (type.name == "INGLESE") {
+                                                Text(
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    maxLines = 1,
+                                                    text = asta.nome,
+                                                    color = Color.Black,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 16.sp,
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    textAlign = TextAlign.Center
+                                                )
+                                                Row(
+                                                    horizontalArrangement = Arrangement.Start,
+                                                    modifier = Modifier.fillMaxWidth()
+                                                        .padding(start = 8.dp),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.category_icon),
+                                                        contentDescription = "category",
+                                                        Modifier.size(15.dp)
+                                                    )
+                                                    Text(
+                                                        text = category.name.replace(
+                                                            "_",
+                                                            " ",
+                                                            false
+                                                        ),
+                                                        fontSize = 12.sp,
+                                                        overflow = TextOverflow.Ellipsis
+                                                    )
+                                                }
                                                 Row(
                                                     horizontalArrangement = Arrangement.Start,
                                                     modifier = Modifier
@@ -955,103 +923,151 @@ fun SchermataHome(navController: NavController) {
                                                     verticalAlignment = Alignment.CenterVertically
                                                 ) {
                                                     Icon(
-                                                        painter = painterResource(id = R.drawable.growth),
-                                                        contentDescription = "SogliaRialzo",
+                                                        painter = painterResource(id = R.drawable.auction_type_icon),
+                                                        contentDescription = "auctionType",
                                                         Modifier.size(15.dp)
                                                     )
                                                     Text(
-                                                        text = asta.sogliaRialzo.toString(),
+                                                        text = type.name,
                                                         fontSize = 12.sp,
                                                         overflow = TextOverflow.Ellipsis
                                                     )
                                                 }
-                                            }
-                                            Row(
-                                                horizontalArrangement = Arrangement.Start,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(start = 8.dp),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                when (type.name) {
-                                                    "INVERSA" -> {
+                                                if (open) {
+                                                    Row(
+                                                        horizontalArrangement = Arrangement.Start,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(start = 8.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
                                                         Icon(
-                                                            painter = painterResource(id = R.drawable.baseline_calendar_month_24),
-                                                            contentDescription = "TimeLeft",
-                                                            Modifier.size(15.dp),
-                                                            tint = MaterialTheme.colorScheme.error
+                                                            painter = painterResource(id = R.drawable.baseline_attach_money_24),
+                                                            contentDescription = "auctionType",
+                                                            Modifier.size(15.dp)
                                                         )
-                                                        asta.dataScadenza?.format(
-                                                            DateTimeFormatter.ofPattern("dd/MM/yy")
+                                                        Text(
+                                                            text = "Prezzo Base " + asta.prezzoBase,
+                                                            fontSize = 12.sp,
+                                                            overflow = TextOverflow.Ellipsis
                                                         )
-                                                            ?.let {
-                                                                Text(
-                                                                    it,
-                                                                    fontSize = 12.sp,
-                                                                    modifier = Modifier.padding(
-                                                                        start = 4.dp
-                                                                    ),
-                                                                    color = MaterialTheme.colorScheme.error
-                                                                )
-                                                            }
-                                                    }
-
-                                                    "SILENZIOSA" -> {
-                                                        Icon(
-                                                            painter = painterResource(id = R.drawable.baseline_calendar_month_24),
-                                                            contentDescription = "TimeLeft",
-                                                            Modifier.size(15.dp),
-                                                            tint = MaterialTheme.colorScheme.error
-                                                        )
-                                                        asta.dataScadenza?.plusHours(1)?.format(
-                                                            DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")
-                                                        )
-                                                            ?.let {
-                                                                Text(
-                                                                    it,
-                                                                    fontSize = 12.sp,
-                                                                    modifier = Modifier.padding(
-                                                                        start = 4.dp
-                                                                    ),
-                                                                    color = MaterialTheme.colorScheme.error
-                                                                )
-                                                            }
 
                                                     }
+                                                    if (type.name == "INGLESE") {
+                                                        Row(
+                                                            horizontalArrangement = Arrangement.Start,
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .padding(start = 8.dp),
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Icon(
+                                                                painter = painterResource(id = R.drawable.growth),
+                                                                contentDescription = "SogliaRialzo",
+                                                                Modifier.size(15.dp)
+                                                            )
+                                                            Text(
+                                                                text = asta.sogliaRialzo.toString(),
+                                                                fontSize = 12.sp,
+                                                                overflow = TextOverflow.Ellipsis
+                                                            )
+                                                        }
+                                                    }
+                                                    Row(
+                                                        horizontalArrangement = Arrangement.Start,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(start = 8.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        when (type.name) {
+                                                            "INVERSA" -> {
+                                                                Icon(
+                                                                    painter = painterResource(id = R.drawable.baseline_calendar_month_24),
+                                                                    contentDescription = "TimeLeft",
+                                                                    Modifier.size(15.dp),
+                                                                    tint = MaterialTheme.colorScheme.error
+                                                                )
+                                                                asta.dataScadenza?.format(
+                                                                    DateTimeFormatter.ofPattern("dd/MM/yy")
+                                                                )
+                                                                    ?.let {
+                                                                        Text(
+                                                                            it,
+                                                                            fontSize = 12.sp,
+                                                                            modifier = Modifier.padding(
+                                                                                start = 4.dp
+                                                                            ),
+                                                                            color = MaterialTheme.colorScheme.error
+                                                                        )
+                                                                    }
+                                                            }
+
+                                                            "SILENZIOSA" -> {
+                                                                Icon(
+                                                                    painter = painterResource(id = R.drawable.baseline_calendar_month_24),
+                                                                    contentDescription = "TimeLeft",
+                                                                    Modifier.size(15.dp),
+                                                                    tint = MaterialTheme.colorScheme.error
+                                                                )
+                                                                asta.dataScadenza?.plusHours(1)
+                                                                    ?.format(
+                                                                        DateTimeFormatter.ofPattern(
+                                                                            "dd/MM/yy HH:mm"
+                                                                        )
+                                                                    )
+                                                                    ?.let {
+                                                                        Text(
+                                                                            it,
+                                                                            fontSize = 12.sp,
+                                                                            modifier = Modifier.padding(
+                                                                                start = 4.dp
+                                                                            ),
+                                                                            color = MaterialTheme.colorScheme.error
+                                                                        )
+                                                                    }
+
+                                                            }
+                                                        }
+
+                                                    }
+
                                                 }
 
+                                                Row(
+                                                    horizontalArrangement = Arrangement.Center,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(),
+                                                    verticalAlignment = Alignment.Bottom
+                                                ) {
+                                                    IconButton(onClick = { open = !open }
+                                                    ) {
+                                                        Icon(
+                                                            painter = painterResource(id = if (!open) R.drawable.baseline_keyboard_arrow_down_24 else R.drawable.baseline_keyboard_arrow_up_24),
+                                                            contentDescription = "ViewMore"
+                                                        )
+                                                    }
+
+
+                                                }
+
+
                                             }
                                         }
-
-                                        Row(
-                                            horizontalArrangement = Arrangement.Center,
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            verticalAlignment = Alignment.Bottom
-                                        ) {
-                                            IconButton(onClick = { open = !open }
-                                            ) {
-                                                Icon(
-                                                    painter = painterResource(id = if (!open) R.drawable.baseline_keyboard_arrow_down_24 else R.drawable.baseline_keyboard_arrow_up_24),
-                                                    contentDescription = "ViewMore"
-                                                )
-                                            }
-
-
-                                        }
-
-
-                                    }
+                                    )
                                 }
-                            )
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(200.dp))
+                            }
+
+                        )
+                        val isScrolledToEnd = listState.layoutInfo.visibleItemsInfo
+                        .lastOrNull()?.index == (12 * (numeroPagina+1)) -1
+                        if(isScrolledToEnd) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .wrapContentWidth(),
-                                horizontalArrangement = Arrangement.Center
+                                    .align(Alignment.BottomCenter)
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.Center,
                             ) {
                                 ElevatedButton(
                                     onClick = {
@@ -1074,16 +1090,8 @@ fun SchermataHome(navController: NavController) {
                                     Text(text = "Carica Altre")
                                 }
                             }
-
-
                         }
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(150.dp)
-                            )
-                        }
+
                     }
 
                     NavigationBar(
