@@ -145,7 +145,7 @@ public class OffertaService {
         return offertaRepository.findOne(spec);
     }
 
-    public boolean confrontaPrezzoOffertaConPrezzoBaseAsta(BigDecimal prezzo, Asta asta) { //possibile metodo da documentazione
+    public boolean confrontaPrezzoOffertaConPrezzoBaseAsta(BigDecimal prezzo, Asta asta) {
         if (asta.getTipo().equals(TipoAsta.INVERSA)) {
             return prezzo.compareTo(asta.getPrezzoBase()) <= 0;
         } else if (asta.getTipo().equals(TipoAsta.SILENZIOSA)) {
@@ -164,7 +164,7 @@ public class OffertaService {
         return false;
     }
 
-    public Offerta modificaStatoOfferta(UUID idOfferta, StatoOfferta stato) throws SchedulerException { //possibile test per documentazione
+    public Offerta modificaStatoOfferta(UUID idOfferta, StatoOfferta stato) throws SchedulerException {
         var spec = OffertaSpecs.hasId(idOfferta);
         Optional<Offerta> offerta = offertaRepository.findOne(spec);
         if (offerta.isPresent()) {
