@@ -142,7 +142,6 @@ fun SchermataCreazioneAsta(navController: NavController) {
     )
     val MAX_LENGTH = 300
     val colorGreen = 0xFF0EA639
-    val colorRed = 0xFF9B0404
     val storage = Firebase.storage
     val storageRef = storage.reference
     val defaultImage = painterResource(id = R.drawable.defaultimage)
@@ -1083,12 +1082,22 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                                 caricaImmagineAsta()
                                                 delay(1500)
                                                 categoriaSelezionata?.let {
+                                                    var adjustedHour = selectedHour
+                                                    if (adjustedHour == 0) {
+                                                        adjustedHour = 23
+                                                    } else {
+                                                        adjustedHour -= 1
+                                                    }
+                                                    val formattedHour = adjustedHour.toString().padStart(2, '0')
+                                                    val formattedMinute = selectedMinute.toString().padStart(2, '0')
+                                                    val dataAsta = LocalDate.of(1970, 1, 1)
+                                                        .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000))
+                                                        .toString() + "T" + formattedHour + ":" + formattedMinute + ":" + "00+00:00"
+
                                                     CreaAsta(
                                                         nomeAsta,
                                                         descrizione,
-                                                        LocalDate.of(1970, 1, 1)
-                                                            .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000))
-                                                            .toString() + "T" + selectedHour + ":" + selectedMinute + ":" + "00+00:00",
+                                                        dataAsta,
                                                         prezzo,
                                                         null,
                                                         null,
@@ -1366,12 +1375,20 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                                 caricaImmagineAsta()
                                                 delay(1500)
                                                 categoriaSelezionata?.let {
+                                                    var adjustedHour = LocalTime.now().hour
+                                                    if (adjustedHour == 0) {
+                                                        adjustedHour = 23
+                                                    } else {
+                                                        adjustedHour -= 1
+                                                    }
+                                                    val formattedHour = adjustedHour.toString().padStart(2, '0')
+                                                    val formattedMinute = LocalTime.now().minute.toString().padStart(2, '0')
                                                     CreaAsta(
                                                         nomeAsta,
                                                         descrizione,
                                                         LocalDate.of(1970, 1, 1)
                                                             .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000))
-                                                            .toString() + "T" + LocalTime.now().hour + ":" + LocalTime.now().minute + ":" + "00+00:00",
+                                                            .toString() + "T" + formattedHour + ":" + formattedMinute + ":" + "00+00:00",
                                                         prezzo,
                                                         null,
                                                         null,
