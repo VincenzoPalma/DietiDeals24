@@ -77,6 +77,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.Year
+import java.time.YearMonth
 
 class PaginaPagamentiProfilo : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,7 +116,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
     var isDialogVisible by remember { mutableStateOf(false) }
     var deleteAlertDialog by remember { mutableStateOf(false) }
     val state = rememberDatePickerState()
-    val openDialog = remember { mutableStateOf(false) }
     var listaCarte by remember { mutableStateOf<List<Carta>>(emptyList()) }
     var meseScadenza by remember { mutableStateOf("") }
     var annoScadenza by remember { mutableStateOf("") }
@@ -149,21 +151,58 @@ fun SchermataPagamentiProfilo(navController: NavController) {
         numeroCarta = ""
         codiceCvvCvc = ""
         state.selectedDateMillis = null
+        meseScadenza = ""
+        annoScadenza = ""
     }
 
     fun checkField(): Boolean {
         return nomeTitolare.isNotEmpty() && numeroCarta.isNotEmpty() && codiceCvvCvc.isNotEmpty()
     }
 
-    fun isNumeroCartaValid(): Boolean {
+    fun isNumeroCartaValid(numeroCarta: String): Boolean {
+        val tipoCarta = when (numeroCarta.firstOrNull()) {
+            '4' -> "Visa"
+            '5' -> "Mastercard"
+            else -> return false // Tipo di carta non supportato
+        }
         // Controllo se il numero di carta ha una lunghezza valida
-        return numeroCarta.length == 16
+        return numeroCarta.length == 16 && (tipoCarta == "Visa" || tipoCarta == "Mastercard")
     }
 
-    fun isCvcValid(): Boolean {
+    fun isCvcValid(codiceCvvCvc: String): Boolean {
         // Controllo se il numero di carta ha una lunghezza valida
         return codiceCvvCvc.length == 3
     }
+
+
+
+    fun isCreditCardDateValid(meseScadenza: String, annoScadenza: String): Boolean {
+        // Ottieni il mese corrente e l'anno corrente
+        val currentYearMonth = YearMonth.now()
+        val currentYear = Year.now().value
+        val currentMonth = LocalDate.now().monthValue
+
+        try {
+            // Converte il mese e l'anno inseriti in interi
+            val mese = meseScadenza.toInt()
+            val anno = annoScadenza.toInt()
+
+            // Verifica se il mese e l'anno sono validi e maggiori della data attuale
+            if (mese in 1..12 && anno >= currentYear && (anno > currentYear || mese > currentMonth)) {
+                val cardYearMonth = YearMonth.of(anno, mese)
+                return !cardYearMonth.isBefore(currentYearMonth)
+            }
+        } catch (e: NumberFormatException) {
+            // Errore di conversione
+            return false
+        }
+
+        return false
+    }
+
+
+
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -350,17 +389,17 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                             OutlinedTextField(
                                 value = numeroCarta,
                                 onValueChange = {
-                                    numeroCarta = it
-                                    isNumeroCartaValid()
+                                    numeroCarta = it.take(16)
+                                    isNumeroCartaValid(it)
                                 },
                                 shape = RoundedCornerShape(15.dp),
                                 trailingIcon = {
                                     Icon(
                                         painter = painterResource(
-                                            id = if (isNumeroCartaValid()) R.drawable.baseline_done_24 else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) R.drawable.baseline_close_24 else R.drawable.empty
+                                            id = if (isNumeroCartaValid(numeroCarta)) R.drawable.baseline_done_24 else if (!isNumeroCartaValid(numeroCarta) && numeroCarta.isNotEmpty()) R.drawable.baseline_close_24 else R.drawable.empty
                                         ),
                                         contentDescription = "",
-                                        tint = if (isNumeroCartaValid()) Color(0xFF0EA639) else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) Color(
+                                        tint = if (isNumeroCartaValid(numeroCarta)) Color(0xFF0EA639) else if (!isNumeroCartaValid(numeroCarta) && numeroCarta.isNotEmpty()) Color(
                                             0xFF9B0404
                                         ) else Color.Gray,
                                         modifier = if (numeroCarta.isEmpty()) Modifier.alpha(0f) else Modifier
@@ -378,12 +417,12 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     onNext = { meseScadenzaFocusRequested.requestFocus() }
                                 ),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = if (isNumeroCartaValid()) Color(
+                                    unfocusedBorderColor = if (isNumeroCartaValid(numeroCarta)) Color(
                                         0xFF0EA639
-                                    ) else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) Color(
+                                    ) else if (!isNumeroCartaValid(numeroCarta) && numeroCarta.isNotEmpty()) Color(
                                         0xFF9B0404
                                     ) else Color.Gray,
-                                    focusedBorderColor = if (isNumeroCartaValid()) Color(0xFF0EA639) else if (!isNumeroCartaValid() && numeroCarta.isNotEmpty()) Color(
+                                    focusedBorderColor = if (isNumeroCartaValid(numeroCarta)) Color(0xFF0EA639) else if (!isNumeroCartaValid(numeroCarta) && numeroCarta.isNotEmpty()) Color(
                                         0xFF9B0404
                                     ) else Color.Gray,
                                 ),
@@ -453,8 +492,8 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 )
                                 OutlinedTextField(
                                     value = codiceCvvCvc, onValueChange = {
-                                        codiceCvvCvc = it
-                                        isCvcValid()
+                                        codiceCvvCvc = it.take(3)
+                                        isCvcValid(codiceCvvCvc)
                                     },
                                     shape = RoundedCornerShape(15.dp),
                                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -465,12 +504,12 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                         .height(50.dp)
                                         .focusRequester(cvcFocusRequested),
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = if (isCvcValid()) Color(
+                                        unfocusedBorderColor = if (isCvcValid(codiceCvvCvc)) Color(
                                             0xFF0EA639
-                                        ) else if (!isCvcValid() && codiceCvvCvc.isNotEmpty()) Color(
+                                        ) else if (!isCvcValid(codiceCvvCvc) && codiceCvvCvc.isNotEmpty()) Color(
                                             0xFF9B0404
                                         ) else Color.Gray,
-                                        focusedBorderColor = if (isCvcValid()) Color(0xFF0EA639) else if (!isCvcValid() && codiceCvvCvc.isNotEmpty()) Color(
+                                        focusedBorderColor = if (isCvcValid(codiceCvvCvc)) Color(0xFF0EA639) else if (!isCvcValid(codiceCvvCvc) && codiceCvvCvc.isNotEmpty()) Color(
                                             0xFF9B0404
                                         ) else Color.Gray,
                                     )
@@ -487,7 +526,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 TextButton(onClick = { isDialogVisible = false }) {
                                     Text("ANNULLA", color = Color(0xFF9B0404))
                                 }
-                                Spacer(modifier = Modifier.width(80.dp))
+                                Spacer(modifier = Modifier.width(60.dp))
 
 
                                 TextButton(
@@ -506,33 +545,12 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                             isDialogVisible = false
                                         }
                                     },
-                                    enabled = checkField()
+                                    enabled = checkField() && isCreditCardDateValid(meseScadenza,annoScadenza) && isCvcValid(codiceCvvCvc) && isNumeroCartaValid(numeroCarta)
                                 ) {
                                     Text("CONFERMA")
                                 }
                             }
-                            if (openDialog.value) {
-                                DatePickerDialog(onDismissRequest = {
-                                    openDialog.value = false
-                                }, confirmButton = {
-                                    TextButton(onClick = {
-                                        cvcFocusRequested.requestFocus()
-                                        openDialog.value = false
-                                    }) {
-                                        Text("CONFERMA")
-                                    }
-                                }, dismissButton = {
-                                    TextButton(onClick = {
-                                        openDialog.value = false
-                                    }) {
-                                        Text("CANCEL")
-                                    }
-                                }) {
-                                    DatePicker(
-                                        state = state
-                                    )
-                                }
-                            }
+
 
 
                         }
@@ -569,7 +587,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                         viewModel.mostraCarte(listener)
                                         deleteAlertDialog = false
                                     }
-                                }, modifier = Modifier.align(Alignment.CenterEnd),
+                                },
                                 content = { Text(text = "Si", fontSize = 15.sp) }
                             )
                         },
@@ -584,9 +602,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                         fontSize = 15.sp,
                                         color = MaterialTheme.colorScheme.error
                                     )
-                                }, modifier = Modifier
-                                    .align(Alignment.CenterStart)
-                                    .offset((-80).dp)
+                                }
                             )
 
                         }

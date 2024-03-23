@@ -107,7 +107,7 @@ class PaginaModificaProfiloUtente : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchermataModificaProfilo(navController: NavController) {
-    val MAX_LENGTH = 300
+    val maxLength = 300
     val viewModel = PaginaModificaProfiloUtenteViewModel()
     val sitoWebFocusRequester = remember { FocusRequester() }
     val addressFocusRequester = remember { FocusRequester() }
@@ -163,6 +163,13 @@ fun SchermataModificaProfilo(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
     ) {
+
+
+        fun isValidWebsite(website: String): Boolean {
+            val websiteRegex = """^www\.\w+\.(com|it)$""".toRegex()
+            return website.isBlank() || website.matches(websiteRegex)
+        }
+
         val (background, topBar, immagineProfilo, nomeUtente, usernameUtente, shortBioLabel, shortBioUtente, sitoWebUtente, social, bottoneModifica, indirizzoUtente, bottoneConferma) = createRefs()
         Box(
             modifier = Modifier
@@ -303,7 +310,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End)
                 {
                     Text(
-                        text = shortBio.length.toString() + "/$MAX_LENGTH",
+                        text = shortBio.length.toString() + "/$maxLength",
                         color = Color.LightGray,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Right
@@ -363,19 +370,22 @@ fun SchermataModificaProfilo(navController: NavController) {
             }
             Spacer(modifier = Modifier.width(7.dp))
 
-            OutlinedTextField(value = sitoWeb, onValueChange = { sitoWeb = it },
+            OutlinedTextField(
+                value = sitoWeb,
+                onValueChange = { sitoWeb = it },
+                label = { Text("Sito Web") },
+                placeholder = { Text("www.sitoweb.com/it",modifier = Modifier.fillMaxWidth()) },
                 shape = RoundedCornerShape(15.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next
                 ),
                 modifier = Modifier
                     .focusRequester(sitoWebFocusRequester)
-                    .height(50.dp),
+                    .height(60.dp),
                 keyboardActions = KeyboardActions(
                     onNext = { addressFocusRequester.requestFocus() }
-                ))
-
-
+                )
+            )
         }
 
 
@@ -658,7 +668,8 @@ fun SchermataModificaProfilo(navController: NavController) {
                         delay(800)
                         navController.popBackStack()
                     }
-                }
+                },
+                enabled = isValidWebsite(sitoWeb)
             ) {
                 Text(text = "Conferma")
 

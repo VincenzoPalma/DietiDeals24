@@ -641,6 +641,8 @@ fun SchermataHome(navController: NavController) {
                                             Checkbox(
                                                 checked = checkInglese,
                                                 onCheckedChange = {
+                                                    checkSilenziosa = false
+                                                    checkInversa = false
                                                     checkInglese = it
                                                     tipoAstaRicerca = if (checkInglese) {
                                                         TipoAsta.INGLESE
@@ -661,6 +663,8 @@ fun SchermataHome(navController: NavController) {
                                             Checkbox(
                                                 checked = checkInversa,
                                                 onCheckedChange = {
+                                                    checkInglese = false
+                                                    checkSilenziosa = false
                                                     checkInversa = it
                                                     tipoAstaRicerca = if (checkInversa) {
                                                         TipoAsta.INVERSA
@@ -682,6 +686,8 @@ fun SchermataHome(navController: NavController) {
                                             Checkbox(
                                                 checked = checkSilenziosa,
                                                 onCheckedChange = {
+                                                    checkInglese = false
+                                                    checkInversa = false
                                                     checkSilenziosa = it
                                                     tipoAstaRicerca = if (checkSilenziosa) {
                                                         TipoAsta.SILENZIOSA

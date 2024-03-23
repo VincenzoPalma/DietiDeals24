@@ -202,7 +202,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (backgroundImage, title, appIcon, emailTextField, passwordTextField, sociaText, accessButton, socialIcons, registratiText, registerButton) = createRefs()
+        val (backgroundImage, title, appIcon, emailTextField, passwordTextField, errorText, socialText, accessButton, socialIcons, registratiText, registerButton) = createRefs()
 
         // Immagine di background
         Image(
@@ -289,12 +289,6 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
         // Text field password
         OutlinedTextField(
             supportingText = {
-                Text(
-                    text = if (loginFailed) "Utente non trovato" else "",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
             },
             value = password,
             visualTransformation = if (passwordVisibile) VisualTransformation.None else PasswordVisualTransformation(),
@@ -344,6 +338,21 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
                 }
             )
         )
+        if(loginFailed)
+        {
+            Row(modifier = Modifier.constrainAs(errorText){
+                top.linkTo(passwordTextField.bottom)
+            }
+            ) {
+                Text(
+                    text = "Utente non trovato",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+
+                    )
+            }
+        }
 
         // Bottone accesso
         ElevatedButton(
@@ -366,7 +375,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
             },
             modifier = Modifier
                 .constrainAs(accessButton) {
-                    top.linkTo(passwordTextField.bottom, margin = 16.dp)
+                    top.linkTo(if(loginFailed)errorText.bottom else passwordTextField.bottom, margin = 16.dp)
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
                 }
@@ -501,7 +510,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .constrainAs(sociaText)
+                .constrainAs(socialText)
                 {
                     top.linkTo(accessButton.bottom, margin = 16.dp)
                 }, horizontalArrangement = Arrangement.Center
@@ -512,7 +521,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
         Row(
             modifier = Modifier
                 .constrainAs(socialIcons) {
-                    top.linkTo(sociaText.bottom)
+                    top.linkTo(socialText.bottom)
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
                 }

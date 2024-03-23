@@ -56,7 +56,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -93,7 +92,6 @@ class PaginaProfiloUtente : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
                 }
             }
         }
@@ -112,7 +110,6 @@ fun SchermataProfiloUtente(navController: NavController) {
     val previousBackStackEntry = navController.previousBackStackEntry
     val previousDestination = previousBackStackEntry?.destination?.route
     val upgradeIcon = painterResource(id = R.drawable.baseline_upgrade_24)
-    val accountIcon = painterResource(id = R.drawable.baseline_account_circle_24)
     val menuIcon = painterResource(id = R.drawable.baseline_menu_24)
     val backIcon = painterResource(id = R.drawable.baseline_arrow_back_24)
     val logoutIcon = painterResource(id = R.drawable.baseline_logout_24)
@@ -139,6 +136,11 @@ fun SchermataProfiloUtente(navController: NavController) {
     }
 
     LaunchedEffect(Unit) {
+        scope.launch {
+            drawerState.apply {
+                close()
+            }
+        }
         snackbarVisible = false
         val uuidString =
             navController.previousBackStackEntry?.savedStateHandle?.get<String>("idUtente")
@@ -173,21 +175,6 @@ fun SchermataProfiloUtente(navController: NavController) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { navController.navigate("SchermataProfiloUtente") }
-                    )
-                    {
-                        Icon(
-                            painter = accountIcon,
-                            contentDescription = "Profilo Utente",
-                            modifier = Modifier.size(30.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Dati Utente", fontSize = 25.sp)
-                    }
-
-
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -314,8 +301,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         scrolledContainerColor = Color.White
                     ),
                     actions = {
-                        if (previousDestination == "SchermataPaginaAsta") {
-                        } else {
+                        if (previousDestination != "SchermataPaginaAsta") {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_brush_24),
                                 contentDescription = null,
@@ -400,7 +386,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                 )
 
                 Text(
-                    text = ((if (datiProfiloUtente?.descrizione == null) "" else datiProfiloUtente!!.descrizione).toString()),
+                    text = ((if (datiProfiloUtente?.descrizione == null) "Non disponibile" else datiProfiloUtente!!.descrizione).toString()),
                     modifier = Modifier
                         .constrainAs(shortBioUtente)
                         {
@@ -409,8 +395,8 @@ fun SchermataProfiloUtente(navController: NavController) {
                         .padding(8.dp)
                         .fillMaxWidth(),
                     textAlign = TextAlign.Left,
+                    color = if (datiProfiloUtente?.descrizione == null) Color.Gray else Color.Black,
                     fontSize = 20.sp,
-                    color = Color.Black,
                     maxLines = 6,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -431,9 +417,6 @@ fun SchermataProfiloUtente(navController: NavController) {
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
                     )
-                    val context = LocalContext.current
-
-
                     val text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
@@ -595,20 +578,17 @@ fun SchermataProfiloUtente(navController: NavController) {
                     )
 
                     Spacer(modifier = Modifier.width(10.dp))
-                    datiProfiloUtente?.indirizzo?.let {
+
+                    (if (datiProfiloUtente?.indirizzo == null) "Non disponibile" else datiProfiloUtente?.indirizzo)?.let {
                         Text(
                             text = it,
                             modifier = Modifier.weight(1f),
-                            fontSize = 15.sp,
-                            color = Color.Black,
-
-                            )
+                            color = if (datiProfiloUtente?.indirizzo == null) Color.Gray else Color.Black,
+                            fontSize = 20.sp
+                        )
                     }
-
-
                 }
                 if (previousDestination == "SchermataPaginaAsta") {
-                } else {
                     NavigationBar(
                         tonalElevation = 30.dp,
                         modifier = Modifier
@@ -687,12 +667,9 @@ fun SchermataProfiloUtente(navController: NavController) {
                                     )
                                 }
                             )
-
                         }
                     )
-
                 }
-
             }
 
         }

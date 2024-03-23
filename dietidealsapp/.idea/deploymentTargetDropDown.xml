@@ -2,20 +2,48 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="app">
+      <entry key="DietiDeals24">
         <State>
-          <targetSelectedWithDropDown>
+          <runningDeviceTargetSelectedWithDropDown>
             <Target>
-              <type value="QUICK_BOOT_TARGET" />
+              <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\vince\.android\avd\Medium_Phone_API_30.avd" />
+                  <type value="SERIAL_NUMBER" />
+                  <value value="adb-1b9f83fe-PGf9BZ._adb-tls-connect._tcp" />
                 </Key>
               </deviceKey>
             </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-02-28T10:15:31.024337400Z" />
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-03-23T13:06:07.045275400Z" />
+        </State>
+      </entry>
+      <entry key="PreviewRegisterScreen">
+        <State />
+      </entry>
+      <entry key="PreviewSchermataCreazioneAsta">
+        <State />
+      </entry>
+      <entry key="PreviewSchermataGestioneAste">
+        <State />
+      </entry>
+      <entry key="PreviewSchermataHome">
+        <State />
+      </entry>
+      <entry key="PreviewSchermataProfiloUtente">
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="SERIAL_NUMBER" />
+                  <value value="adb-GIBMH64DCEZT89Q8-2VEP5k._adb-tls-connect._tcp" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-03-10T10:57:59.745661200Z" />
         </State>
       </entry>
     </value>
