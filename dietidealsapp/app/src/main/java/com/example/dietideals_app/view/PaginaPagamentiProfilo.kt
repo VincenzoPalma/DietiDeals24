@@ -77,9 +77,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
 
 class PaginaPagamentiProfilo : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -317,7 +314,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                 Dialog(onDismissRequest = { isDialogVisible = false }) {
                     Card(
                         modifier = Modifier
-                            .fillMaxWidth(0.9f)
+                            .fillMaxWidth(1f)
                             .padding(16.dp)
                     ) {
                         Column(
@@ -410,8 +407,9 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     .padding(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                TextField(value = meseScadenza,
-                                    label = {Text(text = "Mese")},
+                                TextField(
+                                    value = meseScadenza,
+                                    label = { Text(text = "Mese") },
                                     singleLine = true,
                                     onValueChange = { newValue ->
                                         val input = newValue.take(2)
@@ -437,7 +435,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 TextField(
                                     value = annoScadenza,
                                     singleLine = true,
-                                    label = {Text(text = "Anno")},
+                                    label = { Text(text = "Anno") },
                                     onValueChange = {
                                         it.take(4)
                                         annoScadenza = it
@@ -496,9 +494,15 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     onClick = {
                                         CoroutineScope(Dispatchers.IO).launch {
                                             viewModel.salvaCarta(
-                                                CreaCarta(numeroCarta, nomeTitolare, codiceCvvCvc,
-                                                    if (meseScadenza.toInt() < 10) {"$annoScadenza-0$meseScadenza-01T00:00:00+00:00"} else {"$annoScadenza-$meseScadenza-01T00:00:00+00:00"}
-                                                ), listener)
+                                                CreaCarta(
+                                                    numeroCarta, nomeTitolare, codiceCvvCvc,
+                                                    if (meseScadenza.toInt() < 10) {
+                                                        "$annoScadenza-0$meseScadenza-01T00:00:00+00:00"
+                                                    } else {
+                                                        "$annoScadenza-$meseScadenza-01T00:00:00+00:00"
+                                                    }
+                                                ), listener
+                                            )
                                             isDialogVisible = false
                                         }
                                     },
@@ -566,7 +570,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                         deleteAlertDialog = false
                                     }
                                 }, modifier = Modifier.align(Alignment.CenterEnd),
-                                content = { Text(text = "Cancella", fontSize = 15.sp) }
+                                content = { Text(text = "Si", fontSize = 15.sp) }
                             )
                         },
                         dismissButton = {
@@ -576,7 +580,7 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 },
                                 content = {
                                     Text(
-                                        text = "Annulla",
+                                        text = "No",
                                         fontSize = 15.sp,
                                         color = MaterialTheme.colorScheme.error
                                     )

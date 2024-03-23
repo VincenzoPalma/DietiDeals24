@@ -8,7 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -191,10 +190,14 @@ fun SchermataCreazioneAsta(navController: NavController) {
         }
 
     fun isScadenzaValid(): Boolean {
-        if ((selectedTabIndex.intValue == 1 || selectedTabIndex.intValue == 2) && !(LocalDate.of(1970, 1, 1)
+        if ((selectedTabIndex.intValue == 1 || selectedTabIndex.intValue == 2) && !(LocalDate.of(
+                1970,
+                1,
+                1
+            )
                 .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000)))
-                .isBefore(LocalDate.now().plusDays(31)))
-        {
+                .isBefore(LocalDate.now().plusDays(31))
+        ) {
             return false
         }
         if (selectedTabIndex.intValue == 1) {
@@ -575,7 +578,8 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     AsyncImage(
                                         model = selectedImageUri,
                                         contentDescription = "immagine Asta",
-                                        modifier = Modifier.height(180.dp)
+                                        modifier = Modifier
+                                            .height(180.dp)
                                             .clickable { getContent.launch("image/*") },
                                         placeholder = defaultImage,
                                         error = defaultImage,
@@ -584,13 +588,14 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     )
                                 }
 
-                                if(snackbarVisible)
-                                {
+                                if (snackbarVisible) {
                                     Snackbar(
-                                        modifier = Modifier.padding(16.dp,bottom = 64.dp).align(Alignment.BottomCenter),
-                                        content = { Text(text = "Immagine caricata con successo!")},
+                                        modifier = Modifier
+                                            .padding(16.dp, bottom = 64.dp)
+                                            .align(Alignment.BottomCenter),
+                                        content = { Text(text = "Immagine caricata con successo!") },
                                         action = {
-                                            TextButton(onClick = { snackbarVisible = false}) {
+                                            TextButton(onClick = { snackbarVisible = false }) {
                                                 Text(text = "OK")
                                             }
                                         }
@@ -1042,7 +1047,8 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     AsyncImage(
                                         model = selectedImageUri,
                                         contentDescription = "immagine Asta",
-                                        modifier = Modifier.height(200.dp)
+                                        modifier = Modifier
+                                            .height(200.dp)
                                             .clickable { getContent.launch("image/*") },
                                         placeholder = defaultImage,
                                         error = defaultImage,
@@ -1051,18 +1057,19 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     )
                                 }
 
-                                    if(snackbarVisible)
-                                    {
-                                        Snackbar(
-                                            modifier = Modifier.padding(16.dp,bottom = 64.dp).align(Alignment.BottomCenter),
-                                            content = { Text(text = "Immagine caricata con successo!")},
-                                            action = {
-                                                TextButton(onClick = { snackbarVisible = false}) {
-                                                    Text(text = "OK")
-                                                }
+                                if (snackbarVisible) {
+                                    Snackbar(
+                                        modifier = Modifier
+                                            .padding(16.dp, bottom = 64.dp)
+                                            .align(Alignment.BottomCenter),
+                                        content = { Text(text = "Immagine caricata con successo!") },
+                                        action = {
+                                            TextButton(onClick = { snackbarVisible = false }) {
+                                                Text(text = "OK")
                                             }
-                                        )
-                                    }
+                                        }
+                                    )
+                                }
 
 
 
@@ -1158,7 +1165,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                 ) {
 
                                     Text(
-                                        text = "Prezzo minimo: € ",
+                                        text = "Prezzo base: € ",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp
                                     )
@@ -1283,7 +1290,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     horizontalArrangement = Arrangement.End,
                                 ) {
                                     ElevatedButton(
-                                        enabled = nomeAsta.isNotEmpty() && prezzo > BigDecimal.ZERO && state.selectedDateMillis != null && isScadenzaValid(),
+                                        enabled = nomeAsta.isNotEmpty() && prezzo > BigDecimal.ZERO && state.selectedDateMillis != null && isScadenzaValid() && descrizione.isNotEmpty(),
                                         onClick = { currentPage.intValue = 1 },
                                         modifier = Modifier
                                             .offset(y = 500.dp)
@@ -1323,22 +1330,24 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                     AsyncImage(
                                         model = selectedImageUri,
                                         contentDescription = "immagine Asta",
-                                        modifier = Modifier.height(200.dp)
+                                        modifier = Modifier
+                                            .height(200.dp)
                                             .clickable { getContent.launch("image/*") },
                                         placeholder = defaultImage,
                                         error = defaultImage,
-                                        contentScale = ContentScale.Crop ,
-                                        onSuccess = {snackbarVisible = true}
+                                        contentScale = ContentScale.Crop,
+                                        onSuccess = { snackbarVisible = true }
                                     )
                                 }
 
-                                if(snackbarVisible)
-                                {
+                                if (snackbarVisible) {
                                     Snackbar(
-                                        modifier = Modifier.padding(16.dp,bottom = 64.dp).align(Alignment.BottomCenter),
-                                        content = { Text(text = "Immagine caricata con successo!")},
+                                        modifier = Modifier
+                                            .padding(16.dp, bottom = 64.dp)
+                                            .align(Alignment.BottomCenter),
+                                        content = { Text(text = "Immagine caricata con successo!") },
                                         action = {
-                                            TextButton(onClick = { snackbarVisible = false}) {
+                                            TextButton(onClick = { snackbarVisible = false }) {
                                                 Text(text = "OK")
                                             }
                                         }

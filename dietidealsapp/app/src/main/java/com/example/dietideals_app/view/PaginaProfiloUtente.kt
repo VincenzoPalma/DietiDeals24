@@ -36,8 +36,10 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberDrawerState
@@ -132,8 +134,12 @@ fun SchermataProfiloUtente(navController: NavController) {
             }
         }
     }
+    var snackbarVisible by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(Unit) {
+        snackbarVisible = false
         val uuidString =
             navController.previousBackStackEntry?.savedStateHandle?.get<String>("idUtente")
         if (uuidString.isNullOrBlank()) {
@@ -207,7 +213,8 @@ fun SchermataProfiloUtente(navController: NavController) {
                                     if (isClosed) open() else close()
                                 }
                             }
-                            navController.navigate("SchermataDatiVenditore") }
+                            navController.navigate("SchermataDatiVenditore")
+                        }
                     )
                     {
                         Icon(
@@ -464,6 +471,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                 }
 
 
+
                 @Composable
                 fun IconWithText(
                     iconId: Int,
@@ -484,6 +492,9 @@ fun SchermataProfiloUtente(navController: NavController) {
                                 .clickable {
                                     if (url != null) {
                                         openUrl(prefix + url)
+                                    } else {
+                                        snackbarVisible = true
+
                                     }
                                 }
 
@@ -496,6 +507,9 @@ fun SchermataProfiloUtente(navController: NavController) {
                         )//
                     }
                 }
+
+
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -515,7 +529,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                     IconWithText(
                         iconId = R.drawable.instagramicon,
                         text = "Instagram",
-                        datiProfiloUtente?.instagram + "/", "www.instagram.com/", Color.Black
+                        datiProfiloUtente?.instagram, "www.instagram.com/", Color.Black
 
                     )
                     Spacer(
@@ -544,6 +558,23 @@ fun SchermataProfiloUtente(navController: NavController) {
                             .weight(1f)
                     )
                 }
+                if (snackbarVisible) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        Snackbar(
+                            modifier = Modifier.padding(16.dp, bottom = 80.dp, end = 16.dp),
+                            content = { Text(text = "Link social non disponibile") },
+                            action = {
+                                TextButton(onClick = { snackbarVisible = false }) {
+                                    Text(text = "OK")
+                                }
+                            }
+                        )
+                    }
+                }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

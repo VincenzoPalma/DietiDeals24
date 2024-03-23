@@ -1,7 +1,6 @@
 package com.example.dietideals_app.model
 
 import com.example.dietideals_app.model.enum.RuoloUtente
-import java.io.File
 import java.time.LocalDate
 import java.util.UUID
 
@@ -13,7 +12,7 @@ class Utente(
     val dataDiNascita: LocalDate,
     var partitaIva: String,
     var documentoRiconoscimento: String,
-    var immagineProfilo: String,
+    var urlFotoProfilo: String,
     var contoCorrente: ContoCorrente?,
     var carteAssociate: MutableSet<Carta> = mutableSetOf(),
     var aste: MutableSet<Asta> = mutableSetOf(),

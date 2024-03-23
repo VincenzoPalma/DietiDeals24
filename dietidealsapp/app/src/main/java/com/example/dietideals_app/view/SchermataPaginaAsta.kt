@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -244,6 +245,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     AsyncImage(
+                        contentScale = ContentScale.Crop,
                         model = astaVisualizzata?.urlFoto,
                         placeholder = painterResource(id = R.drawable.defaultimage),
                         error = painterResource(id = R.drawable.defaultimage),
@@ -258,7 +260,9 @@ fun SchermataPaginaAsta(navController: NavController) {
                             .border(
                                 1.dp, Color.Black, shape = RoundedCornerShape(
                                     bottomStart = 16.dp,
-                                    bottomEnd = 16.dp
+                                    bottomEnd = 16.dp,
+                                    topStart = 16.dp,
+                                    topEnd = 16.dp
                                 )
                             )
                             .fillMaxWidth()
@@ -505,8 +509,7 @@ fun SchermataPaginaAsta(navController: NavController) {
                                 ((astaVisualizzata?.tipo != TipoAsta.SILENZIOSA && !isUtenteProprietario)
                                         && (astaVisualizzata?.tipo != TipoAsta.SILENZIOSA && idUtenteCorrente != offertaVincente?.utente?.id))
                                         || (astaVisualizzata?.tipo == TipoAsta.SILENZIOSA && !utenteHasOfferta))
-                                && (astaVisualizzata?.tipo != TipoAsta.INVERSA || (astaVisualizzata?.tipo == TipoAsta.INVERSA && isUtenteVenditore))
-                        ,
+                                && (astaVisualizzata?.tipo != TipoAsta.INVERSA || (astaVisualizzata?.tipo == TipoAsta.INVERSA && isUtenteVenditore)),
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = Color.White,

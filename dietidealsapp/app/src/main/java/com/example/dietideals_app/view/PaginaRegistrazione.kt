@@ -17,7 +17,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -158,7 +157,6 @@ fun SchermataRegistrazione(navController: NavController) {
     val currentPage = remember { mutableIntStateOf(0) }
 
 
-    //TODO IN TEORIA RISOLTO INIZIALIZZANDO LE VARIABILI QUI ALTRIMENTI SI RESETTAVANO A FALSE E QUINDI USCIVA TUTTO ROSSO
     var isValidEmail by remember { mutableStateOf(false) }
     var emailExists by remember { mutableStateOf(false) }
     var isValidUsername by remember { mutableStateOf(false) }
@@ -401,7 +399,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     },
                     label = {
                         Text(
-                            "Password",
+                            if (!isRegistrazioneTerzeParti) "Inserisci Password" else "Acquisita tramnite terze parti",
                             color = if (isValidPassword) Color(0xFF0EA639) else if (password.isNotEmpty() && !isValidPassword) Color(
                                 0xFF9B0404
                             ) else Color.Black,
@@ -465,7 +463,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     },
                     label = {
                         Text(
-                            "Conferma Password",
+                            if (isRegistrazioneTerzeParti) "Acquisita tramite terze parti" else "Conferma Password",
                             color = if (isValidConfirmedPassword && matchedPassword) Color(
                                 0xFF0EA639
                             ) else if (confermaPassword.isNotEmpty() && (!isValidConfirmedPassword || !matchedPassword)) Color(
@@ -731,10 +729,10 @@ fun SchermataRegistrazione(navController: NavController) {
                 var snackbarVisible by remember { mutableStateOf(false) }
                 AsyncImage(model = selectedImageUri,
                     placeholder = painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
-                    error =  painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
-                    onSuccess = {snackbarVisible = true},
-                    contentDescription ="immagine profilo",
-                    contentScale = ContentScale.Crop ,
+                    error = painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
+                    onSuccess = { snackbarVisible = true },
+                    contentDescription = "immagine profilo",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .constrainAs(profileImage) {
                             top.linkTo(parent.top)
@@ -748,14 +746,16 @@ fun SchermataRegistrazione(navController: NavController) {
                             getContent.launch("image/*")
                         }
                         .border(5.dp, Color(0xFF0EA639), shape = CircleShape))
-                if(snackbarVisible)
-                {
+                if (snackbarVisible) {
                     Snackbar(
-                        modifier = Modifier.padding(16.dp).constrainAs(snackbar){
-                            bottom.linkTo(parent.bottom)},
-                        content = { Text(text = "Immagine caricata con successo!")},
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .constrainAs(snackbar) {
+                                bottom.linkTo(parent.bottom)
+                            },
+                        content = { Text(text = "Immagine caricata con successo!") },
                         action = {
-                            TextButton(onClick = { snackbarVisible = false}) {
+                            TextButton(onClick = { snackbarVisible = false }) {
                                 Text(text = "OK")
                             }
                         }
@@ -851,14 +851,14 @@ fun SchermataRegistrazione(navController: NavController) {
                         color = Color.White,
                         fontFamily = titleCustomFont,
                         textAlign = TextAlign.Center,
-                        fontSize = if (isRegistrazioneTerzeParti) 25.sp else 30.sp,
+                        fontSize = if (isRegistrazioneTerzeParti) 20.sp else 30.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
 
                 // Testo "Sei un venditore?"
                 Text(
-                    text = "Sei un venditore?",
+                    text = "\nSei un venditore?",
                     color = Color.White,
                     fontFamily = titleCustomFont,
                     textAlign = TextAlign.Center,
@@ -1025,7 +1025,7 @@ fun SchermataRegistrazione(navController: NavController) {
             ConstraintLayout(
                 modifier = Modifier.fillMaxSize()
             ) {
-                val (backgroundImage, title, subTitle, documentRow, partitaIvaTextField, bankAccountTitle, ownerTextField, bicSwiftCodeTextField, ibanTextField, buttons) = createRefs()
+                val (backgroundImage, title, subTitle, documentRow, snackbar, partitaIvaTextField, bankAccountTitle, ownerTextField, bicSwiftCodeTextField, ibanTextField, buttons) = createRefs()
 
                 // Immagine di sfondo
                 Image(
@@ -1071,6 +1071,7 @@ fun SchermataRegistrazione(navController: NavController) {
                         end.linkTo(parent.end)
                     }
                 )
+                var snackbarDocument by remember { mutableStateOf(false) }
                 Row(
                     modifier = Modifier
                         .constrainAs(documentRow) {
@@ -1098,6 +1099,7 @@ fun SchermataRegistrazione(navController: NavController) {
                         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
                             uri?.let {
                                 selectedFileUri = it
+                                snackbarDocument = true
                             }
                         }
 
@@ -1115,6 +1117,23 @@ fun SchermataRegistrazione(navController: NavController) {
                             fontSize = 10.sp,
                         )
                     }
+                }
+
+
+                if (snackbarDocument) {
+                    Snackbar(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .constrainAs(snackbar) {
+                                bottom.linkTo(parent.bottom)
+                            },
+                        content = { Text(text = "Documento caricato con successo!") },
+                        action = {
+                            TextButton(onClick = { snackbarDocument = false }) {
+                                Text(text = "OK")
+                            }
+                        }
+                    )
                 }
                 OutlinedTextField(
                     value = partitaIva,
@@ -1369,6 +1388,7 @@ fun SchermataRegistrazione(navController: NavController) {
                     ElevatedButton(
                         onClick = {
                             currentPage.intValue = 2
+                            snackbarDocument = false
                         },
 
                         colors = ButtonColors(
@@ -1395,6 +1415,7 @@ fun SchermataRegistrazione(navController: NavController) {
                             selectedFileUri
                         ),
                         onClick = {
+                            snackbarDocument = false
                             CoroutineScope(Dispatchers.Main).launch {
                                 var imageDownloadUrl: String? = null
                                 var fileDownloadUrl: String? = null

@@ -267,108 +267,107 @@ fun SchermataOfferte(navController: NavController) {
                         val nome = offerta.utente.username
                         val prezzo = offerta.prezzo
 
-                            OutlinedCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                border = BorderStroke(1.dp, Color.Black),
+                        OutlinedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            border = BorderStroke(1.dp, Color.Black),
 
+                            ) {
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Column(
-                                        modifier = Modifier.fillMaxHeight(),
-                                        verticalArrangement = Arrangement.Center,
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    Box(
+                                        modifier = Modifier
+                                            .size(85.dp) // Imposta le dimensioni della Box
+                                            .clip(shape = CircleShape)
+                                            .fillMaxHeight(), contentAlignment = Alignment.Center
                                     ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(90.dp) // Imposta le dimensioni della Box
-                                                .clip(shape = CircleShape)
-                                                .fillMaxHeight()
-                                                .padding(start = 10.dp)// Applica la forma circolare
-                                        ) {
-                                            AsyncImage( //ci torniamo
-                                                model = offerta.utente.immagineProfilo,
-                                                placeholder = painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
-                                                error = painterResource(id = com.facebook.R.drawable.com_facebook_close),
-                                                contentDescription = "Immagine dell'utente",
-                                                modifier = Modifier.fillMaxSize(),
-                                                contentScale = ContentScale.Crop
-                                            )
 
-                                        }
+                                        AsyncImage(
+                                            model = offerta.utente.urlFotoProfilo,
+                                            placeholder = painterResource(id = com.facebook.R.drawable.com_facebook_profile_picture_blank_portrait),
+                                            error = painterResource(id = com.facebook.R.drawable.com_facebook_close),
+                                            contentDescription = "Immagine dell'utente",
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Crop
+                                        )
                                     }
+                                }
 
-                                    Column(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center,
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Text(text = nome, fontWeight = FontWeight.Bold)
-                                        }
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center,
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Text(text = "OFFERTA : ")
-                                            Text(
-                                                text = prezzo.toString(),
-                                                color = MaterialTheme.colorScheme.primary
+                                Column(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(text = nome, fontWeight = FontWeight.Bold)
+                                    }
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(text = "OFFERTA : ")
+                                        Text(
+                                            text = prezzo.toString(),
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        ElevatedButton(
+                                            onClick = {
+                                                // Rimuovi la riga dalla lista delle righe visualizzate quando si fa clic su RIFIUTA
+                                                val newOfferteVisualizzate =
+                                                    listaOfferteVisualizzate.toMutableList()
+                                                newOfferteVisualizzate.removeAt(index)
+                                                newOfferteVisualizzate.toList()
+                                                listaOfferteVisualizzate =
+                                                    newOfferteVisualizzate
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    viewModel.makeOffertaRifiutata(offerta.id)
+                                                }
+                                            },
+                                            colors = ButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                                contentColor = Color(0xFFBA1A1A),
+                                                disabledContentColor = Color.Gray,
+                                                disabledContainerColor = Color.Gray
                                             )
-                                        }
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center,
-                                            modifier = Modifier.fillMaxWidth()
                                         ) {
-                                            ElevatedButton(
-                                                onClick = {
-                                                    // Rimuovi la riga dalla lista delle righe visualizzate quando si fa clic su RIFIUTA
-                                                    val newOfferteVisualizzate =
-                                                        listaOfferteVisualizzate.toMutableList()
-                                                    newOfferteVisualizzate.removeAt(index)
-                                                    newOfferteVisualizzate.toList()
-                                                    listaOfferteVisualizzate =
-                                                        newOfferteVisualizzate
-                                                    CoroutineScope(Dispatchers.Main).launch {
-                                                        viewModel.makeOffertaRifiutata(offerta.id)
-                                                    }
-                                                },
-                                                colors = ButtonColors(
-                                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                                    contentColor = Color(0xFFBA1A1A),
-                                                    disabledContentColor = Color.Gray,
-                                                    disabledContainerColor = Color.Gray
-                                                )
-                                            ) {
-                                                Text(text = "RIFIUTA")
-                                            }
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            ElevatedButton(
-                                                onClick = {
-                                                    nomeSelezionato = offerta.utente.username
-                                                    prezzoSelezionato = offerta.prezzo.toString()
-                                                    isDialogVisible = true
-                                                    CoroutineScope(Dispatchers.Main).launch {
-                                                        viewModel.makeOffertaVincente(offerta.id)
-                                                    }
-                                                },
-                                                colors = ButtonColors(
-                                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                    contentColor = MaterialTheme.colorScheme.primary,
-                                                    disabledContentColor = Color.Gray,
-                                                    disabledContainerColor = Color.Gray
-                                                )
-                                            ) {
-                                                Text(text = "ACCETTA")
-                                            }
+                                            Text(text = "RIFIUTA")
+                                        }
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        ElevatedButton(
+                                            onClick = {
+                                                nomeSelezionato = offerta.utente.username
+                                                prezzoSelezionato = offerta.prezzo.toString()
+                                                isDialogVisible = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    viewModel.makeOffertaVincente(offerta.id)
+                                                }
+                                            },
+                                            colors = ButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                contentColor = MaterialTheme.colorScheme.primary,
+                                                disabledContentColor = Color.Gray,
+                                                disabledContainerColor = Color.Gray
+                                            )
+                                        ) {
+                                            Text(text = "ACCETTA")
                                         }
                                     }
                                 }
                             }
+                        }
 
                     }
                 }

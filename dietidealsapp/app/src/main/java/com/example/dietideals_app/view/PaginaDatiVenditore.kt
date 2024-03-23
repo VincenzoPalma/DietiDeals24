@@ -531,7 +531,7 @@ fun SchermataDatiVenditore(navController: NavController) {
         ) {
 
             // Bottone Conferma
-            if (campiModificabili){
+            if (campiModificabili) {
                 ElevatedButton(
                     enabled = viewModelControlloDati.checkFieldsDatiVenditore(
                         nomeTitolare,
@@ -554,7 +554,7 @@ fun SchermataDatiVenditore(navController: NavController) {
                                 }
                             }
                             delay(500)
-                            if (fileDownloadUrl != null){
+                            if (fileDownloadUrl != null) {
                                 viewModelDatiVenditore.modificaDocumentoVenditore(fileDownloadUrl!!)
                             }
                         }

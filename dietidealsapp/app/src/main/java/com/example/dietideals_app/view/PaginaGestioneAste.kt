@@ -45,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -316,7 +317,8 @@ fun SchermataGestioneAste(navController: NavController) {
                                                     error = painterResource(id = R.drawable.defaultimage),
                                                     contentDescription = "Immagine dell'asta",
                                                     modifier = Modifier
-                                                        .size(150.dp)
+                                                        .size(150.dp),
+                                                    contentScale = ContentScale.Crop
                                                 )
                                             }
                                             VerticalDivider()
@@ -437,19 +439,34 @@ fun SchermataGestioneAste(navController: NavController) {
                                             when (selectedTabIndex.intValue) {
                                                 0 -> {
                                                     numeroPaginaAsteAttive++
-                                                    viewModel.getAsteUtenteAttive(numeroPaginaAsteAttive, listenerAste)
+                                                    viewModel.getAsteUtenteAttive(
+                                                        numeroPaginaAsteAttive,
+                                                        listenerAste
+                                                    )
                                                 }
+
                                                 1 -> {
                                                     numeroPaginaAsteTerminate++
-                                                    viewModel.getAsteUtenteTerminate(numeroPaginaAsteTerminate, listenerAste)
+                                                    viewModel.getAsteUtenteTerminate(
+                                                        numeroPaginaAsteTerminate,
+                                                        listenerAste
+                                                    )
                                                 }
+
                                                 2 -> {
                                                     numeroPaginaAsteSeguite++
-                                                    viewModel.getAsteUtenteSeguite(numeroPaginaAsteSeguite, listenerAste)
+                                                    viewModel.getAsteUtenteSeguite(
+                                                        numeroPaginaAsteSeguite,
+                                                        listenerAste
+                                                    )
                                                 }
+
                                                 3 -> {
                                                     numeroPaginaAsteVinte++
-                                                    viewModel.getAsteUtenteVinte(numeroPaginaAsteAttive, listenerAste)
+                                                    viewModel.getAsteUtenteVinte(
+                                                        numeroPaginaAsteAttive,
+                                                        listenerAste
+                                                    )
                                                 }
                                             }
                                         }

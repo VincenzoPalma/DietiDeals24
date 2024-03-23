@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -58,11 +57,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -102,11 +99,9 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 
 class PaginaSchermataHome : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -322,7 +317,7 @@ fun SchermataHome(navController: NavController) {
                                                         )
                                                         navController.navigate("SchermataPaginaAsta")
                                                     },
-                                                ) {
+                                            ) {
                                                 Row(
                                                     verticalAlignment = Alignment.CenterVertically,
                                                 ) {
@@ -821,18 +816,20 @@ fun SchermataHome(navController: NavController) {
 
                     }
                     val listState = rememberLazyGridState()
-                    Box(modifier = Modifier
-                        .constrainAs(listaAste) {
-                            top.linkTo(filterBar.bottom)
-                        }
-                        .fillMaxWidth()
-                        .height(650.dp)
-                        .padding(16.dp),) {
+                    Box(
+                        modifier = Modifier
+                            .constrainAs(listaAste) {
+                                top.linkTo(filterBar.bottom)
+                            }
+                            .fillMaxWidth()
+                            .height(650.dp)
+                            .padding(16.dp),
+                    ) {
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
                             state = listState,
                             content = {
-                                items(asteVisualizzate.size ) { index ->
+                                items(asteVisualizzate.size) { index ->
                                     val asta = asteVisualizzate[index]
                                     var open by remember {
                                         mutableStateOf(false)
@@ -896,7 +893,8 @@ fun SchermataHome(navController: NavController) {
                                                 )
                                                 Row(
                                                     horizontalArrangement = Arrangement.Start,
-                                                    modifier = Modifier.fillMaxWidth()
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
                                                         .padding(start = 8.dp),
                                                     verticalAlignment = Alignment.CenterVertically
                                                 ) {
@@ -1060,8 +1058,8 @@ fun SchermataHome(navController: NavController) {
 
                         )
                         val isScrolledToEnd = listState.layoutInfo.visibleItemsInfo
-                        .lastOrNull()?.index == (12 * (numeroPagina+1)) -1
-                        if(isScrolledToEnd) {
+                            .lastOrNull()?.index == (12 * (numeroPagina + 1)) - 1
+                        if (isScrolledToEnd) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()

@@ -110,6 +110,7 @@ class AstaRepository {
                         val risultato = response.body()
                         deferred.complete(risultato)
                     } else {
+                        println(response.message())
                         deferred.complete(null)
                     }
                 }
