@@ -95,18 +95,14 @@ class MainActivity : ComponentActivity() {
         LoginManager.getInstance().registerCallback(facebookCallbackManager, object :
             FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult) {
-                // L'utente è stato autenticato con successo
                 val accessToken = AccessToken.getCurrentAccessToken()
                 val credential = accessToken?.let { FacebookAuthProvider.getCredential(it.token) }
-                // Puoi gestire ulteriormente l'accesso qui
             }
 
             override fun onCancel() {
-                // L'utente ha annullato l'accesso
             }
 
             override fun onError(error: FacebookException) {
-                // Si è verificato un errore durante l'accesso
             }
 
         })
@@ -168,8 +164,7 @@ object FacebookUtil {
 @Composable
 
 fun SchermataAutenticazione(navController: NavController, activity: Activity) {
-    val presenter =
-        PaginaAutenticazioneViewModel() // Istanza del presenter per la gestione dell'autenticazione
+    val viewModel = PaginaAutenticazioneViewModel()
     var email by remember { mutableStateOf("") } // Variabile per memorizzare l'email
     val firebaseAuth: FirebaseAuth = Firebase.auth
     val oAuthGitHubProvider = OAuthProvider.newBuilder("github.com")
@@ -281,7 +276,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
             ),
             keyboardActions = KeyboardActions(
                 onNext = { passwordFocusRequester.requestFocus() }
-            ), // Aggiungi una logica per la validazione dell'email
+            ),
             singleLine = true, // Assicurati che il campo sia a una sola riga
 
         )
@@ -489,7 +484,7 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
 
                     }
                     .addOnFailureListener {
-                        loginFailed = true
+
                     }
             } else {
                 firebaseAuth

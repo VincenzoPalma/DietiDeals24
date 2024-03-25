@@ -208,12 +208,12 @@ fun SchermataRegistrazione(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.width(5.dp))  // Aggiunge uno spazio tra l'icona e il testo
                     Text(
-                        text = if (isRegistrazioneTerzeParti) "CONTINUA\n REGISTRAZIONE" else "REGISTRAZIONE",
+                        text = if (isRegistrazioneTerzeParti) "CONTINUA REGISTRAZIONE" else "REGISTRAZIONE",
                         color = Color.White,
                         fontFamily = titleCustomFont,
                         textAlign = TextAlign.Center,
-                        fontSize = if (isRegistrazioneTerzeParti) 25.sp else 30.sp,
-                        modifier = Modifier.fillMaxWidth()
+                        fontSize = if (isRegistrazioneTerzeParti) 20.sp else 30.sp,
+                        modifier = Modifier.fillMaxWidth(1f)
                     )
                 }
 
