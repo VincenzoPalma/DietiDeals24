@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ingswProva
+    url: jdbc:postgresql://postgres:5432/ingswProva
     username: postgres
-    password: 26102002
+    password: dietideals
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
