@@ -588,7 +588,7 @@ fun SchermataProfiloUtente(navController: NavController) {
                         )
                     }
                 }
-                if (previousDestination == "SchermataPaginaAsta") {
+                if (previousDestination != "SchermataPaginaAsta") {
                     NavigationBar(
                         tonalElevation = 30.dp,
                         modifier = Modifier
