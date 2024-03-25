@@ -272,7 +272,7 @@ class OffertaServiceTest {
         assertEquals(offerta, risultato);
     }
 
-    @Test
+    @Test //(CE3, CE1)
     void confrontaPrezzoOffertaConPrezzoBaseAstaInversaPrezzoMinoreTest() {
         Asta asta = new Asta();
         asta.setTipo(TipoAsta.INVERSA);
@@ -284,7 +284,7 @@ class OffertaServiceTest {
         assertTrue(risultato);
     }
 
-    @Test
+    @Test //(CE2, CE1)
     void confrontaPrezzoOffertaConPrezzoBaseAstaInversaPrezzoUgualeTest() {
         Asta asta = new Asta();
         asta.setTipo(TipoAsta.INVERSA);
@@ -296,7 +296,7 @@ class OffertaServiceTest {
         assertTrue(risultato);
     }
 
-    @Test
+    @Test //(CE1, CE1)
     void confrontaPrezzoOffertaConPrezzoBaseAstaInversaPrezzoMaggioreTest() {
         Asta asta = new Asta();
         asta.setTipo(TipoAsta.INVERSA);
@@ -308,7 +308,7 @@ class OffertaServiceTest {
         assertFalse(risultato);
     }
 
-    @Test
+    @Test //(CE3, CE2)
     void confrontaPrezzoOffertaConPrezzoBaseAstaSilenziosaPrezzoMinoreTest() {
         Asta asta = new Asta();
         asta.setTipo(TipoAsta.SILENZIOSA);
@@ -320,7 +320,7 @@ class OffertaServiceTest {
         assertFalse(risultato);
     }
 
-    @Test
+    @Test //(CE2, CE2)
     void confrontaPrezzoOffertaConPrezzoBaseAstaSilenziosaPrezzoUgualeTest() {
         Asta asta = new Asta();
         asta.setTipo(TipoAsta.SILENZIOSA);
@@ -332,7 +332,7 @@ class OffertaServiceTest {
         assertTrue(risultato);
     }
 
-    @Test
+    @Test //(CE1, CE2)
     void confrontaPrezzoOffertaConPrezzoBaseAstaSilenziosaPrezzoMaggioreTest() {
         Asta asta = new Asta();
         asta.setTipo(TipoAsta.SILENZIOSA);
@@ -344,7 +344,7 @@ class OffertaServiceTest {
         assertTrue(risultato);
     }
 
-    @Test
+    @Test //(CE3, CE3)
     void confrontaPrezzoOffertaConPrezzoBaseAstaInglesePrezzoMinoreTest() {
         Asta asta = new Asta();
         asta.setTipo(TipoAsta.INGLESE);
@@ -357,7 +357,7 @@ class OffertaServiceTest {
         assertFalse(risultato);
     }
 
-    @Test
+    @Test //(CE2, CE3)
     void confrontaPrezzoOffertaConPrezzoBaseAstaInglesePrezzoUgualeTest() {
         Asta asta = new Asta();
         asta.setTipo(TipoAsta.INGLESE);
@@ -370,7 +370,7 @@ class OffertaServiceTest {
         assertTrue(risultato);
     }
 
-    @Test
+    @Test //(CE1, CE3)
     void confrontaPrezzoOffertaConPrezzoBaseAstaInglesePrezzoMaggioreTest() {
         Asta asta = new Asta();
         asta.setTipo(TipoAsta.INGLESE);
@@ -381,6 +381,17 @@ class OffertaServiceTest {
         boolean risultato = offertaService.confrontaPrezzoOffertaConPrezzoBaseAsta(prezzo, asta);
 
         assertTrue(risultato);
+    }
+
+    @Test //(CE4, X) valido per qualsiasi CE di asta
+    void confrontaPrezzoOffertaConPrezzoBasePrezzoNull(){
+        Asta asta = new Asta();
+        assertThrows(IllegalArgumentException.class, () -> offertaService.confrontaPrezzoOffertaConPrezzoBaseAsta(null, asta));
+    }
+
+    @Test //(X, CE4) valido per qualsiasi CE di prezzo
+    void confrontaPrezzoOffertaConPrezzoBaseAstaNull(){
+        assertThrows(IllegalArgumentException.class, () -> offertaService.confrontaPrezzoOffertaConPrezzoBaseAsta(BigDecimal.TEN, null));
     }
 
     @Test
@@ -482,18 +493,15 @@ class OffertaServiceTest {
         assertFalse(risultato);
     }
 
-    @Test
-    void modificaStatoOffertaOffertaNonTrovataTest() throws SchedulerException {
-
+    @Test //(CE2, X) valido per qualsiasi CE di stato
+    void modificaStatoOffertaOffertaNonTrovataTest() {
+        UUID idOfferta = UUID.randomUUID();
         when(offertaRepositoryMock.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
-        Offerta risultato = offertaService.modificaStatoOfferta(any(UUID.class), any(StatoOfferta.class));
-
-        verify(offertaRepositoryMock, times(1)).findOne(any(Specification.class));
-        assertNull(risultato);
+        assertThrows(IllegalArgumentException.class, () -> offertaService.modificaStatoOfferta(idOfferta, null));
     }
 
-    @Test
+    @Test //(CE1, CE2)
     void modificaStatoOffertaOffertaNonVincenteTest() throws SchedulerException {
         Offerta offerta = new Offerta();
         offerta.setId(UUID.randomUUID());
@@ -511,14 +519,12 @@ class OffertaServiceTest {
         assertEquals(offerta, risultato);
     }
 
-    @Test
-    void modificaStatoOffertaOffertaAstaNonSilenziosaTest() throws SchedulerException {
+    @Test //(CE1, CE3)
+    void modificaStatoOffertaOffertaRifiutataTest() throws SchedulerException {
         Offerta offerta = new Offerta();
         offerta.setId(UUID.randomUUID());
-        StatoOfferta statoOfferta = StatoOfferta.VINCENTE;
+        StatoOfferta statoOfferta = StatoOfferta.RIFIUTATA;
         offerta.setStato(statoOfferta);
-        offerta.setAsta(new Asta());
-        offerta.getAsta().setTipo(TipoAsta.INGLESE); //qualsiasi asta non silenziosa è valida per il test
 
         when(offertaRepositoryMock.findOne(any(Specification.class))).thenReturn(Optional.of(offerta));
         when(offertaRepositoryMock.save(offerta)).thenReturn(offerta);
@@ -531,8 +537,14 @@ class OffertaServiceTest {
         assertEquals(offerta, risultato);
     }
 
-    @Test
-    void modificaStatoOffertaOffertaTest() throws SchedulerException {
+    @Test //(X, CE4) valido per qualsiasi idOfferta
+    void modificaStatoOffertaStatoNull() {
+        UUID idOfferta = UUID.randomUUID();
+        assertThrows(IllegalArgumentException.class, () -> offertaService.modificaStatoOfferta(idOfferta, null));
+    }
+
+    @Test //(CE1, CE1)
+    void modificaStatoOffertaVincenteAstaSilenziosaTest() throws SchedulerException {
         Offerta offerta = new Offerta();
         offerta.setId(UUID.randomUUID());
         StatoOfferta statoOfferta = StatoOfferta.VINCENTE;

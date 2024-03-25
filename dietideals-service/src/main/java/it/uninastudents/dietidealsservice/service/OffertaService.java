@@ -146,13 +146,15 @@ public class OffertaService {
     }
 
     public boolean confrontaPrezzoOffertaConPrezzoBaseAsta(BigDecimal prezzo, Asta asta) {
-        if (asta.getTipo().equals(TipoAsta.INVERSA)) {
-            return prezzo.compareTo(asta.getPrezzoBase()) <= 0;
-        } else if (asta.getTipo().equals(TipoAsta.SILENZIOSA)) {
-            return prezzo.compareTo(asta.getPrezzoBase()) >= 0;
-        } else {
-            return prezzo.compareTo(asta.getPrezzoBase().add(asta.getSogliaRialzo())) >= 0;
-        }
+        if (prezzo != null && asta != null){
+            if (asta.getTipo().equals(TipoAsta.INVERSA)) {
+                return prezzo.compareTo(asta.getPrezzoBase()) <= 0;
+            } else if (asta.getTipo().equals(TipoAsta.SILENZIOSA)) {
+                return prezzo.compareTo(asta.getPrezzoBase()) >= 0;
+            } else {
+                return prezzo.compareTo(asta.getPrezzoBase().add(asta.getSogliaRialzo())) >= 0;
+            }
+        } else throw new IllegalArgumentException();
     }
 
     public boolean confrontaPrezzoNuovaOffertaConPrezzoOffertaVincente(Offerta nuovaOfferta, Offerta offertaVincente, Asta asta) {
@@ -165,6 +167,9 @@ public class OffertaService {
     }
 
     public Offerta modificaStatoOfferta(UUID idOfferta, StatoOfferta stato) throws SchedulerException {
+        if (stato == null){
+            throw new IllegalArgumentException();
+        }
         var spec = OffertaSpecs.hasId(idOfferta);
         Optional<Offerta> offerta = offertaRepository.findOne(spec);
         if (offerta.isPresent()) {
@@ -176,7 +181,7 @@ public class OffertaService {
             }
             return offertaRepository.save(offerta.get());
         } else {
-            return null;
+            throw new IllegalArgumentException();
         }
     }
 }
