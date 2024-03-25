@@ -526,9 +526,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 TextButton(onClick = { isDialogVisible = false }) {
                                     Text("ANNULLA", color = Color(0xFF9B0404))
                                 }
-                                Spacer(modifier = Modifier.width(60.dp))
-
-
                                 TextButton(
                                     onClick = {
                                         CoroutineScope(Dispatchers.IO).launch {
