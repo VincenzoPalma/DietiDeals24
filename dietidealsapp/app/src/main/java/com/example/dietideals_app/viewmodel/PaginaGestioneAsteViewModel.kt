@@ -11,7 +11,7 @@ class PaginaGestioneAsteViewModel {
 
     private val astaRepository = AstaRepository()
 
-    fun getAsteUtenteAttive(numeroPagina : Int, listener: AsteListener){
+    fun getAsteUtenteAttive(numeroPagina: Int, listener: AsteListener) {
         CoroutineScope(Dispatchers.IO).launch {
             val aste = astaRepository.getAsteUtente(numeroPagina, StatoAsta.ATTIVA)
             if (aste != null) {
@@ -22,7 +22,7 @@ class PaginaGestioneAsteViewModel {
         }
     }
 
-    fun getAsteUtenteTerminate(numeroPagina : Int, listener: AsteListener){
+    fun getAsteUtenteTerminate(numeroPagina: Int, listener: AsteListener) {
         CoroutineScope(Dispatchers.IO).launch {
             val aste = astaRepository.getAsteUtente(numeroPagina, StatoAsta.TERMINATA)
             if (aste != null) {
@@ -33,7 +33,7 @@ class PaginaGestioneAsteViewModel {
         }
     }
 
-    fun getAsteUtenteSeguite(numeroPagina : Int, listener: AsteListener){
+    fun getAsteUtenteSeguite(numeroPagina: Int, listener: AsteListener) {
         CoroutineScope(Dispatchers.IO).launch {
             val aste = astaRepository.getAstePartecipateUtente(numeroPagina, false)
             if (aste != null) {
@@ -44,7 +44,7 @@ class PaginaGestioneAsteViewModel {
         }
     }
 
-    fun getAsteUtenteVinte(numeroPagina : Int, listener: AsteListener){
+    fun getAsteUtenteVinte(numeroPagina: Int, listener: AsteListener) {
         CoroutineScope(Dispatchers.IO).launch {
             val aste = astaRepository.getAstePartecipateUtente(numeroPagina, true)
             if (aste != null) {

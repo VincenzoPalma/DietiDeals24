@@ -24,5 +24,8 @@ interface OffertaService {
     ): Call<List<Offerta>>
 
     @PUT("aste/{idOfferta}")
-    fun modificaStatoOfferta(@Path("idOfferta") idOfferta: UUID, @Query("statoOfferta") statoOfferta: StatoOfferta): Call<Offerta>
+    fun modificaStatoOfferta(
+        @Path("idOfferta") idOfferta: UUID,
+        @Query("statoOfferta") statoOfferta: StatoOfferta
+    ): Call<Offerta>
 }

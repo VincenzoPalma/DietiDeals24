@@ -49,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -121,10 +120,7 @@ fun SchermataPaginaAsta(navController: NavController) {
 
     val auth = Firebase.auth
     val viewModel = PaginaAstaViewModel()
-    val defaultImage = painterResource(id = R.drawable.defaultimage)
-    val colorGreen = 0xFF0EA639
     val colorRed = 0xFF9B0404
-    val context = LocalContext.current
     val currentPage = remember { mutableIntStateOf(0) }
     val openDialog = remember { mutableStateOf(false) }
     var offerta by remember { mutableStateOf<BigDecimal>(BigDecimal.ZERO) }
@@ -161,7 +157,7 @@ fun SchermataPaginaAsta(navController: NavController) {
         val astaJson = navController.previousBackStackEntry?.savedStateHandle?.get<String>("asta")
         val gson = GsonBuilder().registerTypeAdapter(
             OffsetDateTime::class.java,
-            JsonDeserializer { json, type, jsonDeserializationContext ->
+            JsonDeserializer { json, _, _ ->
                 val text = json.getAsJsonPrimitive().asString
                 OffsetDateTime.parse(text)
             }).create()

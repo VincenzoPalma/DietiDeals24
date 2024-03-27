@@ -38,7 +38,7 @@ class PaginaAstaViewModel {
         }
     }
 
-    suspend fun getIdUtenteFromIdAuth(idAuth: String) : UUID? {
+    suspend fun getIdUtenteFromIdAuth(idAuth: String): UUID? {
         val utente = utenteRepository.getUtenteByIdAuth(idAuth)
         return utente?.id
     }

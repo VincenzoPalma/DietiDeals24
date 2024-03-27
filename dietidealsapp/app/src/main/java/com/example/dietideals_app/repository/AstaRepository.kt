@@ -15,7 +15,12 @@ import retrofit2.Response
 
 class AstaRepository {
 
-    suspend fun getAste(numeroPagina : Int, nome: String?, categoria: CategoriaAsta?, tipo: TipoAsta?): List<Asta>? {
+    suspend fun getAste(
+        numeroPagina: Int,
+        nome: String?,
+        categoria: CategoriaAsta?,
+        tipo: TipoAsta?
+    ): List<Asta>? {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<List<Asta>?>()
 
@@ -42,13 +47,13 @@ class AstaRepository {
         }
     }
 
-    suspend fun getAsteUtente(numeroPagina : Int, stato: StatoAsta?): List<Asta>? {
+    suspend fun getAsteUtente(numeroPagina: Int, stato: StatoAsta?): List<Asta>? {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<List<Asta>?>()
 
             ApiAsta.astaService.getAsteUtente(numeroPagina, 12, stato).enqueue(object :
                 Callback<AstaList> {
-                    override fun onResponse(
+                override fun onResponse(
                     call: Call<AstaList>,
                     response: Response<AstaList>
                 ) {
@@ -69,7 +74,7 @@ class AstaRepository {
         }
     }
 
-    suspend fun getAstePartecipateUtente(numeroPagina : Int, vinta: Boolean): List<Asta>? {
+    suspend fun getAstePartecipateUtente(numeroPagina: Int, vinta: Boolean): List<Asta>? {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<List<Asta>?>()
 

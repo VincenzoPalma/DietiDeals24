@@ -374,7 +374,7 @@ fun SchermataModificaProfilo(navController: NavController) {
                 value = sitoWeb,
                 onValueChange = { sitoWeb = it },
                 label = { Text("Sito Web") },
-                placeholder = { Text("www.sitoweb.com/it",modifier = Modifier.fillMaxWidth()) },
+                placeholder = { Text("www.sitoweb.com/it", modifier = Modifier.fillMaxWidth()) },
                 shape = RoundedCornerShape(15.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next

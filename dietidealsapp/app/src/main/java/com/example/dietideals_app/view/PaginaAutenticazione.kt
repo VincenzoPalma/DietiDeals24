@@ -83,6 +83,7 @@ class MainActivity : ComponentActivity() {
 
     private val facebookCallbackManager = CallbackManager.Factory.create()
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         FacebookUtil.callbackManager.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
@@ -96,13 +97,15 @@ class MainActivity : ComponentActivity() {
             FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult) {
                 val accessToken = AccessToken.getCurrentAccessToken()
-                val credential = accessToken?.let { FacebookAuthProvider.getCredential(it.token) }
+                accessToken?.let { FacebookAuthProvider.getCredential(it.token) }
             }
 
             override fun onCancel() {
+                //
             }
 
             override fun onError(error: FacebookException) {
+                //
             }
 
         })
@@ -333,9 +336,8 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
                 }
             )
         )
-        if(loginFailed)
-        {
-            Row(modifier = Modifier.constrainAs(errorText){
+        if (loginFailed) {
+            Row(modifier = Modifier.constrainAs(errorText) {
                 top.linkTo(passwordTextField.bottom)
             }
             ) {
@@ -370,7 +372,10 @@ fun SchermataAutenticazione(navController: NavController, activity: Activity) {
             },
             modifier = Modifier
                 .constrainAs(accessButton) {
-                    top.linkTo(if(loginFailed)errorText.bottom else passwordTextField.bottom, margin = 16.dp)
+                    top.linkTo(
+                        if (loginFailed) errorText.bottom else passwordTextField.bottom,
+                        margin = 16.dp
+                    )
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
                 }

@@ -2,7 +2,12 @@ package com.example.dietideals_app.model
 
 import java.util.UUID
 
-class ContoCorrente(var id: UUID?, var nomeTitolare: String, var codiceBicSwift: String, var iban: String) {
+class ContoCorrente(
+    var id: UUID?,
+    var nomeTitolare: String,
+    var codiceBicSwift: String,
+    var iban: String
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ContoCorrente) return false

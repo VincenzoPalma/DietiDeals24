@@ -26,8 +26,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -173,7 +171,6 @@ fun SchermataPagamentiProfilo(navController: NavController) {
         // Controllo se il numero di carta ha una lunghezza valida
         return codiceCvvCvc.length == 3
     }
-
 
 
     fun isCreditCardDateValid(meseScadenza: String, annoScadenza: String): Boolean {
@@ -396,10 +393,16 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                 trailingIcon = {
                                     Icon(
                                         painter = painterResource(
-                                            id = if (isNumeroCartaValid(numeroCarta)) R.drawable.baseline_done_24 else if (!isNumeroCartaValid(numeroCarta) && numeroCarta.isNotEmpty()) R.drawable.baseline_close_24 else R.drawable.empty
+                                            id = if (isNumeroCartaValid(numeroCarta)) R.drawable.baseline_done_24 else if (!isNumeroCartaValid(
+                                                    numeroCarta
+                                                ) && numeroCarta.isNotEmpty()
+                                            ) R.drawable.baseline_close_24 else R.drawable.empty
                                         ),
                                         contentDescription = "",
-                                        tint = if (isNumeroCartaValid(numeroCarta)) Color(0xFF0EA639) else if (!isNumeroCartaValid(numeroCarta) && numeroCarta.isNotEmpty()) Color(
+                                        tint = if (isNumeroCartaValid(numeroCarta)) Color(0xFF0EA639) else if (!isNumeroCartaValid(
+                                                numeroCarta
+                                            ) && numeroCarta.isNotEmpty()
+                                        ) Color(
                                             0xFF9B0404
                                         ) else Color.Gray,
                                         modifier = if (numeroCarta.isEmpty()) Modifier.alpha(0f) else Modifier
@@ -422,7 +425,9 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                     ) else if (!isNumeroCartaValid(numeroCarta) && numeroCarta.isNotEmpty()) Color(
                                         0xFF9B0404
                                     ) else Color.Gray,
-                                    focusedBorderColor = if (isNumeroCartaValid(numeroCarta)) Color(0xFF0EA639) else if (!isNumeroCartaValid(numeroCarta) && numeroCarta.isNotEmpty()) Color(
+                                    focusedBorderColor = if (isNumeroCartaValid(numeroCarta)) Color(
+                                        0xFF0EA639
+                                    ) else if (!isNumeroCartaValid(numeroCarta) && numeroCarta.isNotEmpty()) Color(
                                         0xFF9B0404
                                     ) else Color.Gray,
                                 ),
@@ -509,7 +514,9 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                         ) else if (!isCvcValid(codiceCvvCvc) && codiceCvvCvc.isNotEmpty()) Color(
                                             0xFF9B0404
                                         ) else Color.Gray,
-                                        focusedBorderColor = if (isCvcValid(codiceCvvCvc)) Color(0xFF0EA639) else if (!isCvcValid(codiceCvvCvc) && codiceCvvCvc.isNotEmpty()) Color(
+                                        focusedBorderColor = if (isCvcValid(codiceCvvCvc)) Color(
+                                            0xFF0EA639
+                                        ) else if (!isCvcValid(codiceCvvCvc) && codiceCvvCvc.isNotEmpty()) Color(
                                             0xFF9B0404
                                         ) else Color.Gray,
                                     )
@@ -542,12 +549,14 @@ fun SchermataPagamentiProfilo(navController: NavController) {
                                             isDialogVisible = false
                                         }
                                     },
-                                    enabled = checkField() && isCreditCardDateValid(meseScadenza,annoScadenza) && isCvcValid(codiceCvvCvc) && isNumeroCartaValid(numeroCarta)
+                                    enabled = checkField() && isCreditCardDateValid(
+                                        meseScadenza,
+                                        annoScadenza
+                                    ) && isCvcValid(codiceCvvCvc) && isNumeroCartaValid(numeroCarta)
                                 ) {
                                     Text("CONFERMA")
                                 }
                             }
-
 
 
                         }

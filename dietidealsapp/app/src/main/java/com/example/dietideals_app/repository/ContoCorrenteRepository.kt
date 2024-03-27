@@ -14,23 +14,25 @@ class ContoCorrenteRepository {
     suspend fun saveContoCorrente(creaContoCorrente: CreaContoCorrente): ContoCorrente? {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<ContoCorrente?>()
-            ApiContoCorrente.contoCorrenteService.saveContoCorrente(creaContoCorrente).enqueue(object :
-                Callback<ContoCorrente?> {
-                override fun onResponse(
-                    call: Call<ContoCorrente?>,
-                    response: Response<ContoCorrente?>
-                ) {
-                    if (response.isSuccessful) {
-                        val risultato = response.body()
-                        if (risultato != null) {
-                            deferred.complete(risultato)
+            ApiContoCorrente.contoCorrenteService.saveContoCorrente(creaContoCorrente)
+                .enqueue(object :
+                    Callback<ContoCorrente?> {
+                    override fun onResponse(
+                        call: Call<ContoCorrente?>,
+                        response: Response<ContoCorrente?>
+                    ) {
+                        if (response.isSuccessful) {
+                            val risultato = response.body()
+                            if (risultato != null) {
+                                deferred.complete(risultato)
+                            }
                         }
                     }
-                }
-                override fun onFailure(call: Call<ContoCorrente?>, t: Throwable) {
-                    deferred.complete(null)
-                }
-            })
+
+                    override fun onFailure(call: Call<ContoCorrente?>, t: Throwable) {
+                        deferred.complete(null)
+                    }
+                })
             deferred.await()
         }
     }
@@ -38,23 +40,25 @@ class ContoCorrenteRepository {
     suspend fun modifyContoCorrente(contoCorrente: ContoCorrente): ContoCorrente? {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<ContoCorrente?>()
-            ApiContoCorrente.contoCorrenteService.modifyContoCorrente(contoCorrente).enqueue(object :
-                Callback<ContoCorrente?> {
-                override fun onResponse(
-                    call: Call<ContoCorrente?>,
-                    response: Response<ContoCorrente?>
-                ) {
-                    if (response.isSuccessful) {
-                        val risultato = response.body()
-                        if (risultato != null) {
-                            deferred.complete(risultato)
+            ApiContoCorrente.contoCorrenteService.modifyContoCorrente(contoCorrente)
+                .enqueue(object :
+                    Callback<ContoCorrente?> {
+                    override fun onResponse(
+                        call: Call<ContoCorrente?>,
+                        response: Response<ContoCorrente?>
+                    ) {
+                        if (response.isSuccessful) {
+                            val risultato = response.body()
+                            if (risultato != null) {
+                                deferred.complete(risultato)
+                            }
                         }
                     }
-                }
-                override fun onFailure(call: Call<ContoCorrente?>, t: Throwable) {
-                    deferred.complete(null)
-                }
-            })
+
+                    override fun onFailure(call: Call<ContoCorrente?>, t: Throwable) {
+                        deferred.complete(null)
+                    }
+                })
             deferred.await()
         }
     }
@@ -75,6 +79,7 @@ class ContoCorrenteRepository {
                         }
                     }
                 }
+
                 override fun onFailure(call: Call<ContoCorrente?>, t: Throwable) {
                     deferred.complete(null)
                 }

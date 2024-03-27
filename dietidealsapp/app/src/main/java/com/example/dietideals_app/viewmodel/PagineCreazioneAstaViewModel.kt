@@ -14,7 +14,7 @@ class PagineCreazioneAstaViewModel {
     private val astaRepository = AstaRepository()
     private val utenteRepository = UtenteRepository()
 
-    fun inserisciAsta(creaAsta: CreaAsta){
+    fun inserisciAsta(creaAsta: CreaAsta) {
         CoroutineScope(Dispatchers.IO).launch {
             astaRepository.saveAsta(creaAsta)
         }

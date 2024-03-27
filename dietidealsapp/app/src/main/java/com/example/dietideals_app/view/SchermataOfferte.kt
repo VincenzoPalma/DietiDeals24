@@ -5,12 +5,9 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +39,6 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,8 +47,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -184,53 +178,6 @@ fun SchermataOfferte(navController: NavController) {
         val righeVisualizzate = remember { mutableStateListOf(*Array(7) { it }) }
         var nomeSelezionato by remember { mutableStateOf("") }
         var prezzoSelezionato by remember { mutableStateOf("") }
-
-        @Composable
-        fun SwipeableRow(
-            onSwipeLeft: () -> Unit,
-            onSwipeRight: () -> Unit,
-            content: @Composable () -> Unit
-        ) {
-            var offsetX by remember { mutableFloatStateOf(0f) }
-
-            val animatableOffset = remember { androidx.compose.animation.core.Animatable(0f) }
-            val offsetState by animateFloatAsState(
-                targetValue = offsetX,
-                animationSpec = tween(durationMillis = 100), label = ""
-            )
-
-            LaunchedEffect(offsetState) {
-                animatableOffset.animateTo(offsetState)
-            }
-
-            Row(
-                modifier = Modifier
-                    .graphicsLayer {
-                        translationX = animatableOffset.value
-                    }
-                    .pointerInput(Unit) {
-                        detectHorizontalDragGestures(
-                            onHorizontalDrag = { change, dragAmount ->
-                                change.consume()
-                                val sensitiveDragAmount = dragAmount * 0.5f
-                                offsetX += sensitiveDragAmount
-                            },
-                            onDragStart = { offsetX = 0f },
-                            onDragEnd = {
-                                if (offsetX > 100) {
-                                    onSwipeRight()
-                                } else {
-                                    onSwipeLeft()
-                                }
-                                offsetX = 0f
-                            },
-
-                            )
-                    }
-            ) {
-                content()
-            }
-        }
 
 
         LazyColumn(

@@ -55,6 +55,7 @@ class CartaRepository {
                         }
                     }
                 }
+
                 override fun onFailure(call: Call<Carta?>, t: Throwable) {
                     deferred.complete(null)
                 }

@@ -60,28 +60,30 @@ object RetrofitClient {
         return Retrofit.Builder()
             .client(clientWithAuthorization)
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(
-                GsonBuilder().registerTypeAdapter(
-                    OffsetDateTime::class.java,
-                    JsonDeserializer { json, type, jsonDeserializationContext ->
-                        val text = json.getAsJsonPrimitive().asString
-                        OffsetDateTime.parse(text)
-                    }).create()
-            )
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().registerTypeAdapter(
+                        OffsetDateTime::class.java,
+                        JsonDeserializer { json, type, jsonDeserializationContext ->
+                            val text = json.getAsJsonPrimitive().asString
+                            OffsetDateTime.parse(text)
+                        }).create()
+                )
             ).build()
     }
 
     val retrofitWithoutAuthorization: Retrofit by lazy { //da usare solo per la registrazione (senza autenticazione)
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(
-                GsonBuilder().registerTypeAdapter(
-                    OffsetDateTime::class.java,
-                    JsonDeserializer { json, type, jsonDeserializationContext ->
-                        val text = json.getAsJsonPrimitive().asString
-                        OffsetDateTime.parse(text)
-                    }).create()
-            )
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().registerTypeAdapter(
+                        OffsetDateTime::class.java,
+                        JsonDeserializer { json, type, jsonDeserializationContext ->
+                            val text = json.getAsJsonPrimitive().asString
+                            OffsetDateTime.parse(text)
+                        }).create()
+                )
             ).build()
     }
 

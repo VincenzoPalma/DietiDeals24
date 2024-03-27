@@ -140,7 +140,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
         "BELLEZZA",
         "MUSICA_E_ARTE"
     )
-    val MAX_LENGTH = 300
+    val maxLenght = 300
     val colorGreen = 0xFF0EA639
     val storage = Firebase.storage
     val storageRef = storage.reference
@@ -510,7 +510,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                 )
                                 OutlinedTextField(
                                     value = descrizione,
-                                    onValueChange = { descrizione = it.take(MAX_LENGTH) },
+                                    onValueChange = { descrizione = it.take(maxLenght) },
                                     supportingText = {
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
@@ -518,7 +518,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         )
                                         {
                                             Text(
-                                                text = descrizione.length.toString() + "/$MAX_LENGTH",
+                                                text = descrizione.length.toString() + "/$maxLenght",
                                                 color = Color.LightGray,
                                                 modifier = Modifier.fillMaxWidth(),
                                                 textAlign = TextAlign.Right
@@ -971,7 +971,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
 
                                 OutlinedTextField(
                                     value = descrizione,
-                                    onValueChange = { descrizione = it.take(MAX_LENGTH) },
+                                    onValueChange = { descrizione = it.take(maxLenght) },
                                     supportingText = {
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
@@ -979,7 +979,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         )
                                         {
                                             Text(
-                                                text = descrizione.length.toString() + "/$MAX_LENGTH",
+                                                text = descrizione.length.toString() + "/$maxLenght",
                                                 color = Color.LightGray,
                                                 modifier = Modifier.fillMaxWidth(),
                                                 textAlign = TextAlign.Right
@@ -1088,8 +1088,10 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                                     } else {
                                                         adjustedHour -= 1
                                                     }
-                                                    val formattedHour = adjustedHour.toString().padStart(2, '0')
-                                                    val formattedMinute = selectedMinute.toString().padStart(2, '0')
+                                                    val formattedHour =
+                                                        adjustedHour.toString().padStart(2, '0')
+                                                    val formattedMinute =
+                                                        selectedMinute.toString().padStart(2, '0')
                                                     val dataAsta = LocalDate.of(1970, 1, 1)
                                                         .plusDays(state.selectedDateMillis!! / (24 * 60 * 60 * 1000))
                                                         .toString() + "T" + formattedHour + ":" + formattedMinute + ":" + "00+00:00"
@@ -1269,7 +1271,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                 OutlinedTextField(
 
                                     value = descrizione,
-                                    onValueChange = { descrizione = it.take(MAX_LENGTH) },
+                                    onValueChange = { descrizione = it.take(maxLenght) },
                                     supportingText = {
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
@@ -1277,7 +1279,7 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                         )
                                         {
                                             Text(
-                                                text = descrizione.length.toString() + "/$MAX_LENGTH",
+                                                text = descrizione.length.toString() + "/$maxLenght",
                                                 color = Color.LightGray,
                                                 modifier = Modifier.fillMaxWidth(),
                                                 textAlign = TextAlign.Right
@@ -1381,8 +1383,11 @@ fun SchermataCreazioneAsta(navController: NavController) {
                                                     } else {
                                                         adjustedHour -= 1
                                                     }
-                                                    val formattedHour = adjustedHour.toString().padStart(2, '0')
-                                                    val formattedMinute = LocalTime.now().minute.toString().padStart(2, '0')
+                                                    val formattedHour =
+                                                        adjustedHour.toString().padStart(2, '0')
+                                                    val formattedMinute =
+                                                        LocalTime.now().minute.toString()
+                                                            .padStart(2, '0')
                                                     CreaAsta(
                                                         nomeAsta,
                                                         descrizione,
