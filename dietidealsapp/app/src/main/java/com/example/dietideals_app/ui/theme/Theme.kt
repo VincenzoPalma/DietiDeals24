@@ -74,7 +74,7 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun DietidealsappTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    useDarkTheme: Boolean = false, //isSystemInDarkTheme(),
     content: @Composable() () -> Unit
 ) {
     val colors = if (!useDarkTheme) {
